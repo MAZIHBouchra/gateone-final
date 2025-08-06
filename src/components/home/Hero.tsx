@@ -72,20 +72,12 @@ const Hero = () => {
             <p className="text-xl md:text-2xl font-light opacity-90 max-w-2xl mx-auto">
               {slides[currentSlide].subtitle}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+            <div className="flex justify-center pt-8">
               <Link to="/properties">
                 <Button size="lg" className="btn-primary text-lg px-8 py-4">
                   View Our Properties
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="text-white border-white hover:bg-white hover:text-primary text-lg px-8 py-4"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Watch Video Tour
-              </Button>
             </div>
           </div>
         </div>
