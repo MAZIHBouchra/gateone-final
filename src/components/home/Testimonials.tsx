@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
+import avatar1 from '@/assets/avatar-1.jpg';
+import avatar2 from '@/assets/avatar-2.jpg';
+import avatar3 from '@/assets/avatar-3.jpg';
+import ceoAvatar from '@/assets/ceo-avatar.jpg';
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -11,7 +15,7 @@ const Testimonials = () => {
       id: 1,
       name: "Sarah Johnson",
       role: "First-time Homebuyer",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      avatar: avatar1,
       rating: 5,
       content: "GateOne made my dream of homeownership a reality. Their team was incredibly patient and guided me through every step of the process. I couldn't be happier with my new home!",
     },
@@ -19,7 +23,7 @@ const Testimonials = () => {
       id: 2,
       name: "Michael Chen",
       role: "Real Estate Investor",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      avatar: avatar2,
       rating: 5,
       content: "As an investor, I need agents who understand the market inside and out. GateOne consistently delivers exceptional properties and investment opportunities. Their market insights are invaluable.",
     },
@@ -27,7 +31,7 @@ const Testimonials = () => {
       id: 3,
       name: "Emily Rodriguez",
       role: "Family Relocating",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      avatar: avatar3,
       rating: 5,
       content: "Moving across the country with three kids was stressful, but GateOne made the house hunting process seamless. They found us the perfect family home in our ideal neighborhood.",
     },
@@ -35,7 +39,7 @@ const Testimonials = () => {
       id: 4,
       name: "David Thompson",
       role: "Luxury Home Buyer",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      avatar: ceoAvatar,
       rating: 5,
       content: "The attention to detail and personalized service from GateOne exceeded all expectations. They understood exactly what we were looking for and delivered beyond our dreams.",
     },
@@ -43,7 +47,7 @@ const Testimonials = () => {
       id: 5,
       name: "Lisa Wang",
       role: "Property Seller",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      avatar: avatar1,
       rating: 5,
       content: "Selling our home was stress-free thanks to GateOne's professional marketing and negotiation skills. They sold our property above asking price in just two weeks!",
     },

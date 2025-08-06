@@ -3,6 +3,9 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import article1 from '@/assets/article-1.jpg';
+import article2 from '@/assets/article-2.jpg';
+import article3 from '@/assets/article-3.jpg';
 
 const Journal = () => {
   const articles = [
@@ -14,7 +17,7 @@ const Journal = () => {
       author: "Sarah Mitchell",
       date: "2024-01-15",
       readTime: "5 min read",
-      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article1,
       featured: true,
     },
     {
@@ -25,7 +28,7 @@ const Journal = () => {
       author: "Michael Chen",
       date: "2024-01-12",
       readTime: "7 min read",
-      image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article2,
       featured: false,
     },
     {
@@ -36,7 +39,7 @@ const Journal = () => {
       author: "Emily Rodriguez",
       date: "2024-01-10",
       readTime: "6 min read",
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article3,
       featured: true,
     },
   ];

@@ -3,6 +3,12 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Bed, Bath, Square, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import property1 from '@/assets/property-1.jpg';
+import property2 from '@/assets/property-2.jpg';
+import property3 from '@/assets/property-3.jpg';
+import property4 from '@/assets/property-4.jpg';
+import property5 from '@/assets/property-5.jpg';
+import property6 from '@/assets/property-6.jpg';
 
 const FeaturedProperties = () => {
   const properties = [
@@ -15,7 +21,7 @@ const FeaturedProperties = () => {
       bedrooms: 5,
       bathrooms: 4,
       area: 4200,
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property1,
       featured: true,
     },
     {
@@ -27,7 +33,7 @@ const FeaturedProperties = () => {
       bedrooms: 2,
       bathrooms: 2,
       area: 1200,
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property2,
       featured: false,
     },
     {
@@ -39,7 +45,7 @@ const FeaturedProperties = () => {
       bedrooms: 4,
       bathrooms: 3,
       area: 2800,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property3,
       featured: true,
     },
     {
@@ -51,7 +57,7 @@ const FeaturedProperties = () => {
       bedrooms: 3,
       bathrooms: 3,
       area: 2200,
-      image: "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property4,
       featured: true,
     },
     {
@@ -63,7 +69,7 @@ const FeaturedProperties = () => {
       bedrooms: 3,
       bathrooms: 2,
       area: 1800,
-      image: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property5,
       featured: false,
     },
     {
@@ -75,7 +81,7 @@ const FeaturedProperties = () => {
       bedrooms: 2,
       bathrooms: 2,
       area: 1500,
-      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      image: property6,
       featured: false,
     },
   ];

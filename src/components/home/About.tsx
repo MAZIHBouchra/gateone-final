@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Award, Users, Home, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import aboutHeroImage from '@/assets/about-hero.jpg';
 
 const About = () => {
   const stats = [
@@ -74,7 +75,7 @@ const About = () => {
           <div className="space-y-6">
             <div className="relative">
               <img
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                src={aboutHeroImage}
                 alt="Luxury property interior"
                 className="w-full h-80 object-cover rounded-xl shadow-lg"
               />

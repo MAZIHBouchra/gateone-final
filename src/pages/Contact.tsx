@@ -6,6 +6,7 @@ import { MapPin, Phone, Mail, Clock, User, Building } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
+import ceoAvatar from '@/assets/ceo-avatar.jpg';
 
 const Contact = () => {
   return (
@@ -42,7 +43,7 @@ const Contact = () => {
                 <h3 className="text-xl font-playfair font-semibold mb-4">CEO & Founder</h3>
                 <div className="flex items-center space-x-4">
                   <img
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"
+                    src={ceoAvatar}
                     alt="Alexander GateOne"
                     className="w-16 h-16 rounded-full object-cover"
                   />

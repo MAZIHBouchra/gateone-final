@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import heroImage1 from '@/assets/hero-1.jpg';
+import heroImage2 from '@/assets/hero-2.jpg';
+import heroImage3 from '@/assets/hero-3.jpg';
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -9,19 +12,19 @@ const Hero = () => {
   const slides = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80",
+      image: heroImage1,
       title: "Find Your Dream Home",
       subtitle: "Discover luxury properties in prime locations",
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80",
+      image: heroImage2,
       title: "Premium Real Estate",
       subtitle: "Experience elegance and comfort in every detail",
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2850&q=80",
+      image: heroImage3,
       title: "Investment Opportunities",
       subtitle: "Secure your future with prime real estate investments",
     },
