@@ -19,13 +19,15 @@ import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
+import orchid from '@/assets/orchid.jpg';
+
 
 const About = () => {
   const stats = [
-    { icon: Home, number: "500+", label: "Properties Sold" },
-    { icon: Users, number: "1000+", label: "Happy Clients" },
-    { icon: Award, number: "15+", label: "Years Experience" },
-    { icon: TrendingUp, number: "98%", label: "Client Satisfaction" },
+    { icon: Home, number: "350+", label: "Properties Sold" },
+    { icon: Users, number: "1785+", label: "Happy Clients" },
+    { icon: Award, number: "254+", label: "Project Complete" },
+    { icon: TrendingUp, number: "116", label: "Winning Awards" },
   ];
 
   const values = [
@@ -111,28 +113,32 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary">
-                Our Story
+                Our Mission
               </h2>
               <div className="w-20 h-1 bg-accent rounded-full"></div>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Founded in 2009, GateOne began as a small boutique real estate firm with a simple mission: 
-                to provide exceptional, personalized service that puts clients first. What started as a 
-                two-person operation has grown into a respected agency serving clients across multiple markets.
+                At GateOne, we believe that finding the perfect property in Marrakech should be more than 
+                just a transaction, it should be a truly exceptional experience. With many years of experience 
+                in the Marrakech real estate market, we have helped multiple clients discover luxury villas, 
+                traditional riads, and exclusive investment properties across the Red City.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Our founder, Alexander GateOne, recognized a gap in the market for truly client-centered 
-                real estate services. Too many agencies focused on volume over relationships, transactions 
-                over transformations. We set out to change that narrative.
+                As a leading real estate agency in Marrakech, we specialize in high-end properties, offering 
+                tailor-made solutions for both local and international clients. Our dedicated team combines 
+                deep local knowledge, market expertise, and personalized service to guide you through every 
+                step – whether you’re buying, selling, or investing in Marrakech real estate.
+
+
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Today, we're proud to have helped over 1,000 families find their perfect homes and 
+                Today, we're proud to have helped over 1,000 clients find their perfect homes and 
                 assisted countless investors in building wealth through strategic real estate decisions. 
                 Our success is measured not just in properties sold, but in dreams realized and futures secured.
               </p>
             </div>
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              <img 
+                src={orchid}
                 alt="GateOne office"
                 className="w-full h-96 object-cover rounded-xl shadow-lg"
               />

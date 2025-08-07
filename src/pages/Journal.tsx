@@ -10,12 +10,12 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
-import garden from '@/assets/article-1.jpg';
+import article1 from '@/assets/article-1.jpg';
 import article2 from '@/assets/article-2.jpg';
-import stagingHomeImg from '@/assets/images/staging-home.jpg';
-import investmentImg from '@/assets/images/investment.jpg';
-import sustainableImg from '@/assets/images/sustainable.jpg';
-import luxuryImg from '@/assets/images/luxury.jpg';
+import article3 from '@/assets/article-3.jpg';
+import article5 from '@/assets/article-5.jpg';
+import article6 from '@/assets/article-6.jpg';
+import article7 from '@/assets/article-7.jpg';
 
 
 const Journal = () => {
@@ -32,7 +32,7 @@ const Journal = () => {
       author: "Sarah Mitchell",
       date: "2024-01-15",
       readTime: "5 min read",
-      image: garden,
+      image: article1,
       featured: true,
       tags: ["first-time-buyer", "tips", "mortgage", "home-buying"]
     },
@@ -56,7 +56,7 @@ const Journal = () => {
       author: "Emily Rodriguez",
       date: "2024-01-10",
       readTime: "6 min read",
-      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article3,
       featured: true,
       tags: ["staging", "interior-design", "selling", "home-value"]
     },
@@ -68,7 +68,7 @@ const Journal = () => {
       author: "David Thompson",
       date: "2024-01-08",
       readTime: "8 min read",
-      image: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article5,
       featured: false,
       tags: ["investment", "wealth-building", "cash-flow", "portfolio"]
     },
@@ -80,7 +80,7 @@ const Journal = () => {
       author: "Lisa Wang",
       date: "2024-01-05",
       readTime: "5 min read",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article6,
       featured: false,
       tags: ["sustainability", "eco-friendly", "green-homes", "energy-efficiency"]
     },
@@ -92,7 +92,7 @@ const Journal = () => {
       author: "Alexander GateOne",
       date: "2024-01-03",
       readTime: "6 min read",
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article7,
       featured: true,
       tags: ["luxury", "premium-market", "high-end", "exclusive"]
     }
