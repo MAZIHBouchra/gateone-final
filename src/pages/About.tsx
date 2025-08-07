@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import CEO from '@/assets/CEO.jpg';
+
 import { 
   Award, 
   Users, 
@@ -55,15 +57,14 @@ const About = () => {
 
   const team = [
     {
-      name: "Alexander GateOne",
+      name: "Mohamed Dekkak",
       role: "CEO & Founder",
       experience: "15+ years",
       specialization: "Luxury Properties & Commercial Real Estate",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      bio: "Alexander founded GateOne with a vision to revolutionize real estate services. With over 15 years of experience in luxury and commercial properties, he leads our team with passion and expertise.",
+      image: CEO,
+      bio: "Mohamed Dekkak is a visionary entrepreneur and social advocate, founding Orchid Island Real Estate Agency and Adgeco Group. He leads multiple organizations across business, finance, and social impact, including Gate One Properties, CARLAC, and the Arab Peace Corp Foundation. Deeply committed to cultural and community development, he also holds honorary and executive roles in several non-profits supporting education, peace, and heritage.",
       phone: "+1 (555) 123-4567",
-      email: "alexander@gateone.com",
-      linkedin: "alexander-gateone"
+      email: "MD@dekkak.com"
     }
   ];
 
@@ -177,7 +178,7 @@ const About = () => {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary mb-4">
-              Meet Our Team
+              Meet Our CEO
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               The experienced professionals dedicated to making your real estate dreams come true
