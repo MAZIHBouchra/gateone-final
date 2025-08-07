@@ -64,28 +64,6 @@ const About = () => {
       phone: "+1 (555) 123-4567",
       email: "alexander@gateone.com",
       linkedin: "alexander-gateone"
-    },
-    {
-      name: "Sarah Mitchell",
-      role: "Senior Real Estate Agent",
-      experience: "10+ years",
-      specialization: "Residential & First-Time Buyers",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      bio: "Sarah specializes in helping first-time buyers navigate the real estate market. Her patient approach and market knowledge have helped hundreds of families find their perfect home.",
-      phone: "+1 (555) 123-4568",
-      email: "sarah@gateone.com",
-      linkedin: "sarah-mitchell-re"
-    },
-    {
-      name: "Michael Chen",
-      role: "Investment Specialist",
-      experience: "12+ years",
-      specialization: "Investment Properties & Market Analysis",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      bio: "Michael brings deep financial analysis expertise to our team. He helps investors identify profitable opportunities and maximize their real estate portfolio returns.",
-      phone: "+1 (555) 123-4569",
-      email: "michael@gateone.com",
-      linkedin: "michael-chen-investments"
     }
   ];
 
@@ -205,44 +183,42 @@ const About = () => {
               The experienced professionals dedicated to making your real estate dreams come true
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div className="relative">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+          <div className="flex justify-center">
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 max-w-md">
+              <div className="relative">
+                <img
+                  src={team[0].image}
+                  alt={team[0].name}
+                  className="w-full h-64 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+              </div>
+              <div className="p-6 space-y-4">
+                <div>
+                  <h3 className="text-xl font-playfair font-semibold text-primary">{team[0].name}</h3>
+                  <Badge variant="secondary" className="mt-1">{team[0].role}</Badge>
                 </div>
-                <div className="p-6 space-y-4">
-                  <div>
-                    <h3 className="text-xl font-playfair font-semibold text-primary">{member.name}</h3>
-                    <Badge variant="secondary" className="mt-1">{member.role}</Badge>
+                <div className="space-y-2 text-sm">
+                  <div><strong>Experience:</strong> {team[0].experience}</div>
+                  <div><strong>Specialization:</strong> {team[0].specialization}</div>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">{team[0].bio}</p>
+                <div className="space-y-2 text-sm border-t pt-4">
+                  <div className="flex items-center">
+                    <Phone className="w-4 h-4 mr-2 text-primary" />
+                    {team[0].phone}
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <div><strong>Experience:</strong> {member.experience}</div>
-                    <div><strong>Specialization:</strong> {member.specialization}</div>
+                  <div className="flex items-center">
+                    <Mail className="w-4 h-4 mr-2 text-primary" />
+                    {team[0].email}
                   </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{member.bio}</p>
-                  <div className="space-y-2 text-sm border-t pt-4">
-                    <div className="flex items-center">
-                      <Phone className="w-4 h-4 mr-2 text-primary" />
-                      {member.phone}
-                    </div>
-                    <div className="flex items-center">
-                      <Mail className="w-4 h-4 mr-2 text-primary" />
-                      {member.email}
-                    </div>
-                    <div className="flex items-center">
-                      <Linkedin className="w-4 h-4 mr-2 text-primary" />
-                      {member.linkedin}
-                    </div>
+                  <div className="flex items-center">
+                    <Linkedin className="w-4 h-4 mr-2 text-primary" />
+                    {team[0].linkedin}
                   </div>
                 </div>
-              </Card>
-            ))}
+              </div>
+            </Card>
           </div>
         </div>
       </section>

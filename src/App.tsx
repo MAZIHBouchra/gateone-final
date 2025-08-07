@@ -11,6 +11,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Journal from "./pages/Journal";
 import ArticleDetail from "./pages/ArticleDetail";
 import Contact from "./pages/Contact";
+import Investment from "./pages/Investment";
 import PricePrediction from "./pages/PricePrediction";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/journal" element={<Journal />} />
             <Route path="/article/:id" element={<ArticleDetail />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/investment" element={<Investment />} />
             <Route path="/price-prediction" element={<PricePrediction />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
