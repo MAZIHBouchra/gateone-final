@@ -2,29 +2,29 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Award, Users, Home, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import aboutHeroImage from '@/assets/about-hero.jpg';
+import aboutHeroImage from '@/assets/orchid.jpg';
 
 const About = () => {
   const stats = [
     {
       icon: Home,
-      number: "500+",
+      number: "350+",
       label: "Properties Sold",
     },
     {
       icon: Users,
-      number: "1000+",
+      number: "1,785+",
       label: "Happy Clients",
     },
     {
       icon: Award,
-      number: "15+",
-      label: "Years Experience",
+      number: "254+",
+      label: "Project Complete",
     },
     {
       icon: TrendingUp,
-      number: "98%",
-      label: "Client Satisfaction",
+      number: "116",
+      label: "Winning Awards",
     },
   ];
 
@@ -42,23 +42,28 @@ const About = () => {
             </div>
             
             <p className="text-lg text-muted-foreground leading-relaxed">
-              At GateOne, we believe that finding the perfect property should be an exceptional experience. 
-              With over 15 years of expertise in the luxury real estate market, we've helped thousands of 
-              clients discover their dream homes and make smart investment decisions.
+              At GateOne, we believe that finding the perfect property in Marrakech should be more than just a transaction, 
+              it should be a truly exceptional experience. With many years of experience in the Marrakech real estate market, 
+              we have helped multiple clients discover luxury villas, traditional riads, and exclusive investment properties 
+              across the Red City.
+
             </p>
             
             <p className="text-muted-foreground leading-relaxed">
-              Our team of dedicated professionals combines deep market knowledge with personalized service 
-              to ensure every client receives the attention they deserve. From first-time buyers to seasoned 
-              investors, we guide you through every step of your real estate journey.
+              As a leading real estate agency in Marrakech, we specialize in high-end properties, offering tailor-made solutions 
+              for both local and international clients. Our dedicated team combines deep local knowledge, market expertise, and 
+              personalized service to guide you through every step – whether you’re buying, selling, or investing in Marrakech 
+              real estate.
+
             </p>
 
             <div className="space-y-4">
               <h3 className="text-xl font-playfair font-semibold text-primary">Our Mission</h3>
               <p className="text-muted-foreground leading-relaxed">
-                To revolutionize the real estate experience by providing unparalleled service, 
-                innovative technology, and expert guidance that empowers our clients to make 
-                confident property decisions.
+                To transform the real estate experience in Marrakech by delivering unmatched service, 
+                innovative digital tools, and expert guidance. We empower our clients to make confident, 
+                informed decisions in one of Morocco’s most sought-after property markets.
+
               </p>
             </div>
 

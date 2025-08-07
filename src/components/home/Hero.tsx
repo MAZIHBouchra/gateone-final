@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroImage1 from '@/assets/hero-1.jpg';
-import heroImage2 from '@/assets/hero-2.jpg';
+import heroImage1 from '@/assets/hero-2.jpg';
+import heroImage2 from '@/assets/hero-1.jpg';
 import heroImage3 from '@/assets/hero-3.jpg';
 
 const Hero = () => {

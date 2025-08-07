@@ -10,6 +10,14 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
+import garden from '@/assets/article-1.jpg';
+import article2 from '@/assets/article-2.jpg';
+import stagingHomeImg from '@/assets/images/staging-home.jpg';
+import investmentImg from '@/assets/images/investment.jpg';
+import sustainableImg from '@/assets/images/sustainable.jpg';
+import luxuryImg from '@/assets/images/luxury.jpg';
+
+
 const Journal = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -24,7 +32,7 @@ const Journal = () => {
       author: "Sarah Mitchell",
       date: "2024-01-15",
       readTime: "5 min read",
-      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: garden,
       featured: true,
       tags: ["first-time-buyer", "tips", "mortgage", "home-buying"]
     },
@@ -36,7 +44,7 @@ const Journal = () => {
       author: "Michael Chen",
       date: "2024-01-12",
       readTime: "7 min read",
-      image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      image: article2,
       featured: false,
       tags: ["market-trends", "analysis", "investment", "2024"]
     },
