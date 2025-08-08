@@ -22,6 +22,10 @@ import property1 from '@/assets/property-1.jpg';
 import property11 from '@/assets/property-11.jpg';
 import property111 from '@/assets/property-111.jpg';
 
+import property2 from '@/assets/property-2.jpg';
+import property22 from '@/assets/property-22.jpg';
+import property222 from '@/assets/property-222.jpg';
+
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -57,27 +61,34 @@ const PropertyDetail = () => {
     },
     2: {
       id: 2,
-      title: "Modern Downtown Apartment",
-      type: "Apartment",
-      price: 850000,
-      location: "Manhattan, NY",
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 1200,
+      title: "Amelkis Golf Villa – For Living or Investment",
+      type: "Villa",
+      price: 2500000,
+      location: "Amelkis Golf Domain, Marrakech",
+      bedrooms: 4,
+      bathrooms: 6,
+      area: 685,
       status: "For Sale",
       featured: false,
-      description: "Experience luxury living in the heart of Manhattan with this stunning modern apartment. Featuring floor-to-ceiling windows, premium finishes, and access to world-class amenities. Located in a prestigious building with 24/7 concierge service, fitness center, and rooftop terrace with breathtaking city views.",
-      images: [property1, property11, property111],
+      description: "This luxury villa in Amelkis Golf Domain, Marrakech, offers 685 m² of elegant living space, blending Moroccan charm with contemporary finishes. With 4 bedrooms, 6 bathrooms, a private pool, and landscaped gardens, it’s perfect for a serene family home or a high-end investment. Located in a secure, prestigious golf resort just 10 minutes from downtown, it provides both exclusivity and accessibility. Ideal for relocation, second home ownership, or a premium holiday rental opportunity.",
+      images: [property2, property222, property22],
       features: [
-        "Floor-to-ceiling windows with city views",
-        "Premium hardwood flooring throughout",
-        "Gourmet kitchen with stainless steel appliances",
-        "24/7 concierge and doorman service",
-        "Building amenities: gym, rooftop terrace, lounge",
-        "Central air conditioning and heating",
-        "In-unit washer and dryer",
-        "Prime Manhattan location",
-        "Walking distance to subway stations"
+  "Located in the prestigious Amelkis Golf Domain, Marrakech",
+  "685 m² of elegant living space",
+  "4 spacious and beautifully finished bedrooms",
+  "6 luxurious bathrooms including guest and service facilities",
+  "Private swimming pool surrounded by lush greenery",
+  "Landscaped garden with multiple outdoor lounge areas",
+  "Flooded with natural light through floor-to-ceiling windows",
+  "High ceilings and panoramic garden and golf course views",
+  "Expansive rooftop terrace for relaxing or entertaining",
+  "Multiple outdoor terraces for dining and leisure",
+  "Traditional Moroccan design blended with modern finishes",
+  "Situated within a gated community with 24/7 security",
+  "Direct access to golf course, spa, and fine dining",
+  "10 minutes from downtown Marrakech",
+  "Ideal for personal residence, second home, or rental investment"
+
       ],
     },
     3: {

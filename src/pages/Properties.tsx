@@ -12,11 +12,11 @@ import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
 import property1 from '@/assets/property-1.jpg';
-import article2 from '@/assets/article-2.jpg';
-import article3 from '@/assets/article-3.jpg';
-import article5 from '@/assets/article-5.jpg';
-import article6 from '@/assets/article-6.jpg';
-import article7 from '@/assets/article-7.jpg';
+import property2 from '@/assets/property-2.jpg';
+import property3 from '@/assets/property-3.jpg';
+import property4 from '@/assets/property-4.jpg';
+import property5 from '@/assets/property-5.jpg';
+import property6 from '@/assets/property-6.jpg';
 
 const Properties = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -51,14 +51,12 @@ const Properties = () => {
       type: "Apartment",
       price: 850000,
       location: "Manhattan, NY",
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 1200,
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      bedrooms: 4,
+      bathrooms: 6,
+      area: 685,
+      image: property2,
       featured: false,
-      description: "Contemporary apartment in the heart of Manhattan with city views and premium finishes.",
-      yearBuilt: 2018,
-      garage: 1,
+      description: "This luxury villa in Amelkis Golf Domain, Marrakech, offers 685 m² of elegant living space, blending Moroccan charm with contemporary finishes. With 4 bedrooms, 6 bathrooms, a private pool, and landscaped gardens, it’s perfect for a serene family home or a high-end investment. Located in a secure, prestigious golf resort just 10 minutes from downtown, it provides both exclusivity and accessibility. Ideal for relocation, second home ownership, or a premium holiday rental opportunity.",
       status: "For Sale"
     },
     {
