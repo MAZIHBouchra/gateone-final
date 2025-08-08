@@ -11,6 +11,13 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
+import property1 from '@/assets/property-1.jpg';
+import article2 from '@/assets/article-2.jpg';
+import article3 from '@/assets/article-3.jpg';
+import article5 from '@/assets/article-5.jpg';
+import article6 from '@/assets/article-6.jpg';
+import article7 from '@/assets/article-7.jpg';
+
 const Properties = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
@@ -26,18 +33,16 @@ const Properties = () => {
   const properties = [
     {
       id: 1,
-      title: "Luxury Villa with Ocean View",
-      type: "Villa",
-      price: 2850000,
-      location: "Miami Beach, FL",
-      bedrooms: 5,
+      title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
+      type: "Riad",
+      price: 690000,
+      location: "Historic medina",
+      bedrooms: 4,
       bathrooms: 4,
-      area: 4200,
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      area: 335,
+      image: property1,
       featured: true,
-      description: "Stunning oceanfront villa with panoramic views, private beach access, and world-class amenities.",
-      yearBuilt: 2020,
-      garage: 3,
+      description: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm. The location of this riad in Morocco places you at the center of cultural and historical attractions. The medina is home to bustling souks, artisan workshops, historic sites, and authentic Moroccan cuisine. It’s a short walk to major landmarks, making this a top choice for both lifestyle buyers and short-term rental guests.",
       status: "For Sale"
     },
     {
@@ -170,7 +175,7 @@ const Properties = () => {
                 </div>
                 <div className="flex items-center">
                   <Square className="w-4 h-4 mr-1" />
-                  {property.area.toLocaleString()} sqft
+                  {property.area.toLocaleString()} m²
                 </div>
                 <div>Built: {property.yearBuilt}</div>
                 <div>Garage: {property.garage} cars</div>
@@ -235,7 +240,7 @@ const Properties = () => {
             </div>
             <div className="flex items-center">
               <Square className="w-4 h-4 mr-1" />
-              {property.area.toLocaleString()} sqft
+              {property.area.toLocaleString()} m²
             </div>
           </div>
           <Link to={`/property/${property.id}`}>

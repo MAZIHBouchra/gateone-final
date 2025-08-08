@@ -14,13 +14,13 @@ const FeaturedProperties = () => {
   const properties = [
     {
       id: 1,
-      title: "Luxury Villa with Ocean View",
-      type: "Villa",
-      price: 2850000,
-      location: "Miami Beach, FL",
-      bedrooms: 5,
+      title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
+      type: "Riad",
+      price: 690000,
+      location: "Historic medina",
+      bedrooms: 4,
       bathrooms: 4,
-      area: 4200,
+      area: 335,
       image: property1,
       featured: true,
     },
@@ -149,7 +149,7 @@ const FeaturedProperties = () => {
                   </div>
                   <div className="flex items-center">
                     <Square className="w-4 h-4 mr-1" />
-                    {property.area.toLocaleString()} sqft
+                    {property.area.toLocaleString()} m²
                   </div>
                 </div>
 

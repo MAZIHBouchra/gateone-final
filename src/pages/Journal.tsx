@@ -28,8 +28,7 @@ const Journal = () => {
       id: 1,
       title: "Marrakech Real Estate Market in 2025 – Key Trends for Investors",
       excerpt: "The Marrakech real estate market in 2025 shows stable growth, driven by economic expansion, tourism, and shifting buyer preferences toward spacious, eco-friendly homes. With opportunities ranging from luxury villas and traditional riads to modern apartments in emerging neighborhoods, the market offers diverse investment potential supported by infrastructure improvements and increasing digitization.",
-      category: "Buying Guide",
-      author: "Sarah Mitchell",
+      category: "Investment Trends",
       date: "2025-08-06",
       readTime: "5 min read",
       image: article1,
@@ -38,63 +37,58 @@ const Journal = () => {
     },
     {
       id: 2,
-      title: "Real Estate Market Trends: What to Expect This Year",
+      title: "Effective Strategies to Market Your Marrakech Property to International Buyers and Renters",
       excerpt: "Discover the latest market insights and predictions that will shape the real estate landscape in the coming months. Our analysis covers pricing trends, inventory levels, and regional variations.",
       category: "Market Analysis",
-      author: "Michael Chen",
-      date: "2024-01-12",
-      readTime: "7 min read",
+      date: "2025-07-31",
+      readTime: "6 min read",
       image: article2,
       featured: false,
-      tags: ["market-trends", "analysis", "investment", "2024"]
+      tags: ["market-trends", "analysis", "investment", "2025"]
     },
     {
       id: 3,
-      title: "Staging Your Home: Secrets from Interior Designers",
-      excerpt: "Learn professional staging techniques that can increase your home's value and appeal to potential buyers. From decluttering to color schemes, master the art of presentation.",
-      category: "Selling Tips",
-      author: "Emily Rodriguez",
-      date: "2024-01-10",
+      title: "Apartments vs Luxury Villas Marrakech: Which Is the Best Real Estate Investment?",
+      excerpt: "This guide compares the investment potential of apartments versus luxury villas in Marrakech, helping investors choose based on budget, rental income, and long-term growth.",
+      category: "Investment Tips",
+      date: "2025-07-29",
       readTime: "6 min read",
       image: article3,
       featured: true,
-      tags: ["staging", "interior-design", "selling", "home-value"]
+      tags: ["Apartment", "interior-design", "Villa", "home-value"]
     },
     {
       id: 4,
-      title: "Investment Properties: Building Long-Term Wealth",
-      excerpt: "Explore the fundamentals of real estate investing and learn how to build a profitable property portfolio. We discuss cash flow, appreciation, and tax benefits.",
+      title: "Who Owns Marrakech?",
+      excerpt: "Explores how Marrakech's real estate landscape has shifted due to rising foreign investment, transforming ownership, prices, and the city's socio-economic fabric",
       category: "Investment",
-      author: "David Thompson",
-      date: "2024-01-08",
+      date: "2025-07-25",
       readTime: "8 min read",
       image: article5,
       featured: false,
-      tags: ["investment", "wealth-building", "cash-flow", "portfolio"]
+      tags: ["investment", "Marrakech", "Transformation", "Economy"]
     },
     {
       id: 5,
-      title: "Sustainable Living: Eco-Friendly Home Features",
-      excerpt: "Discover how green home features can reduce your environmental impact while saving money. From solar panels to smart thermostats, explore sustainable living options.",
+      title: "Investing in Real Estate Near Morocco Mall Marrakech",
+      excerpt: "Investing in real estate near Morocco Mall Marrakech offers strategic location benefits, rising residential and commercial demand, and strong long-term value potential.",
       category: "Lifestyle",
-      author: "Lisa Wang",
-      date: "2024-01-05",
+      date: "2025-07-25",
       readTime: "5 min read",
       image: article6,
       featured: false,
-      tags: ["sustainability", "eco-friendly", "green-homes", "energy-efficiency"]
+      tags: ["High-demand", "Marrakech", "Benefits", "Investment"]
     },
     {
       id: 6,
-      title: "Luxury Real Estate: Understanding the Premium Market",
-      excerpt: "Dive into the world of luxury real estate and understand what drives this exclusive market segment. Learn about unique selling points and buyer expectations.",
+      title: "Common Myths About Buying Property in Marrakech Debunked",
+      excerpt: "This article debunks common myths about buying property in Marrakech, emphasizing that foreigners have equal rights and that the process can be secure and straightforward with expert guidance.",
       category: "Luxury",
-      author: "Alexander GateOne",
-      date: "2024-01-03",
+      date: "2025-07-23",
       readTime: "6 min read",
       image: article7,
       featured: true,
-      tags: ["luxury", "premium-market", "high-end", "exclusive"]
+      tags: ["luxury", "premium-market", "high-end", "Investment"]
     }
   ];
 
@@ -102,7 +96,7 @@ const Journal = () => {
     { value: 'all', label: 'All Categories' },
     { value: 'Buying Guide', label: 'Buying Guide' },
     { value: 'Market Analysis', label: 'Market Analysis' },
-    { value: 'Selling Tips', label: 'Selling Tips' },
+    { value: 'Investment Tips', label: 'Investment Tips' },
     { value: 'Investment', label: 'Investment' },
     { value: 'Lifestyle', label: 'Lifestyle' },
     { value: 'Luxury', label: 'Luxury' },
@@ -162,15 +156,7 @@ const Journal = () => {
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
                     <div className="flex items-center space-x-3">
-                      <div className="flex items-center">
-                        <User className="w-3 h-3 mr-1" />
-                        {article.author}
                       </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {new Date(article.date).toLocaleDateString()}
-                      </div>
-                    </div>
                     <div className="flex items-center">
                       <Clock className="w-3 h-3 mr-1" />
                       {article.readTime}
@@ -249,14 +235,6 @@ const Journal = () => {
                   </p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-4">
                     <div className="flex items-center space-x-3">
-                      <div className="flex items-center">
-                        <User className="w-3 h-3 mr-1" />
-                        {article.author}
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {new Date(article.date).toLocaleDateString()}
-                      </div>
                     </div>
                     <div className="flex items-center">
                       <Clock className="w-3 h-3 mr-1" />
