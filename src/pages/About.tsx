@@ -213,10 +213,6 @@ const About = () => {
                     <Mail className="w-4 h-4 mr-2 text-primary" />
                     {team[0].email}
                   </div>
-                  <div className="flex items-center">
-                    <Linkedin className="w-4 h-4 mr-2 text-primary" />
-                    {team[0].linkedin}
-                  </div>
                 </div>
               </div>
             </Card>
