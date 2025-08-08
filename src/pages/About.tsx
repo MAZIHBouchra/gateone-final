@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,17 +13,14 @@ import {
   Heart, 
   Shield,
   Star,
-  MapPin,
   Phone,
-  Mail,
-  Linkedin
+  Mail
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 import orchid from '@/assets/orchid.jpg';
-
 
 const About = () => {
   const stats = [
@@ -55,18 +53,16 @@ const About = () => {
     }
   ];
 
-  const team = [
-    {
-      name: "Mohamed Dekkak",
-      role: "CEO & Founder",
-      experience: "15+ years",
-      specialization: "Luxury Properties & Commercial Real Estate",
-      image: CEO,
-      bio: "Mohamed Dekkak is a visionary entrepreneur and social advocate, founding Orchid Island Real Estate Agency and Adgeco Group. He leads multiple organizations across business, finance, and social impact, including Gate One Properties, CARLAC, and the Arab Peace Corp Foundation. Deeply committed to cultural and community development, he also holds honorary and executive roles in several non-profits supporting education, peace, and heritage.",
-      phone: "+212 618-688888",
-      email: "MD@dekkak.com"
-    }
-  ];
+  const ceo = {
+    name: "Mohamed Dekkak",
+    role: "CEO & Founder",
+    experience: "15+ years",
+    specialization: "Luxury Properties & Commercial Real Estate",
+    image: CEO,
+    bio: "Mohamed Dekkak is a visionary entrepreneur and social advocate, founding Orchid Island Real Estate Agency and Adgeco Group. He leads multiple organizations across business, finance, and social impact, including Gate One Properties, CARLAC, and the Arab Peace Corp Foundation. Deeply committed to cultural and community development, he also holds honorary and executive roles in several non-profits supporting education, peace, and heritage.",
+    phone: "+1 (555) 123-4567",
+    email: "MD@dekkak.com"
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,9 +101,7 @@ const About = () => {
                 As a leading real estate agency in Marrakech, we specialize in high-end properties, offering 
                 tailor-made solutions for both local and international clients. Our dedicated team combines 
                 deep local knowledge, market expertise, and personalized service to guide you through every 
-                step – whether you’re buying, selling, or investing in Marrakech real estate.
-
-
+                step – whether you're buying, selling, or investing in Marrakech real estate.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Today, we're proud to have helped over 1,000 clients find their perfect homes and 
@@ -173,7 +167,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team */}
+      {/* CEO Section */}
       <section className="section-padding bg-muted/30">
         <div className="container-custom">
           <div className="text-center mb-12">
@@ -181,41 +175,37 @@ const About = () => {
               Meet Our CEO
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The experienced professionals dedicated to making your real estate dreams come true
+              The experienced professional dedicated to making your real estate dreams come true
             </p>
           </div>
           <div className="flex justify-center">
             <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 max-w-md">
               <div className="relative">
                 <img
-                  src={team[0].image}
-                  alt={team[0].name}
+                  src={ceo.image}
+                  alt={ceo.name}
                   className="w-full h-64 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
               </div>
               <div className="p-6 space-y-4">
                 <div>
-                  <h3 className="text-xl font-playfair font-semibold text-primary">{team[0].name}</h3>
-                  <Badge variant="secondary" className="mt-1">{team[0].role}</Badge>
+                  <h3 className="text-xl font-playfair font-semibold text-primary">{ceo.name}</h3>
+                  <Badge variant="secondary" className="mt-1">{ceo.role}</Badge>
                 </div>
                 <div className="space-y-2 text-sm">
-                  <div><strong>Experience:</strong> {team[0].experience}</div>
-                  <div><strong>Specialization:</strong> {team[0].specialization}</div>
+                  <div><strong>Experience:</strong> {ceo.experience}</div>
+                  <div><strong>Specialization:</strong> {ceo.specialization}</div>
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">{team[0].bio}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{ceo.bio}</p>
                 <div className="space-y-2 text-sm border-t pt-4">
                   <div className="flex items-center">
                     <Phone className="w-4 h-4 mr-2 text-primary" />
-                    {team[0].phone}
+                    {ceo.phone}
                   </div>
                   <div className="flex items-center">
                     <Mail className="w-4 h-4 mr-2 text-primary" />
-                    {team[0].email}
-                  </div>
-                  <div className="flex items-center">
-                    <Linkedin className="w-4 h-4 mr-2 text-primary" />
-                    {team[0].linkedin}
+                    {ceo.email}
                   </div>
                 </div>
               </div>

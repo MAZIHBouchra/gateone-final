@@ -1,70 +1,190 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, Share, Heart, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Heart, Share, ArrowLeft, ArrowRight } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
-import article1 from '@/assets/article-1.jpg';
-import article2 from '@/assets/article-2.jpg';
-import article3 from '@/assets/article-3.jpg';
-import article5 from '@/assets/article-5.jpg';
-import article6 from '@/assets/article-6.jpg';
-import article7 from '@/assets/article-7.jpg';
 const ArticleDetail = () => {
   const { id } = useParams();
 
-  // Mock article data - in real app, fetch by ID
-  const article = {
-    id: parseInt(id || '1'),
-    title: "Marrakech Real Estate Market in 2025 – Key Trends for Investors",
-    excerpt: "The Marrakech real estate market in 2025 shows stable growth, driven by economic expansion, tourism, and shifting buyer preferences toward spacious, eco-friendly homes. With opportunities ranging from luxury villas and traditional riads to modern apartments in emerging neighborhoods, the market offers diverse investment potential supported by infrastructure improvements and increasing digitization.",
-    category: "Trends",
-    date: "2025-08-06",
-    readTime: "5 min read",
-    image: article1,
-    featured: true,
-    tags: ["Marrakech real estate 2025", "tips", "mortgage", "home-buying"],
-    content: `
-  <p>The Marrakech real estate market in 2025 is expected to remain one of Morocco’s most attractive investment sectors. With steady economic growth, urbanization, and evolving consumer preferences, the market offers diverse opportunities—from luxurious villas to modern housing developments.</p>
-
-  <h2 style="font-weight: bold;">Current Market Trends</h2>
-  <p>The market continues to show stable, controlled growth, supported by tourism and increasing demand from Moroccan residents abroad (MREs). Historic areas like the Medina appeal to those seeking boutique hotels and riads, while neighborhoods like Targa and Ourika Road offer new homes for middle-class buyers.</p>
-
-  <p>Post-pandemic shifts have increased interest in larger homes with outdoor spaces and pools. Developers are responding with spacious, feature-rich layouts, while eco-friendly, energy-efficient construction is rising, especially in the high-end segment.</p>
-
-  <h2 style="font-weight: bold;">2025 Market Outlook</h2>
-  <p>With Morocco's economy expanding and major infrastructure projects like the Al Boraq high-speed train underway, investor confidence is growing. Experts predict price stabilization, while Morocco’s role in the upcoming FIFA World Cup is likely to boost market activity further.</p>
-
-  <p>Digitization is simplifying real estate transactions, offering easier access for both foreign and local investors through online platforms and tools.</p>
-
-  <h2 style="font-weight: bold;">Investment Opportunities by Property Type</h2>
-  <h3 style="font-weight: bold;">Luxury Villas</h3>
-  <p>Prime areas like Palmeraie and Hivernage offer strong rental potential, particularly during tourist seasons, combining privacy with accessibility.</p>
-
-  <h3 style="font-weight: bold;">Traditional Riads</h3>
-  <p>Located in the Medina, these properties are ideal for restoration or use in hospitality, providing high returns through luxury short-term rentals.</p>
-
-  <h3 style="font-weight: bold;">Modern Apartments</h3>
-  <p>Developers in areas like Agdal and Targa are meeting demand for urban, well-equipped homes—appealing to professionals and expats.</p>
-
-  <h2 style="font-weight: bold;">High-Growth Neighborhoods</h2>
-  <ul>
-    <li><strong>Agdal:</strong> Active development zone with strong mixed-use investment potential.</li>
-    <li><strong>Targa:</strong> Rapidly growing residential hub for middle-income families.</li>
-    <li><strong>Sidi Ghanem:</strong> Emerging industrial and creative district with residential-commercial potential.</li>
-  </ul>
-
-  <h2 style="font-weight: bold;">Conclusion</h2>
-  <p>The Marrakech real estate market in 2025 offers a compelling blend of growth, diversity, and sustainability. Whether you're interested in luxury properties, traditional riads, or modern urban housing, there are opportunities to suit various strategies. The future is bright for investors ready to enter or expand in this dynamic market.</p>
-
-  <p><em>Interested in Marrakech real estate?</em> Contact us to explore current listings, get tailored advice, and align your strategy with market trends.</p>
-`,
+  // Article data with proper typing
+  const articlesData: Record<number, {
+    title: string;
+    excerpt: string;
+    category: string;
+    author: string;
+    authorBio: string;
+    authorImage: string;
+    date: string;
+    readTime: string;
+    image: string;
+    tags: string[];
+    content: string;
+  }> = {
+    1: {
+      title: "10 Tips for First-Time Home Buyers in 2024",
+      excerpt: "Navigate the home buying process with confidence using these expert tips tailored for today's market conditions.",
+      category: "Buying Guide",
+      author: "Sarah Mitchell",
+      authorBio: "Sarah is a senior real estate agent with over 10 years of experience helping first-time buyers navigate the market.",
+      authorImage: "https://images.unsplash.com/photo-1494790108755-2616b612b55c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-15",
+      readTime: "5 min read",
+      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["first-time-buyer", "tips", "mortgage", "home-buying"],
+      content: `
+        <p>Buying your first home is one of life's most significant milestones, but it can also feel overwhelming. The real estate market has evolved considerably, especially in recent years, and first-time buyers need to be well-prepared to navigate today's competitive landscape successfully.</p>
+        <h2>1. Get Pre-Approved for a Mortgage</h2>
+        <p>Before you start house hunting, it's crucial to understand exactly how much you can afford. Getting pre-approved for a mortgage gives you a clear budget and shows sellers that you're a serious buyer.</p>
+        <h2>2. Research Neighborhoods Thoroughly</h2>
+        <p>Don't just focus on the house itself – the neighborhood is equally important. Consider factors like commute times, school districts, local amenities, and future development plans.</p>
+        <h2>3. Work with a Qualified Real Estate Agent</h2>
+        <p>A good real estate agent is invaluable for first-time buyers. They can guide you through the process, help you understand market conditions, and negotiate on your behalf.</p>
+      `,
+    },
+    2: {
+      title: "Real Estate Market Trends: What to Expect This Year",
+      excerpt: "Discover the latest market insights and predictions that will shape the real estate landscape in the coming months.",
+      category: "Market Analysis",
+      author: "Michael Chen",
+      authorBio: "Michael is a market analyst with 15 years of experience tracking real estate trends and economic indicators.",
+      authorImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-12",
+      readTime: "7 min read",
+      image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["market-trends", "analysis", "investment", "2024"],
+      content: `
+        <p>The real estate market continues to evolve rapidly, influenced by economic factors, demographic shifts, and changing consumer preferences. Understanding these trends is crucial for both buyers and sellers in making informed decisions.</p>
+        <h2>Interest Rate Projections</h2>
+        <p>Interest rates have been a major factor affecting housing affordability. Current projections suggest rates may stabilize in the coming months, potentially opening opportunities for buyers who have been waiting on the sidelines.</p>
+        <h2>Inventory Levels and Supply Chain</h2>
+        <p>Housing inventory remains a critical factor in many markets. New construction is gradually increasing, but supply chain improvements and labor availability continue to impact delivery timelines.</p>
+        <h2>Regional Market Variations</h2>
+        <p>Different regions are experiencing varying market conditions. Urban areas are seeing renewed interest as remote work policies evolve, while suburban markets continue to show strength.</p>
+      `,
+    },
+    3: {
+      title: "Staging Your Home: Secrets from Interior Designers",
+      excerpt: "Learn professional staging techniques that can increase your home's value and appeal to potential buyers.",
+      category: "Selling Tips",
+      author: "Emily Rodriguez",
+      authorBio: "Emily is a certified interior designer and home staging expert with over 12 years of experience transforming spaces.",
+      authorImage: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-10",
+      readTime: "6 min read",
+      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["staging", "interior-design", "selling", "home-value"],
+      content: `
+        <p>Professional home staging can significantly impact how quickly your home sells and for how much. The right staging creates an emotional connection with buyers and helps them envision themselves living in the space.</p>
+        <h2>Declutter and Depersonalize</h2>
+        <p>The first step in staging is removing personal items and excess clutter. This allows potential buyers to imagine their own belongings in the space and reduces distractions.</p>
+        <h2>Neutral Color Palette</h2>
+        <p>Fresh paint in neutral colors can make rooms feel larger and cleaner. Stick to whites, grays, and beiges that appeal to the broadest range of buyers.</p>
+        <h2>Strategic Furniture Placement</h2>
+        <p>Proper furniture arrangement can make rooms appear larger and highlight their best features. Sometimes less is more – removing oversized pieces can open up a space dramatically.</p>
+        <h2>Lighting and Ambiance</h2>
+        <p>Good lighting is crucial for creating a warm, welcoming atmosphere. Ensure all fixtures work, add lamps for warmth, and open curtains to maximize natural light.</p>
+      `,
+    },
+    4: {
+      title: "Investment Properties: Building Long-Term Wealth",
+      excerpt: "Explore the fundamentals of real estate investing and learn how to build a profitable property portfolio.",
+      category: "Investment",
+      author: "David Thompson",
+      authorBio: "David is a real estate investment advisor and portfolio manager with expertise in commercial and residential properties.",
+      authorImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-08",
+      readTime: "8 min read",
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["investment", "wealth-building", "cash-flow", "portfolio"],
+      content: `
+        <p>Real estate investing can be one of the most effective ways to build long-term wealth, but it requires careful planning, market knowledge, and strategic thinking to be successful.</p>
+        <h2>Understanding Cash Flow</h2>
+        <p>Positive cash flow occurs when rental income exceeds all expenses including mortgage payments, taxes, insurance, and maintenance. This is the foundation of successful real estate investing.</p>
+        <h2>Location Analysis</h2>
+        <p>The old saying "location, location, location" is especially true for investment properties. Look for areas with growing employment, good schools, and planned infrastructure improvements.</p>
+        <h2>Financing Strategies</h2>
+        <p>Investment property financing differs from owner-occupied homes. Understand your options including conventional loans, portfolio lenders, and creative financing methods.</p>
+        <h2>Property Management</h2>
+        <p>Decide whether to self-manage or hire a property management company. Consider your time availability, local knowledge, and the complexity of managing multiple properties.</p>
+      `,
+    },
+    5: {
+      title: "Sustainable Living: Eco-Friendly Home Features",
+      excerpt: "Discover how green home features can reduce your environmental impact while saving money.",
+      category: "Lifestyle",
+      author: "Lisa Wang",
+      authorBio: "Lisa is a sustainability consultant and green building specialist passionate about eco-friendly living solutions.",
+      authorImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-05",
+      readTime: "5 min read",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["sustainability", "eco-friendly", "green-homes", "energy-efficiency"],
+      content: `
+        <p>Sustainable living is becoming increasingly important as homeowners seek to reduce their environmental footprint while enjoying long-term cost savings through energy efficiency.</p>
+        <h2>Solar Energy Systems</h2>
+        <p>Solar panels have become more affordable and efficient, offering significant long-term savings on electricity bills while reducing reliance on fossil fuels.</p>
+        <h2>Smart Home Technology</h2>
+        <p>Smart thermostats, LED lighting, and energy monitoring systems help optimize energy usage and provide real-time feedback on consumption patterns.</p>
+        <h2>Water Conservation</h2>
+        <p>Low-flow fixtures, rainwater harvesting systems, and drought-resistant landscaping can significantly reduce water usage and utility costs.</p>
+        <h2>Sustainable Materials</h2>
+        <p>Choose building materials with low environmental impact, such as bamboo flooring, recycled content insulation, and low-VOC paints and finishes.</p>
+      `,
+    },
+    6: {
+      title: "Luxury Real Estate: Understanding the Premium Market",
+      excerpt: "Dive into the world of luxury real estate and understand what drives this exclusive market segment.",
+      category: "Luxury",
+      author: "Alexander GateOne",
+      authorBio: "Alexander is a luxury real estate specialist with extensive experience in high-end properties and exclusive markets.",
+      authorImage: "https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+      date: "2024-01-03",
+      readTime: "6 min read",
+      image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      tags: ["luxury", "premium-market", "high-end", "exclusive"],
+      content: `
+        <p>The luxury real estate market operates by different rules than traditional residential sales, with unique buyer motivations, marketing strategies, and transaction processes.</p>
+        <h2>Defining Luxury</h2>
+        <p>Luxury real estate isn't just about price – it encompasses exceptional location, architectural significance, premium amenities, and exclusive features that set properties apart.</p>
+        <h2>Buyer Psychology</h2>
+        <p>Luxury buyers often prioritize lifestyle, prestige, and investment potential over basic functionality. They seek properties that reflect their success and provide unique experiences.</p>
+        <h2>Marketing Strategies</h2>
+        <p>Marketing luxury properties requires sophisticated approaches including private showings, exclusive events, international exposure, and partnerships with luxury brands.</p>
+        <h2>Global Market Trends</h2>
+        <p>The luxury market is increasingly global, with international buyers seeking trophy properties in prestigious locations worldwide.</p>
+      `,
+    },
   };
 
+  const articleId = parseInt(id || '1');
+  const article = articlesData[articleId] || articlesData[1];
   
+  const articleWithId = {
+    ...article,
+    id: articleId,
+    featured: articleId === 1 || articleId === 3 || articleId === 6,
+  };
+
+  const relatedArticles = [
+    {
+      id: 2,
+      title: "Understanding Mortgage Types and Requirements",
+      image: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      category: "Financing"
+    },
+    {
+      id: 3,
+      title: "Home Inspection Checklist: What to Look For",
+      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      category: "Buying Guide"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -167,13 +287,44 @@ const ArticleDetail = () => {
               <div className="space-y-6">
                 {/* Author */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-playfair font-semibold mb-4">Marrakech Investment</h3>
+                  <h3 className="text-lg font-playfair font-semibold mb-4">About the Author</h3>
                   <div className="flex items-start space-x-3">
-                    
+                    <img
+                      src={article.authorImage}
+                      alt={article.author}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <div className="font-semibold text-primary mb-1">{article.author}</div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{article.authorBio}</p>
+                    </div>
                   </div>
                 </Card>
 
-                
+                {/* Related Articles */}
+                <Card className="p-6">
+                  <h3 className="text-lg font-playfair font-semibold mb-4">Related Articles</h3>
+                  <div className="space-y-4">
+                    {relatedArticles.map((related) => (
+                      <Link key={related.id} to={`/article/${related.id}`}>
+                        <div className="flex space-x-3 group cursor-pointer">
+                          <img
+                            src={related.image}
+                            alt={related.title}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <Badge variant="secondary" className="text-xs mb-1">{related.category}</Badge>
+                            <h4 className="text-sm font-medium group-hover:text-accent transition-colors line-clamp-2">
+                              {related.title}
+                            </h4>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </Card>
+
                 {/* Newsletter */}
                 <Card className="p-6 bg-primary text-primary-foreground">
                   <h3 className="text-lg font-playfair font-semibold mb-4">Stay Updated</h3>
