@@ -28,32 +28,162 @@ const PropertyDetail = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Mock property data - in real app, fetch by ID
-  const property = {
-    id: parseInt(id || '1'),
-    title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm.",
-    type: "Riad",
-    price: 690000,
-    location: "Historic medina",
-    bedrooms: 4,
-    bathrooms: 4,
-    area: 335,
-    status: "For Sale",
-    featured: true,
-    description: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm. The location of this riad in Morocco places you at the center of cultural and historical attractions. The medina is home to bustling souks, artisan workshops, historic sites, and authentic Moroccan cuisine. It’s a short walk to major landmarks, making this a top choice for both lifestyle buyers and short-term rental guests.",
-    images: [property1,property11,property111],
-    features: [
-      "Authentic Moroccan Design (zellige tiles, tadelakt walls, carved cedar wood)",
-      "4 Floors + Rooftop Terrace",
-      "Rooftop Terrace with Medina Views (ideal for dining, sunbathing, entertaining)",
-      "Prime Location in Historic Medina",
-      "Investment Opportunity (guesthouse, Airbnb, vacation rental)",
-      "Modern Comforts Integrated with Traditional Style",
-      "Close to Cultural & Historical Attractions",
-      "High-Quality Craftsmanship and Finishes",
-      "Photo Gallery and Tours Available on Request"
-    ],
+  // Property data based on ID
+  const propertiesData = {
+    1: {
+      id: 1,
+      title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
+      type: "Riad",
+      price: 690000,
+      location: "Historic medina",
+      bedrooms: 4,
+      bathrooms: 4,
+      area: 335,
+      status: "For Sale",
+      featured: true,
+      description: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm. The location of this riad in Morocco places you at the center of cultural and historical attractions. The medina is home to bustling souks, artisan workshops, historic sites, and authentic Moroccan cuisine. It's a short walk to major landmarks, making this a top choice for both lifestyle buyers and short-term rental guests.",
+      images: [property1, property11, property111],
+      features: [
+        "Authentic Moroccan Design (zellige tiles, tadelakt walls, carved cedar wood)",
+        "4 Floors + Rooftop Terrace",
+        "Rooftop Terrace with Medina Views (ideal for dining, sunbathing, entertaining)",
+        "Prime Location in Historic Medina",
+        "Investment Opportunity (guesthouse, Airbnb, vacation rental)",
+        "Modern Comforts Integrated with Traditional Style",
+        "Close to Cultural & Historical Attractions",
+        "High-Quality Craftsmanship and Finishes",
+        "Photo Gallery and Tours Available on Request"
+      ],
+    },
+    2: {
+      id: 2,
+      title: "Modern Downtown Apartment",
+      type: "Apartment",
+      price: 850000,
+      location: "Manhattan, NY",
+      bedrooms: 2,
+      bathrooms: 2,
+      area: 1200,
+      status: "For Sale",
+      featured: false,
+      description: "Experience luxury living in the heart of Manhattan with this stunning modern apartment. Featuring floor-to-ceiling windows, premium finishes, and access to world-class amenities. Located in a prestigious building with 24/7 concierge service, fitness center, and rooftop terrace with breathtaking city views.",
+      images: [property1, property11, property111],
+      features: [
+        "Floor-to-ceiling windows with city views",
+        "Premium hardwood flooring throughout",
+        "Gourmet kitchen with stainless steel appliances",
+        "24/7 concierge and doorman service",
+        "Building amenities: gym, rooftop terrace, lounge",
+        "Central air conditioning and heating",
+        "In-unit washer and dryer",
+        "Prime Manhattan location",
+        "Walking distance to subway stations"
+      ],
+    },
+    3: {
+      id: 3,
+      title: "Elegant Suburban House",
+      type: "House",
+      price: 1250000,
+      location: "Beverly Hills, CA",
+      bedrooms: 4,
+      bathrooms: 3,
+      area: 2800,
+      status: "For Sale",
+      featured: true,
+      description: "Discover this magnificent suburban home in the prestigious Beverly Hills area. This elegant property combines classic architecture with modern amenities, featuring spacious rooms, a beautiful garden, and a swimming pool. Perfect for families seeking luxury and comfort in a prime location.",
+      images: [property1, property11, property111],
+      features: [
+        "Spacious open-plan living areas",
+        "Swimming pool and outdoor entertainment area",
+        "Two-car garage with additional storage",
+        "Beautifully landscaped garden",
+        "High-end kitchen with granite countertops",
+        "Master suite with walk-in closet",
+        "Home office/study room",
+        "Premium security system",
+        "Close to top-rated schools"
+      ],
+    },
+    4: {
+      id: 4,
+      title: "Waterfront Penthouse",
+      type: "Penthouse",
+      price: 3200000,
+      location: "Seattle, WA",
+      bedrooms: 3,
+      bathrooms: 3,
+      area: 2200,
+      status: "For Sale",
+      featured: true,
+      description: "Exceptional waterfront penthouse offering panoramic views of the Puget Sound and city skyline. This luxury residence features an open-concept design, premium finishes, and a private terrace perfect for entertaining. Located in Seattle's most desirable waterfront district.",
+      images: [property1, property11, property111],
+      features: [
+        "Panoramic water and city views",
+        "Private elevator access",
+        "Wraparound terrace with outdoor kitchen",
+        "Floor-to-ceiling windows throughout",
+        "Premium Viking appliances",
+        "Master suite with spa-like bathroom",
+        "Smart home automation system",
+        "Concierge and valet services",
+        "Marina access and boat slip available"
+      ],
+    },
+    5: {
+      id: 5,
+      title: "Cozy Garden Cottage",
+      type: "Cottage",
+      price: 680000,
+      location: "Portland, OR",
+      bedrooms: 3,
+      bathrooms: 2,
+      area: 1800,
+      status: "For Sale",
+      featured: false,
+      description: "Charming garden cottage nestled in Portland's vibrant neighborhood. This cozy home features original hardwood floors, a fireplace, and a beautiful garden sanctuary. Perfect for those seeking character and charm in a peaceful setting while staying close to the city's amenities.",
+      images: [property1, property11, property111],
+      features: [
+        "Original hardwood floors throughout",
+        "Cozy fireplace in living room",
+        "Beautiful garden with mature trees",
+        "Updated kitchen with vintage charm",
+        "Covered front porch",
+        "Detached garage and workshop",
+        "Walking distance to local cafes and shops",
+        "Quiet residential neighborhood",
+        "Energy-efficient windows and insulation"
+      ],
+    },
+    6: {
+      id: 6,
+      title: "Contemporary Loft",
+      type: "Loft",
+      price: 950000,
+      location: "Chicago, IL",
+      bedrooms: 2,
+      bathrooms: 2,
+      area: 1500,
+      status: "For Sale",
+      featured: false,
+      description: "Stunning contemporary loft in Chicago's trendy arts district. This industrial-chic space features exposed brick walls, soaring ceilings, and large windows that flood the space with natural light. Perfect for those who appreciate modern design and urban living.",
+      images: [property1, property11, property111],
+      features: [
+        "Exposed brick walls and steel beams",
+        "Soaring 14-foot ceilings",
+        "Industrial-style kitchen with island",
+        "Polished concrete floors",
+        "Large windows with city views",
+        "In-unit laundry",
+        "Building amenities: rooftop deck, gym",
+        "Walking distance to galleries and restaurants",
+        "Secure building with elevator"
+      ],
+    },
   };
+
+  const propertyId = parseInt(id || '1');
+  const property = propertiesData[propertyId as keyof typeof propertiesData] || propertiesData[1];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
@@ -70,7 +200,7 @@ const PropertyDetail = () => {
       
       <div className="pt-20">
         {/* Image Gallery */}
-        <section className="relative h-96 md:h-[500px] overflow-hidden">
+        <section className="relative h-96 md:h-[500px] overflow-hidden max-w-6xl mx-auto">
           {property.images.map((image, index) => (
             <img
               key={index}
