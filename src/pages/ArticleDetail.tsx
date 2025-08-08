@@ -13,8 +13,6 @@ import article3 from '@/assets/article-3.jpg';
 import article5 from '@/assets/article-5.jpg';
 import article6 from '@/assets/article-6.jpg';
 import article7 from '@/assets/article-7.jpg';
-
-
 const ArticleDetail = () => {
   const { id } = useParams();
 
