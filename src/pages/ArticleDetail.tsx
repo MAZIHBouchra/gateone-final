@@ -149,7 +149,7 @@ const ArticleDetail = () => {
   };
 
   const articleId = parseInt(id || '1');
-  const article = articlesData[articleId as keyof typeof articlesData] || articlesData[1];
+  const article = articlesData[articleId as 1 | 2 | 3 | 4 | 5 | 6] || articlesData[1];
   
   const articleWithId = {
     ...article,
