@@ -1,8 +1,9 @@
+
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, User, Share, Heart, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Heart, Share, ArrowLeft, ArrowRight } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
@@ -10,8 +11,20 @@ import ChatBot from '@/components/layout/ChatBot';
 const ArticleDetail = () => {
   const { id } = useParams();
 
-  // Article data based on ID
-  const articlesData = {
+  // Article data with proper typing
+  const articlesData: Record<number, {
+    title: string;
+    excerpt: string;
+    category: string;
+    author: string;
+    authorBio: string;
+    authorImage: string;
+    date: string;
+    readTime: string;
+    image: string;
+    tags: string[];
+    content: string;
+  }> = {
     1: {
       title: "10 Tips for First-Time Home Buyers in 2024",
       excerpt: "Navigate the home buying process with confidence using these expert tips tailored for today's market conditions.",
@@ -149,7 +162,7 @@ const ArticleDetail = () => {
   };
 
   const articleId = parseInt(id || '1');
-  const article = articlesData[articleId as 1 | 2 | 3 | 4 | 5 | 6] || articlesData[1];
+  const article = articlesData[articleId] || articlesData[1];
   
   const articleWithId = {
     ...article,
@@ -229,14 +242,14 @@ const ArticleDetail = () => {
                 </div>
 
                 {/* Article Text */}
-                 <div 
+                <div 
                   className="prose prose-lg max-w-none text-foreground
                     prose-headings:font-playfair prose-headings:text-primary
                     prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4
                     prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
                     prose-p:leading-relaxed prose-p:mb-6
                     prose-strong:text-primary"
-                  dangerouslySetInnerHTML={{ __html: articleWithId.content }}
+                  dangerouslySetInnerHTML={{ __html: article.content }}
                 />
 
                 {/* Tags */}
