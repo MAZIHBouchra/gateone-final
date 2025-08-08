@@ -63,7 +63,7 @@ const About = () => {
       specialization: "Luxury Properties & Commercial Real Estate",
       image: CEO,
       bio: "Mohamed Dekkak is a visionary entrepreneur and social advocate, founding Orchid Island Real Estate Agency and Adgeco Group. He leads multiple organizations across business, finance, and social impact, including Gate One Properties, CARLAC, and the Arab Peace Corp Foundation. Deeply committed to cultural and community development, he also holds honorary and executive roles in several non-profits supporting education, peace, and heritage.",
-      phone: "+1 (555) 123-4567",
+      phone: "+212 618-688888",
       email: "MD@dekkak.com"
     }
   ];
@@ -213,10 +213,7 @@ const About = () => {
                     <Mail className="w-4 h-4 mr-2 text-primary" />
                     {team[0].email}
                   </div>
-                  <div className="flex items-center">
-                    <Linkedin className="w-4 h-4 mr-2 text-primary" />
-                    {team[0].linkedin}
-                  </div>
+                  
                 </div>
               </div>
             </Card>

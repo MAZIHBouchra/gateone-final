@@ -26,15 +26,15 @@ const Journal = () => {
   const articles = [
     {
       id: 1,
-      title: "10 Tips for First-Time Home Buyers in 2024",
-      excerpt: "Navigate the home buying process with confidence using these expert tips tailored for today's market conditions. From pre-approval to closing, we cover everything you need to know.",
+      title: "Marrakech Real Estate Market in 2025 – Key Trends for Investors",
+      excerpt: "The Marrakech real estate market in 2025 shows stable growth, driven by economic expansion, tourism, and shifting buyer preferences toward spacious, eco-friendly homes. With opportunities ranging from luxury villas and traditional riads to modern apartments in emerging neighborhoods, the market offers diverse investment potential supported by infrastructure improvements and increasing digitization.",
       category: "Buying Guide",
       author: "Sarah Mitchell",
-      date: "2024-01-15",
+      date: "2025-08-06",
       readTime: "5 min read",
       image: article1,
       featured: true,
-      tags: ["first-time-buyer", "tips", "mortgage", "home-buying"]
+      tags: ["Marrakech real estate 2025", "tips", "mortgage", "home-buying"]
     },
     {
       id: 2,
