@@ -6,8 +6,8 @@ import uvicorn
 from chatbot_routes import chatbot_router
 from email_routes import email_router
 
-# Import chatbot init and state for health
-from chatbot_api import initialize_rag_system, qa_chain
+# Import chatbot module for status
+import chatbot_api as ca
 
 # Create FastAPI app
 app = FastAPI(
@@ -34,7 +34,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event() -> None:
     print("🚀 Starting GateOne unified API...")
-    success = initialize_rag_system()
+    success = ca.initialize_rag_system()
     if success:
         print("✅ Chatbot initialized successfully!")
         print("🌐 Server ready to accept connections")
@@ -69,7 +69,7 @@ async def health_check():
             "chatbot": "/chat/status",
             "email": "/email/config"
         },
-        "chatbot_initialized": qa_chain is not None
+        "chatbot_initialized": ca.qa_chain is not None
     }
 
 if __name__ == "__main__":

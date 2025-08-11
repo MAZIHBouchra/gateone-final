@@ -2,45 +2,47 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
-# Import chatbot functionality
-from chatbot_api import (
-    ChatMessage, 
-    ChatResponse, 
-    qa_chain, 
-    llm, 
-    retriever, 
-    chat_prompt,
-    get_or_create_memory,
-    ConversationalRetrievalChain
-)
+# Import chatbot module (module import keeps live references)
+import chatbot_api as ca
 
 # Create router
 chatbot_router = APIRouter(prefix="/chat", tags=["chatbot"])
 
-@chatbot_router.post("/", response_model=ChatResponse)
-async def chat(chat_message: ChatMessage):
+@chatbot_router.post("/", response_model=ca.ChatResponse)
+async def chat(chat_message: ca.ChatMessage):
     """Handle chat messages"""
     print(f"📨 Received message: {chat_message.message[:50]}..." if len(chat_message.message) > 50 else f"📨 Received message: {chat_message.message}")
     
-    if qa_chain is None:
-        print("❌ QA chain not initialized")
+    # Lazy init if needed
+    if ca.qa_chain is None:
+        print("⚙️ QA chain not initialized, attempting initialization...")
+        try:
+            ok = ca.initialize_rag_system()
+            if ok:
+                print("✅ Chatbot initialized on-demand")
+            else:
+                print("❌ On-demand initialization failed")
+        except Exception as e:
+            print(f"❌ Init error: {e}")
+    
+    if ca.qa_chain is None:
         raise HTTPException(
             status_code=500, 
-            detail="Chatbot not initialized. Please check server logs."
+            detail="Chatbot not initialized. Check dataset and API keys."
         )
     
     try:
         # Get or create memory for this session
-        memory = get_or_create_memory(chat_message.session_id)
+        memory = ca.get_or_create_memory(chat_message.session_id)
         
         # Create a new chain instance with session-specific memory
-        session_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=retriever,
+        session_chain = ca.ConversationalRetrievalChain.from_llm(
+            llm=ca.llm,
+            retriever=ca.retriever,
             memory=memory,
             return_source_documents=True,
             output_key="answer",
-            combine_docs_chain_kwargs={"prompt": chat_prompt},
+            combine_docs_chain_kwargs={"prompt": ca.chat_prompt},
         )
         
         # Get response
@@ -48,7 +50,7 @@ async def chat(chat_message: ChatMessage):
         
         print(f"✅ Generated response for session {chat_message.session_id}")
         
-        return ChatResponse(
+        return ca.ChatResponse(
             response=result["answer"],
             session_id=chat_message.session_id
         )
@@ -61,7 +63,7 @@ async def chat(chat_message: ChatMessage):
 async def chatbot_status():
     """Check chatbot status"""
     return {
-        "chatbot_configured": qa_chain is not None,
-        "llm_available": llm is not None,
-        "retriever_available": retriever is not None
+        "chatbot_configured": ca.qa_chain is not None,
+        "llm_available": ca.llm is not None,
+        "retriever_available": ca.retriever is not None
     }
