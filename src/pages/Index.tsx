@@ -5,7 +5,7 @@ import Hero from '@/components/home/Hero';
 import PropertySearch from '@/components/home/PropertySearch';
 import About from '@/components/home/About';
 import FeaturedProperties from '@/components/home/FeaturedProperties';
-import Testimonials from '@/components/home/Testimonials';
+
 import Journal from '@/components/home/Journal';
 
 const Index = () => {
@@ -16,7 +16,6 @@ const Index = () => {
       <PropertySearch />
       <About />
       <FeaturedProperties />
-      <Testimonials />
       <Journal />
       <ChatBot />
       <Footer />
