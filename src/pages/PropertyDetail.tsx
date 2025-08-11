@@ -211,7 +211,7 @@ const PropertyDetail = () => {
       
       <div className="pt-20">
         {/* Image Gallery */}
-        <section className="relative h-96 md:h-[500px] overflow-hidden max-w-6xl mx-auto">
+        <section className="relative h-[500px] md:h-[700px] lg:h-[800px] overflow-hidden max-w-7xl mx-auto">
           {property.images.map((image, index) => (
             <img
               key={index}
