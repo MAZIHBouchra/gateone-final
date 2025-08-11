@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
 import { MessageCircle, X, Send } from 'lucide-react';
 
 const ChatBot = () => {
@@ -15,31 +14,61 @@ const ChatBot = () => {
     },
   ]);
   const [inputValue, setInputValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const newMessage = {
+    const userMessage = {
       id: messages.length + 1,
       text: inputValue,
       isBot: false,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, newMessage]);
+    // Affiche le message utilisateur immédiatement
+    setMessages(prev => [...prev, userMessage]);
     setInputValue('');
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponse = {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/chat/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userMessage.text,
+          session_id: "default" // tu peux mettre un ID unique par utilisateur
+        }),
+      });
+
+      if (!response.ok) throw new Error("Erreur lors de la requête");
+
+      const data = await response.json();
+
+      const botMessage = {
         id: messages.length + 2,
-        text: "Thank you for your message! A real estate specialist will get back to you shortly. In the meantime, feel free to browse our properties or contact us directly.",
+        text: data.response,
         isBot: true,
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+
+      setMessages(prev => [...prev, botMessage]);
+
+    } catch (error) {
+      console.error("Erreur d'envoi du message:", error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: messages.length + 2,
+          text: "⚠️ There was an error contacting the chatbot. Please try again.",
+          isBot: true,
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const quickActions = [
@@ -48,6 +77,11 @@ const ChatBot = () => {
     "Get price estimate",
     "Contact an agent",
   ];
+
+  const sendQuickAction = async (action: string) => {
+    setInputValue(action);
+    await handleSendMessage({ preventDefault: () => {} } as React.FormEvent);
+  };
 
   return (
     <>
@@ -93,6 +127,13 @@ const ChatBot = () => {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-xs px-3 py-2 rounded-lg text-sm bg-muted text-muted-foreground">
+                  Typing...
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -106,7 +147,7 @@ const ChatBot = () => {
                     variant="ghost"
                     size="sm"
                     className="w-full justify-start text-xs h-8"
-                    onClick={() => setInputValue(action)}
+                    onClick={() => sendQuickAction(action)}
                   >
                     {action}
                   </Button>
@@ -124,7 +165,7 @@ const ChatBot = () => {
                 placeholder="Type your message..."
                 className="flex-1"
               />
-              <Button type="submit" size="sm" className="px-3">
+              <Button type="submit" size="sm" className="px-3" disabled={isLoading}>
                 <Send className="h-4 w-4" />
               </Button>
             </form>
