@@ -21,37 +21,7 @@ import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
 const Investment = () => {
-  const investmentTypes = [
-    {
-      icon: Home,
-      title: "Residential Properties",
-      description: "Single-family homes and condos with strong rental potential and appreciation prospects.",
-      roi: "8-12%",
-      timeframe: "Medium to Long-term"
-    },
-    {
-      icon: Building,
-      title: "Commercial Real Estate",
-      description: "Office buildings, retail spaces, and mixed-use properties for stable income streams.",
-      roi: "10-15%",
-      timeframe: "Long-term"
-    },
-    {
-      icon: TrendingUp,
-      title: "Fix & Flip",
-      description: "Renovation projects with quick turnaround and substantial profit potential.",
-      roi: "15-25%",
-      timeframe: "Short-term"
-    },
-    {
-      icon: PieChart,
-      title: "REITs & Funds",
-      description: "Real Estate Investment Trusts for diversified exposure without direct ownership.",
-      roi: "6-10%",
-      timeframe: "Variable"
-    }
-  ];
-
+  
   const benefits = [
     {
       icon: DollarSign,
@@ -137,25 +107,7 @@ const Investment = () => {
               Explore diverse real estate investment options tailored to your financial goals and risk profile
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {investmentTypes.map((type, index) => (
-              <Card key={index} className="p-6 hover:shadow-lg transition-shadow duration-300 group">
-                <type.icon className="w-12 h-12 mb-4 text-primary group-hover:text-accent transition-colors" />
-                <h3 className="text-xl font-playfair font-semibold text-primary mb-3">{type.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">{type.description}</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Expected ROI:</span>
-                    <Badge variant="secondary">{type.roi}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Timeframe:</span>
-                    <span className="text-sm text-muted-foreground">{type.timeframe}</span>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+
         </div>
       </section>
 
@@ -226,26 +178,26 @@ const Investment = () => {
               </h2>
               <div className="w-20 h-1 bg-accent rounded-full"></div>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Stay ahead of market trends with our comprehensive analysis and insider knowledge. 
-                We provide detailed market reports, property valuations, and investment forecasts 
-                to help you make informed decisions.
+                Morocco offers a booming real estate market, stable growth, 
+                and high rental yields — and Orchid Island helps you tap into 
+                that potential with precision and peace of mind.
               </p>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Monthly market reports and trend analysis</span>
+                  <span>Strategic locations with strong growth potential</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Comparative market analysis (CMA) for target properties</span>
+                  <span>Market-driven investment advice</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>ROI calculations and cash flow projections</span>
+                  <span>Legal and tax guidance tailored to your nationality</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Risk assessment and mitigation strategies</span>
+                  <span>Full support from purchase to property management</span>
                 </div>
               </div>
               <Link to="/price-prediction">
