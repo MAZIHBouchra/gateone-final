@@ -93,7 +93,7 @@ const PropertyDetail = () => {
     },
     3: {
       id: 3,
-      title: "Elegant Suburban House",
+      title: "test test 2222",
       type: "House",
       price: 1250000,
       location: "Beverly Hills, CA",

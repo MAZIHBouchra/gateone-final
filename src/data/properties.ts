@@ -57,7 +57,7 @@ export const properties: Property[] = [
   },
   {
     id: 3,
-    title: "Elegant Suburban House",
+    title: "test test",
     type: "House",
     price: 1250000,
     location: "Beverly Hills, CA",
