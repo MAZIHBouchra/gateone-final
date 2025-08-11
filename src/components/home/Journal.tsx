@@ -3,46 +3,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import article1 from '@/assets/article-1.jpg';
-import article2 from '@/assets/article-2.jpg';
-import article3 from '@/assets/article-3.jpg';
+import { articles } from '@/data/articles';
 
 const Journal = () => {
-  const articles = [
-    {
-      id: 1,
-      title: "10 Tips for First-Time Home Buyers in 2024",
-      excerpt: "Navigate the home buying process with confidence using these expert tips tailored for today's market conditions.",
-      category: "Buying Guide",
-      author: "Sarah Mitchell",
-      date: "2024-01-15",
-      readTime: "5 min read",
-      image: article1,
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Real Estate Market Trends: What to Expect This Year",
-      excerpt: "Discover the latest market insights and predictions that will shape the real estate landscape in the coming months.",
-      category: "Market Analysis",
-      author: "Michael Chen",
-      date: "2024-01-12",
-      readTime: "7 min read",
-      image: article2,
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Staging Your Home: Secrets from Interior Designers",
-      excerpt: "Learn professional staging techniques that can increase your home's value and appeal to potential buyers.",
-      category: "Selling Tips",
-      author: "Emily Rodriguez",
-      date: "2024-01-10",
-      readTime: "6 min read",
-      image: article3,
-      featured: true,
-    },
-  ];
+  const featuredArticles = articles.filter(article => article.featured).slice(0, 3);
 
   return (
     <section className="section-padding bg-muted/30">
@@ -57,7 +21,7 @@ const Journal = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article) => (
+          {featuredArticles.map((article) => (
             <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
               <div className="relative overflow-hidden">
                 <img

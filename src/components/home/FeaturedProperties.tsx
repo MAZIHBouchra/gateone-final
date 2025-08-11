@@ -3,88 +3,9 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Bed, Bath, Square, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import property1 from '@/assets/property-1.jpg';
-import property2 from '@/assets/property-2.jpg';
-import property3 from '@/assets/property-3.jpg';
-import property4 from '@/assets/property-4.jpg';
-import property5 from '@/assets/property-5.jpg';
-import property6 from '@/assets/property-6.jpg';
+import { properties } from '@/data/properties';
 
 const FeaturedProperties = () => {
-  const properties = [
-    {
-      id: 1,
-      title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
-      type: "Riad",
-      price: 690000,
-      location: "Historic medina",
-      bedrooms: 4,
-      bathrooms: 4,
-      area: 335,
-      image: property1,
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Amelkis Golf Villa – For Living or Investment",
-      type: "Villa",
-      price: 2500000,
-      location: "Amelkis Golf Domain, Marrakech",
-      bedrooms: 4,
-      bathrooms: 6,
-      area: 685,
-      image: property2,
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Elegant Suburban House",
-      type: "House",
-      price: 1250000,
-      location: "Beverly Hills, CA",
-      bedrooms: 4,
-      bathrooms: 3,
-      area: 2800,
-      image: property3,
-      featured: true,
-    },
-    {
-      id: 4,
-      title: "Waterfront Penthouse",
-      type: "Penthouse",
-      price: 3200000,
-      location: "Seattle, WA",
-      bedrooms: 3,
-      bathrooms: 3,
-      area: 2200,
-      image: property4,
-      featured: true,
-    },
-    {
-      id: 5,
-      title: "Cozy Garden Cottage",
-      type: "Cottage",
-      price: 680000,
-      location: "Portland, OR",
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 1800,
-      image: property5,
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Contemporary Loft",
-      type: "Loft",
-      price: 950000,
-      location: "Chicago, IL",
-      bedrooms: 2,
-      bathrooms: 2,
-      area: 1500,
-      image: property6,
-      featured: false,
-    },
-  ];
 
   return (
     <section className="section-padding bg-muted/30">

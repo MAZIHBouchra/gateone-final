@@ -1,0 +1,122 @@
+import property1 from '@/assets/property-1.jpg';
+import property2 from '@/assets/property-2.jpg';
+import property3 from '@/assets/property-3.jpg';
+import property4 from '@/assets/property-4.jpg';
+import property5 from '@/assets/property-5.jpg';
+import property6 from '@/assets/property-6.jpg';
+
+export interface Property {
+  id: number;
+  title: string;
+  type: string;
+  price: number;
+  location: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  image: string;
+  featured: boolean;
+  description: string;
+  yearBuilt?: number;
+  garage?: number;
+  status: string;
+}
+
+export const properties: Property[] = [
+  {
+    id: 1,
+    title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
+    type: "Riad",
+    price: 690000,
+    location: "Historic medina",
+    bedrooms: 4,
+    bathrooms: 4,
+    area: 335,
+    image: property1,
+    featured: true,
+    description: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm. The location of this riad in Morocco places you at the center of cultural and historical attractions. The medina is home to bustling souks, artisan workshops, historic sites, and authentic Moroccan cuisine. It's a short walk to major landmarks, making this a top choice for both lifestyle buyers and short-term rental guests.",
+    yearBuilt: 2018,
+    garage: 0,
+    status: "For Sale"
+  },
+  {
+    id: 2,
+    title: "Amelkis Golf Villa – For Living or Investment",
+    type: "Villa",
+    price: 2500000,
+    location: "Amelkis Golf Domain, Marrakech",
+    bedrooms: 4,
+    bathrooms: 6,
+    area: 685,
+    image: property2,
+    featured: false,
+    description: "This luxury villa in Amelkis Golf Domain, Marrakech, offers 685 m² of elegant living space, blending Moroccan charm with contemporary finishes. With 4 bedrooms, 6 bathrooms, a private pool, and landscaped gardens, it's perfect for a serene family home or a high-end investment. Located in a secure, prestigious golf resort just 10 minutes from downtown, it provides both exclusivity and accessibility. Ideal for relocation, second home ownership, or a premium holiday rental opportunity.",
+    yearBuilt: 2020,
+    garage: 2,
+    status: "For Sale"
+  },
+  {
+    id: 3,
+    title: "Elegant Suburban House",
+    type: "House",
+    price: 1250000,
+    location: "Beverly Hills, CA",
+    bedrooms: 4,
+    bathrooms: 3,
+    area: 2800,
+    image: property3,
+    featured: true,
+    description: "Beautiful family home in prestigious Beverly Hills with spacious rooms and manicured gardens.",
+    yearBuilt: 2019,
+    garage: 2,
+    status: "For Sale"
+  },
+  {
+    id: 4,
+    title: "Waterfront Penthouse",
+    type: "Penthouse",
+    price: 3200000,
+    location: "Seattle, WA",
+    bedrooms: 3,
+    bathrooms: 3,
+    area: 2200,
+    image: property4,
+    featured: true,
+    description: "Exclusive penthouse with floor-to-ceiling windows and breathtaking water views.",
+    yearBuilt: 2021,
+    garage: 2,
+    status: "For Sale"
+  },
+  {
+    id: 5,
+    title: "Cozy Garden Cottage",
+    type: "Cottage",
+    price: 680000,
+    location: "Portland, OR",
+    bedrooms: 3,
+    bathrooms: 2,
+    area: 1800,
+    image: property5,
+    featured: false,
+    description: "Charming cottage with beautiful gardens and cozy interior perfect for small families.",
+    yearBuilt: 2017,
+    garage: 1,
+    status: "For Sale"
+  },
+  {
+    id: 6,
+    title: "Contemporary Loft",
+    type: "Loft",
+    price: 950000,
+    location: "Chicago, IL",
+    bedrooms: 2,
+    bathrooms: 2,
+    area: 1500,
+    image: property6,
+    featured: false,
+    description: "Industrial-style loft with exposed brick walls and modern amenities in trendy neighborhood.",
+    yearBuilt: 2016,
+    garage: 1,
+    status: "For Sale"
+  },
+];
