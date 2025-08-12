@@ -25,14 +25,13 @@ qa_chain = None
 memory_store = {}
 vectorstore = None
 
-# Add these 👇
 llm = None
 retriever = None
 chat_prompt = None
 
 
 # Path to your private data file
-DATA_FILE_PATH = "orchid_chatbo.csv"  # Place your CSV file in the same directory as main.py
+DATA_FILE_PATH = "gateone_chatbot.csv"  # Place your CSV file in the same directory as main.py
 
 def format_for_embedding(text: str) -> str:
     """Format text for embedding with instruction prefix"""
