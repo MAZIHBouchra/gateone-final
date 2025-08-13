@@ -39,5 +39,5 @@ numpy
 scikit-learn
 xgboost
 joblib
-nixpacks
+
 
