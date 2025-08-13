@@ -71,12 +71,7 @@ const ChatBot = () => {
     }
   };
 
-  const quickActions = [
-    "Show me available properties",
-    "Schedule a viewing",
-    "Get price estimate",
-    "Contact an agent",
-  ];
+  
 
   const sendQuickAction = async (action: string) => {
     setInputValue(action);
@@ -136,25 +131,6 @@ const ChatBot = () => {
             )}
           </div>
 
-          {/* Quick Actions */}
-          {messages.length === 1 && (
-            <div className="px-4 pb-2">
-              <div className="text-xs text-muted-foreground mb-2">Quick actions:</div>
-              <div className="space-y-1">
-                {quickActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-xs h-8"
-                    onClick={() => sendQuickAction(action)}
-                  >
-                    {action}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Input */}
           <div className="border-t border-border p-4">

@@ -174,7 +174,7 @@ const Contact = () => {
                   <div>
                     <h4 className="font-semibold text-primary">Mohamed Dekkak</h4>
                     <div className="text-sm text-muted-foreground space-y-1">
-                      <div className="flex items-center"><Phone className="w-4 h-4 mr-2" />+212 618688888</div>
+                      <div className="flex items-center"><Phone className="w-4 h-4 mr-2" />+212 622222202</div>
                     </div>
                   </div>
                 </div>
@@ -189,7 +189,7 @@ const Contact = () => {
                   </div>
                   <div className="flex items-center">
                     <Phone className="w-5 h-5 mr-3 text-primary" />
-                    <span>+212 618688888</span>
+                    <span>+212 622222202</span>
                   </div>
                   
                   <div className="flex items-center">
