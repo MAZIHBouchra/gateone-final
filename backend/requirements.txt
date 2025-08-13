@@ -22,7 +22,7 @@ chromadb>=0.4.0
 sentence-transformers>=2.2.0
 langchain-huggingface>=0.0.9
 faiss-cpu>=1.7.4
-
+matplotlib==3.9.*
 # Document processing
 pypdf>=3.0.0
 python-docx>=0.8.11
