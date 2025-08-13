@@ -175,7 +175,6 @@ const Contact = () => {
                     <h4 className="font-semibold text-primary">Mohamed Dekkak</h4>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <div className="flex items-center"><Phone className="w-4 h-4 mr-2" />+212 618688888</div>
-                      <div className="flex items-center"><Mail className="w-4 h-4 mr-2" />gateoneinfo@gmail.com</div>
                     </div>
                   </div>
                 </div>
@@ -192,10 +191,7 @@ const Contact = () => {
                     <Phone className="w-5 h-5 mr-3 text-primary" />
                     <span>+212 618688888</span>
                   </div>
-                  <div className="flex items-center">
-                    <Mail className="w-5 h-5 mr-3 text-primary" />
-                    <span>gateoneinfo@gmail.com</span>
-                  </div>
+                  
                   <div className="flex items-center">
                     <Clock className="w-5 h-5 mr-3 text-primary" />
                     <span>Mon-Fri: 9AM-5PM</span>

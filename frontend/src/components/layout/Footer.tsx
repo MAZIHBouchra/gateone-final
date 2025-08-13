@@ -84,37 +84,12 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-primary-foreground/60" />
-                <span className="text-primary-foreground/80">+212 618688888</span>
+                <span className="text-primary-foreground/80">+212 622222202</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-primary-foreground/60" />
-                <span className="text-primary-foreground/80">gateoneinfo@gmail.com</span>
-              </div>
+              
             </div>
           </div>
 
-          {/* Newsletter */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-playfair font-semibold">Newsletter</h3>
-            <p className="text-primary-foreground/80 text-sm">
-              Subscribe to get the latest property updates and market insights.
-            </p>
-            <form onSubmit={handleNewsletterSubmit} className="space-y-2">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
-                required
-              />
-              <Button 
-                type="submit" 
-                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Subscribe
-              </Button>
-            </form>
-          </div>
         </div>
 
         {/* Bottom Bar */}

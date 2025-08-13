@@ -185,19 +185,21 @@ const Investment = () => {
               <div className="space-y-4">
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Strategic locations with strong growth potential</span>
+                  <span>Prime locations with high growth opportunities</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Market-driven investment advice</span>
+                  <span>Investment insights based on market trends</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Legal and tax guidance tailored to your nationality</span>
+                  <span>Customized legal and tax advice for your citizenship</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-primary mr-3" />
-                  <span>Full support from purchase to property management</span>
+                  <span>End-to-end assistance, from buying to managing your property
+                    
+                  </span>
                 </div>
               </div>
               <Link to="/price-prediction">
