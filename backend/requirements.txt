@@ -39,5 +39,6 @@ numpy
 scikit-learn
 xgboost
 joblib
+email-validator
 
 
