@@ -9,10 +9,15 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  preview: {
+    allowedHosts: [
+      "appealing-smile-production.up.railway.app", // Railway public domain
+      "gateone.immo" // Replace with your Namecheap domain (without https://)
+    ],
+  },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
