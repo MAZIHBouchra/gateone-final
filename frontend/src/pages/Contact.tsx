@@ -56,7 +56,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/email/send-contact', {
+      const response = await fetch('http://gateone-deploy-production.up.railway.app/email/send-contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
