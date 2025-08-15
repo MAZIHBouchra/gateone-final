@@ -157,7 +157,8 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:3001",
-        "http://127.0.0.1:3001"
+        "http://127.0.0.1:3001",
+        "https://appealing-smile-production.up.railway.app"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
@@ -265,4 +266,5 @@ async def test_endpoint():
 if __name__ == "__main__":
     print("🚀 Starting Orchid Island Chatbot Server...")
     # Remove reload=True to avoid the import string warning
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
