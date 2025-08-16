@@ -33,7 +33,7 @@ const ChatBot = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://gateone-deploy-production.up.railway.app/chat/", {
+      const response = await fetch("https://gateone-deploy-production.up.railway.app/chat/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
