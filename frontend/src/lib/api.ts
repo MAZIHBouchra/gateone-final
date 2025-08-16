@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://gateone-deploy-production.up.railway.app";
+const BASE = import.meta.env.VITE_API_BASE_URL ?? "https://gateone-deploy-production.up.railway.app";
 
 async function asJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
