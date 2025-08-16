@@ -31,7 +31,8 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:8080",
         "http://127.0.0.1:8080",
-        "https://appealing-smile-production.up.railway.app"
+        "https://appealing-smile-production.up.railway.app",
+        "https://gateone.immo"
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
@@ -87,5 +88,6 @@ async def health_check():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
 
