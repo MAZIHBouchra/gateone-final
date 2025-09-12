@@ -37,7 +37,7 @@ const ArticleDetail = () => {
       date: "2025-08-06",
       readTime: "5 min read",
       image: article1,
-      tags: ["Marrakech real estate 2025", "tips", "mortgage", "home-buying"],
+      tags: ["Marrakech real estate 2024", "tips", "mortgage", "home-buying"],
       content: `
   <p>The Marrakech real estate market in 2025 is expected to remain one of Morocco’s most attractive investment sectors. With steady economic growth, urbanization, and evolving consumer preferences, the market offers diverse opportunities—from luxurious villas to modern housing developments.</p>
 
