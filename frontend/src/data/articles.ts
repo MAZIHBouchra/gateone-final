@@ -21,69 +21,36 @@ export interface Article {
 export const articles: Article[] = [
   {
     id: 1,
-    title: "Marrakech Real Estate Market in 2025 – Key Trends for Investors",
-    excerpt: "The Marrakech real estate market in 2025 shows stable growth, driven by economic expansion, tourism, and shifting buyer preferences toward spacious, eco-friendly homes. With opportunities ranging from luxury villas and traditional riads to modern apartments in emerging neighborhoods, the market offers diverse investment potential supported by infrastructure improvements and increasing digitization.",
+    title: "Marrakech Real Estate Market in 2025: A Dynamic Investment Destination",
+    excerpt: "The Marrakech Real Estate Market in 2025 is expected to be one of Morocco’s most attractive sectors for investors, driven by economic growth, urbanization, tourism, and evolving buyer preferences. From luxury villas and traditional riads to modern apartments, Marrakech offers diverse opportunities balancing tradition and modernity.",
     category: "Investment Trends",
     date: "2025-08-06",
-    readTime: "5 min read",
+    readTime: "6 min read",
     image: article1,
     featured: true,
-    tags: ["Marrakech real estate 2025", "tips", "mortgage", "home-buying"]
+    tags: ["Marrakech real estate 2025", "investment", "villas", "riads", "apartments", "trends"]
   },
   {
     id: 2,
-    title: "Effective Strategies to Market Your Marrakech Property to International Buyers and Renters",
-    excerpt: "Discover the latest market insights and predictions that will shape the real estate landscape in the coming months. Our analysis covers pricing trends, inventory levels, and regional variations.",
+    title: "Luxury Villas vs Apartments: Which Is the Better Investment?",
+    excerpt: "In Marrakech’s thriving real estate market, the choice between luxury villas and modern apartments is a top concern for investors. Villas offer prestige, capital appreciation, and premium rental yields, while apartments provide affordability, steady demand, and lower maintenance costs.",
     category: "Market Analysis",
     date: "2025-07-31",
     readTime: "6 min read",
     image: article2,
     featured: false,
-    tags: ["market-trends", "analysis", "investment", "2025"]
+    tags: ["Marrakech real estate 2025", "luxury villas", "apartments", "investment", "rental income", "property market"]
   },
   {
     id: 3,
-    title: "Apartments vs Luxury Villas Marrakech: Which Is the Best Real Estate Investment?",
-    excerpt: "This guide compares the investment potential of apartments versus luxury villas in Marrakech, helping investors choose based on budget, rental income, and long-term growth.",
+    title: "Buying Property in Marrakech: Myths vs Reality",
+    excerpt: "Buying property in Marrakech is often surrounded by myths, from supposed restrictions on foreigners to concerns about security and pricing. In reality, Morocco’s laws protect buyers and offer clear processes for safe and profitable investments.",
     category: "Investment Tips",
     date: "2025-07-29",
     readTime: "6 min read",
     image: article3,
     featured: true,
-    tags: ["Apartment", "interior-design", "Villa", "home-value"]
-  },
-  {
-    id: 4,
-    title: "Who Owns Marrakech?",
-    excerpt: "Explores how Marrakech's real estate landscape has shifted due to rising foreign investment, transforming ownership, prices, and the city's socio-economic fabric",
-    category: "Investment",
-    date: "2025-07-25",
-    readTime: "8 min read",
-    image: article5,
-    featured: false,
-    tags: ["investment", "Marrakech", "Transformation", "Economy"]
-  },
-  {
-    id: 5,
-    title: "Investing in Real Estate Near Morocco Mall Marrakech",
-    excerpt: "Investing in real estate near Morocco Mall Marrakech offers strategic location benefits, rising residential and commercial demand, and strong long-term value potential.",
-    category: "Lifestyle",
-    date: "2025-07-25",
-    readTime: "5 min read",
-    image: article6,
-    featured: false,
-    tags: ["High-demand", "Marrakech", "Benefits", "Investment"]
-  },
-  {
-    id: 6,
-    title: "Common Myths About Buying Property in Marrakech Debunked",
-    excerpt: "This article debunks common myths about buying property in Marrakech, emphasizing that foreigners have equal rights and that the process can be secure and straightforward with expert guidance.",
-    category: "Luxury",
-    date: "2025-07-23",
-    readTime: "6 min read",
-    image: article7,
-    featured: true,
-    tags: ["luxury", "premium-market", "high-end", "Investment"]
+    tags: ["Marrakech property", "real estate myths", "foreign buyers", "investment tips", "property laws"]
   }
 ];
 
