@@ -31,7 +31,7 @@ const ArticleDetail = () => {
     content: string;
   }> = {
     1: {
-      title: "Marrakech Estate Real Estate Market in 2025 – Key Trends for Investors",
+      title: "Marrakech Estate Real Estate Market in 2023 – Key Trends for Investors",
       excerpt: "The Marrakech real estate market in 2025 shows stable growth, driven by economic expansion, tourism, and shifting buyer preferences toward spacious, eco-friendly homes. With opportunities ranging from luxury villas and traditional riads to modern apartments in emerging neighborhoods, the market offers diverse investment potential supported by infrastructure improvements and increasing digitization.",
       category: "Investment Trends",
       date: "2025-08-06",
