@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from price_routes import price_router
 from price_model import PredictorService
+from Admin.routers import admin_simple as admin
 
 
 # Import routers
@@ -59,6 +60,8 @@ async def startup_event() -> None:
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
+# Admin auth routes (login/logout, me)
+app.include_router(admin.router)
 
 # Root endpoint
 @app.get("/")
