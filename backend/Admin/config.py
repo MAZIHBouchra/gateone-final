@@ -22,6 +22,8 @@ ALLOWED_ORIGINS = [
     "http://localhost:8081",     # Port alternatif
     "http://127.0.0.1:3000",     # Adresse alternative
     "http://127.0.0.1:5173",     # Vite alternative
+    "https://gateone.immo",      # Domaine production
+    "https://gateone-deploy-production.up.railway.app",  # API Railway
 ]
 
 # Identifiants admin
