@@ -101,5 +101,5 @@ def serve_image_placeholder(filename: str):
 
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host=HOST, port=PORT, reload=True)
+    import uvicorn, os
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
