@@ -169,7 +169,8 @@ async def admin_login(
             value="authenticated",
             httponly=True,
             path="/",
-            samesite="lax"
+            samesite="none",
+            secure=True
         )
         return response
     else:
@@ -189,7 +190,8 @@ async def admin_login_json(payload: dict):
             value="authenticated",
             httponly=True,
             path="/",
-            samesite="lax",
+            samesite="none",
+            secure=True,
         )
         return response
     raise HTTPException(status_code=401, detail="Identifiants incorrects")
