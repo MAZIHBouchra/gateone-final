@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - GateOne Estate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 18px;
+        }
+        
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-card h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 20px;
+        }
+        
+        .action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dashboard Admin - GateOne Estate</h1>
+        <form method="post" action="/admin/logout" style="display: inline;">
+            <button type="submit" class="logout-btn">Déconnexion</button>
+        </form>
+    </div>
+    
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Articles</h3>
+                <div class="number">{{ articles_count }}</div>
+                <p>Articles publiés</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Propriétés</h3>
+                <div class="number">{{ properties_count }}</div>
+                <p>Propriétés en vente</p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <div class="action-card">
+                <h3>Gestion des Articles</h3>
+                <p>Créer, modifier et supprimer des articles de blog pour votre site immobilier.</p>
+                <a href="/admin/articles" class="btn">Voir les articles</a>
+                <a href="/admin/articles/add" class="btn btn-secondary">Ajouter un article</a>
+            </div>
+            
+            <div class="action-card">
+                <h3>Gestion des Propriétés</h3>
+                <p>Gérer votre catalogue de propriétés immobilières.</p>
+                <a href="/admin/properties" class="btn">Voir les propriétés</a>
+                <a href="/admin/properties/add" class="btn btn-secondary">Ajouter une propriété</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -14,6 +14,14 @@ import Contact from "./pages/Contact";
 import Investment from "./pages/Investment";
 import PricePrediction from "./pages/PricePrediction";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminArticles from "./pages/AdminArticles";
+import AdminProperties from "./pages/AdminProperties";
+import AdminAddArticle from "./pages/AdminAddArticle";
+import AdminEditArticle from "./pages/AdminEditArticle";
+import AdminAddProperty from "./pages/AdminAddProperty";
+import AdminEditProperty from "./pages/AdminEditProperty";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +42,15 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/investment" element={<Investment />} />
             <Route path="/price-prediction" element={<PricePrediction />} />
+            {/* Admin routes */}
+            <Route path="/adminlogin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/articles" element={<AdminArticles />} />
+            <Route path="/admin/properties" element={<AdminProperties />} />
+            <Route path="/admin/articles/add" element={<AdminAddArticle />} />
+            <Route path="/admin/articles/edit/:id" element={<AdminEditArticle />} />
+            <Route path="/admin/properties/add" element={<AdminAddProperty />} />
+            <Route path="/admin/properties/edit/:id" element={<AdminEditProperty />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
