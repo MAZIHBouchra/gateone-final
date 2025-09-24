@@ -1,17 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import os
 import uvicorn
 from price_routes import price_router
 from price_model import PredictorService
 from Admin.routers import admin_simple as admin
 
+
+# Import routers
 from chatbot_routes import chatbot_router
 from email_routes import email_router
+
+# Import chatbot module for status
 import chatbot_api as ca
 
+# Create FastAPI app
 app = FastAPI(
-    title="GateOne API",
+    title="GateOne API", 
     version="1.0.0",
     description="Unified API for GateOne Estate - Chatbot and Email Services"
 )
@@ -32,10 +36,11 @@ app.add_middleware(
         "https://gateone.immo"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],   # <-- ici, accepte tous les methods
+    allow_headers=["*"],   # <-- accepte tous les headers envoyés par le navigateur
 )
 
+# Initialize chatbot on startup
 @app.on_event("startup")
 async def startup_event() -> None:
     print("🚀 Starting GateOne unified API...")
@@ -55,10 +60,13 @@ async def startup_event() -> None:
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
-app.include_router(admin.router)  # admin routes avec /api/admin
+# Admin auth routes (login/logout, me)
+app.include_router(admin.router)
 
+# Root endpoint
 @app.get("/")
 async def root():
+    """Root endpoint"""
     return {
         "message": "GateOne API is running!",
         "services": {
@@ -69,8 +77,10 @@ async def root():
         }
     }
 
+# Health check endpoint
 @app.get("/health")
 async def health_check():
+    """Health check endpoint"""
     return {
         "status": "healthy",
         "services": {
@@ -81,5 +91,7 @@ async def health_check():
     }
 
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=PORT)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+
