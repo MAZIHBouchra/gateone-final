@@ -19,12 +19,30 @@ import Footer from '@/components/layout/Footer';
 import ChatBot from '@/components/layout/ChatBot';
 
 import property1 from '@/assets/property-1.jpg';
-import property11 from '@/assets/property-11.jpg';
-import property111 from '@/assets/property-111.jpg';
+import property10 from '@/assets/P10.jpg';
+import property11 from '@/assets/P11.jpg';
+import property12 from '@/assets/P12.jpg';
+import property13 from '@/assets/P13.jpg';
+import property14 from '@/assets/P14.jpg';
+import property15 from '@/assets/P15.jpg';
+import property16 from '@/assets/P16.jpg';
+import property17 from '@/assets/P17.jpg';
+import property18 from '@/assets/P18.jpg';
+import property19 from '@/assets/P19.jpg';
+
+
 
 import property2 from '@/assets/property-2.jpg';
-import property22 from '@/assets/property-22.jpg';
-import property222 from '@/assets/property-222.jpg';
+import property21 from '@/assets/P21.jpg';
+import property22 from '@/assets/P22.jpg';
+import property23 from '@/assets/P23.jpg';
+import property24 from '@/assets/P24.jpg';
+import property25 from '@/assets/P25.jpg';
+import property26 from '@/assets/P26.jpg';
+import property27 from '@/assets/P27.jpg';
+import property28 from '@/assets/P28.jpg';
+import property29 from '@/assets/P29.jpg';
+
 
 
 const PropertyDetail = () => {
@@ -36,61 +54,62 @@ const PropertyDetail = () => {
   const propertiesData = {
     1: {
       id: 1,
-      title: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm",
-      type: "Riad",
-      price: 690000,
-      location: "Historic medina",
-      bedrooms: 4,
-      bathrooms: 4,
-      area: 335,
+      title: "Luxury Apartment for Sale in Marrakech: Spacious Living with Terraces and Parking",
+      type: "Apartment",
+      price: 3000000, // MAD (furnished) – 2,800,000 MAD unfurnished
+      location: "Calm Residential Zone, Marrakech",
+      bedrooms: 3, // 2 chambres + 1 suite parentale
+      bathrooms: 2,
+      area: 147,
       status: "For Sale",
       featured: true,
-      description: "Luxury Riad for Sale in Morocco – 4 Bedrooms, Rooftop Terrace & Traditional Charm. The location of this riad in Morocco places you at the center of cultural and historical attractions. The medina is home to bustling souks, artisan workshops, historic sites, and authentic Moroccan cuisine. It's a short walk to major landmarks, making this a top choice for both lifestyle buyers and short-term rental guests.",
-      images: [property1, property11, property111],
+      description:
+        "This luxury apartment for sale in Marrakech offers 147 m² of refined living space, including two bright bedrooms and a spacious master suite. Highlights include two private terraces (25 m² and 15 m²), a secure underground parking space, and elegant modern finishes. Located in a calm residential zone, it combines privacy, exclusivity, and proximity to Marrakech’s main attractions. Ideal for professionals, families, or investors seeking comfort and long-term value.",
+      images: [property1,property10,property11,property12,property13,property14,property15,property16,property17,property18,property19], // à remplacer par les bonnes images
       features: [
-        "Authentic Moroccan Design (zellige tiles, tadelakt walls, carved cedar wood)",
-        "4 Floors + Rooftop Terrace",
-        "Rooftop Terrace with Medina Views (ideal for dining, sunbathing, entertaining)",
-        "Prime Location in Historic Medina",
-        "Investment Opportunity (guesthouse, Airbnb, vacation rental)",
-        "Modern Comforts Integrated with Traditional Style",
-        "Close to Cultural & Historical Attractions",
-        "High-Quality Craftsmanship and Finishes",
-        "Photo Gallery and Tours Available on Request"
+        "147 m² Spacious Interior (2 bedrooms + 1 master suite)",
+        "Two Private Terraces (25 m² and 15 m²)",
+        "Secure Underground Parking Space",
+        "Elegant Modern Finishes & High-Quality Décor",
+        "Bright and Airy Living Spaces",
+        "Calm Residential Location near City Attractions",
+        "Flexible Pricing: 3,000,000 MAD (furnished) or 2,800,000 MAD (unfurnished)",
+        "Strong Investment Potential in Marrakech’s Premium Market",
+        "Turnkey Option for Homeowners or Rental Investors"
       ],
     },
     2: {
       id: 2,
-      title: "Amelkis Golf Villa – For Living or Investment",
+      title: "Luxury Villa Rental in Marrakech: Modern Targa Retreat",
       type: "Villa",
-      price: 2500000,
-      location: "Amelkis Golf Domain, Marrakech",
+      price: 35000, // 35,000 DH par mois
+      location: "Targa, Marrakech",
       bedrooms: 4,
-      bathrooms: 6,
+      bathrooms: 4,
       area: 685,
-      status: "For Sale",
+      status: "For Rent",
       featured: false,
-      description: "This luxury villa in Amelkis Golf Domain, Marrakech, offers 685 m² of elegant living space, blending Moroccan charm with contemporary finishes. With 4 bedrooms, 6 bathrooms, a private pool, and landscaped gardens, it’s perfect for a serene family home or a high-end investment. Located in a secure, prestigious golf resort just 10 minutes from downtown, it provides both exclusivity and accessibility. Ideal for relocation, second home ownership, or a premium holiday rental opportunity.",
-      images: [property2, property222, property22],
+      description:
+        "This modern luxury villa in Targa, Marrakech, offers spacious suites, a private pool, and stylish interiors — ideal for families, professionals, and expatriates seeking a serene and well-connected home. Located just 3 km from Jardin Majorelle and 3.2 km from Lycée Victor Hugo, it combines residential tranquility with quick access to cultural and commercial hubs. With contemporary architecture, abundant natural light, and high-end finishes, it ensures comfort, elegance, and functionality for premium living.",
+      images: [property2, property21, property22, property23, property24, property25, property26, property27, property28, property29],
       features: [
-  "Located in the prestigious Amelkis Golf Domain, Marrakech",
-  "685 m² of elegant living space",
-  "4 spacious and beautifully finished bedrooms",
-  "6 luxurious bathrooms including guest and service facilities",
-  "Private swimming pool surrounded by lush greenery",
-  "Landscaped garden with multiple outdoor lounge areas",
-  "Flooded with natural light through floor-to-ceiling windows",
-  "High ceilings and panoramic garden and golf course views",
-  "Expansive rooftop terrace for relaxing or entertaining",
-  "Multiple outdoor terraces for dining and leisure",
-  "Traditional Moroccan design blended with modern finishes",
-  "Situated within a gated community with 24/7 security",
-  "Direct access to golf course, spa, and fine dining",
-  "10 minutes from downtown Marrakech",
-  "Ideal for personal residence, second home, or rental investment"
-
+        "Prime location in Targa, one of Marrakech’s most exclusive residential areas",
+        "Spacious double living room with fireplace",
+        "Private swimming pool surrounded by landscaped gardens",
+        "Large windows offering natural light and scenic garden views",
+        "Outdoor lounge and multiple terraces for entertaining",
+        "Fully equipped modern kitchen with premium appliances",
+        "Ground-floor guest bedroom with en-suite bathroom",
+        "Three upstairs suites with dressing areas and private bathrooms",
+        "Staff room for on-site assistance",
+        "Secure, private environment with enclosed boundaries",
+        "Air-conditioning and high-quality insulation for year-round comfort",
+        "Close proximity to Lycée Victor Hugo, shopping centers, and restaurants",
+        "Easy access to Jardin Majorelle, Gueliz, and the Medina",
+        "Perfect for families, professionals, and expatriates",
+        "Monthly rent: 35,000 DH with standard lease terms",
       ],
-    },
+    },    
   };
 
   const propertyId = parseInt(id || '1');
