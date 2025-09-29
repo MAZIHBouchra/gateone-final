@@ -1,13 +1,17 @@
 import os
 from dotenv import load_dotenv
 
+# Charger les variables d'environnement
 load_dotenv()
 
-# MongoDB Atlas
-MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://orchidland55_db_user:wXw52DtrnbrDBk80@cluster0.c7pm1fd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-DATABASE_NAME = "real_estate"
+# ---- Base de données ----
+MONGO_URI = os.getenv(
+    "MONGO_URI",
+    "mongodb+srv://orchidland55_db_user:wXw52DtrnbrDBk80@cluster0.c7pm1fd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+)
+DATABASE_NAME = os.getenv("DATABASE_NAME", "real_estate")
 
-# CORS
+# ---- CORS ----
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
@@ -19,10 +23,10 @@ ALLOWED_ORIGINS = [
     "https://gateone-deploy-production.up.railway.app",
 ]
 
-# Admin
+# ---- Admin ----
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "GetOne@gmail.com")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "GetOne2025")
 
-# Serveur (⚠️ utiliser le PORT Railway si dispo)
+# ---- Serveur ----
 HOST = "0.0.0.0"
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT", 8000))  # Railway fournit PORT automatiquement
