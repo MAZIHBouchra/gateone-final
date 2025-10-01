@@ -84,7 +84,7 @@ export const properties: Property[] = [
   yearBuilt: 2022, // estimation
   garage: 5, // garage pour 3–5 voitures
   status: "For Sale",
-}
+},
 {
   id: 5,
   title: "Apartment for Sale in Marrakech – Luxury 118m² Flat on Boulevard Abdelkarim El Khatabi",
