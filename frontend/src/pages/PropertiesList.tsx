@@ -13,7 +13,7 @@ import {
   Search,
   Filter,
   Heart,
-  DollarSign
+  Euro
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -284,7 +284,7 @@ const PropertiesList = () => {
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="outline">{property.type}</Badge>
                       <div className="flex items-center text-primary font-bold text-lg">
-                        <DollarSign className="h-4 w-4 mr-1" />
+                        <Euro className="h-4 w-4 mr-1" />
                         {formatPrice(property.price)}
                       </div>
                     </div>

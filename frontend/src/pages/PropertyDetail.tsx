@@ -344,7 +344,7 @@ const PropertyDetail = () => {
                   </h1>
 
                   <div className="text-4xl font-playfair font-bold text-primary">
-                    ${property.price.toLocaleString()}
+                    €{property.price.toLocaleString()}
                   </div>
                 </div>
 

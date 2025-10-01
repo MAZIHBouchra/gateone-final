@@ -16,7 +16,7 @@ import {
   Bed,
   Bath,
   Square,
-  DollarSign
+  Euro
 } from 'lucide-react';
 
 interface Property {
@@ -203,7 +203,7 @@ const AdminProperties: React.FC = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center text-primary font-bold text-lg">
-                          <DollarSign className="h-4 w-4 mr-1" />
+                          <Euro className="h-4 w-4 mr-1" />
                           {formatPrice(property.price)}
                         </div>
                         <Badge variant="outline">{property.type}</Badge>

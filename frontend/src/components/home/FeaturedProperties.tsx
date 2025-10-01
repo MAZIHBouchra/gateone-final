@@ -55,7 +55,7 @@ const FeaturedProperties = () => {
                     {property.location}
                   </div>
                   <div className="text-2xl font-playfair font-bold text-primary">
-                    ${property.price.toLocaleString()}
+                    €{property.price.toLocaleString()}
                   </div>
                 </div>
 

@@ -79,7 +79,7 @@ const Properties = () => {
               </div>
               <div className="flex items-center justify-between">
                 <div className="text-3xl font-playfair font-bold text-primary">
-                  ${property.price.toLocaleString()}
+                  €{property.price.toLocaleString()}
                 </div>
                 <Link to={`/property/${property.id}`}>
                   <Button className="btn-primary">View Details</Button>
@@ -270,7 +270,7 @@ const Properties = () => {
                 </Select>
               </div>
 
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <label className="text-sm font-medium">Price Range</label>
                 <Slider
                   value={priceRange}
@@ -281,8 +281,8 @@ const Properties = () => {
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>${priceRange[0].toLocaleString()}</span>
-                  <span>${priceRange[1].toLocaleString()}</span>
+                  <span>€{priceRange[0].toLocaleString()}</span>
+                  <span>€{priceRange[1].toLocaleString()}</span>
                 </div>
               </div>
             </Card>
