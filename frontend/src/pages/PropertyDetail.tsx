@@ -43,6 +43,40 @@ import property27 from '@/assets/P27.jpg';
 import property28 from '@/assets/P28.jpg';
 import property29 from '@/assets/P29.jpg';
 
+import property3 from '@/assets/P3.jpg';
+import property31 from '@/assets/P31.jpg';
+import property32 from '@/assets/P32.jpg';
+import property33 from '@/assets/P33.jpg';
+import property34 from '@/assets/P34.jpg';
+import property35 from '@/assets/P35.jpg';
+
+import property4 from '@/assets/P4.jpg';
+import property41 from '@/assets/P41.jpg';
+import property42 from '@/assets/P42.jpg';
+import property43 from '@/assets/P43.jpg';
+import property44 from '@/assets/P44.jpg';
+import property45 from '@/assets/P45.jpg';
+import property46 from '@/assets/P46.jpg';
+import property47 from '@/assets/P47.jpg';
+import property48 from '@/assets/P48.jpg';
+import property49 from '@/assets/P49.jpg';
+import property40 from '@/assets/P40.jpg';
+import property401 from '@/assets/P401.jpg';
+import property402 from '@/assets/P402.jpg';
+
+import property5 from '@/assets/p5.jpg';
+import property51 from '@/assets/P51.jpg';
+import property52 from '@/assets/P52.jpg';
+import property53 from '@/assets/P53.jpg';
+import property54 from '@/assets/P54.jpg';
+import property55 from '@/assets/P55.jpg';
+import property56 from '@/assets/P56.jpg';
+import property57 from '@/assets/P57.jpg';
+import property58 from '@/assets/P58.jpg';
+import property59 from '@/assets/P59.jpg';
+import property50 from '@/assets/P50.jpg';
+
+
 
 
 const PropertyDetail = () => {
@@ -110,6 +144,110 @@ const PropertyDetail = () => {
         "Monthly rent: 35,000 DH with standard lease terms",
       ],
     },    
+    3:{
+      id: 3,
+      title: "Luxury Property with VNA for Sale in Marrakech – Rare 4-Hectare Estate with Villa & Pool",
+      type: "Villa",
+      price: 1460000, // € pour la villa + 1 hectare (net seller)
+      location: "Marrakech, Morocco",
+      bedrooms: 4,
+      bathrooms: 5,
+      area: 400, // surface de la villa
+      status: "For Sale",
+      featured: true,
+      description:
+        "This exceptional luxury property in Marrakech spans 4 hectares, subdivided into four 1-hectare lots, featuring a 400 m² villa, a 20-meter swimming pool, and secured VNA (Vocation Non Agricole) authorization. The villa offers spacious, luminous interiors with multiple terraces, ideal for families or hospitality projects. With full administrative clarity, including titles and permits, this estate provides both lifestyle comfort and strategic real estate investment potential.",
+      images: [property3, property31, property32, property33, property34, property35],
+      features: [
+        "Total surface: 4 hectares (divided into 4 titled 1-hectare lots)",
+        "Villa: 400 m² with modern comfort and luminous interiors",
+        "20-meter swimming pool for leisure, wellness, or entertainment",
+        "Administrative clarity: titles, building permits, and VNA authorization secured",
+        "Multiple terraces and landscaped grounds for outdoor enjoyment",
+        "Flexibility to develop additional villas, boutique hotels, or wellness retreats",
+        "Ideal for private residence, holiday home, or boutique hospitality project",
+        "Close to Marrakech city center, international restaurants, golf courses, and spas",
+        "Privacy, tranquility, and premium lifestyle on 4 hectares of land",
+        "High potential for investment and property value appreciation",
+        "Immediate start for development projects due to VNA authorization",
+        "Combination of lifestyle, luxury, and strategic real estate potential",
+        "Perfect for global buyers seeking a second home in Marrakech"
+      ]
+    },
+    4:{
+      id: 4,
+      title: "Luxury Villas for Sale on RCZ Road, Marrakech: Exclusive Dual-Villa Estate",
+      type: "Villa",
+      price: 4200000, // € pour l’ensemble (≈ 45,000,000 MAD)
+      location: "RCZ Road, Marrakech, Morocco",
+      bedrooms: 10, // 4 suites dans la première villa + 6 suites dans la seconde
+      bathrooms: 10, // estimation : 4 + 6
+      area: 500, // villa principale approx. 500 m² (la seconde peut être estimée similaire)
+      status: "For Sale",
+      featured: true,
+      description:
+        "This exclusive dual-villa estate on RCZ Road, Marrakech, spans 9,000 m² and includes two independent luxury villas, landscaped gardens, wellness facilities, and premium leisure amenities. Designed for privacy, comfort, and long-term investment potential, it combines refined living with exceptional lifestyle and rental opportunities.",
+      images: [property4, property41, property42, property43, property44, property45, property46, property47, property48, property49, property40, property401, property402],
+      features: [
+        "Two independent luxury villas with refined architecture and premium finishes",
+        "First villa approx. 500 m² with 4 suites, master suite with reception area, fireplace, office, walk-in wardrobe, and luxury bathroom",
+        "Second villa with 6 suites, each with private terrace and garden",
+        "Bali stone swimming pool with terraces and outdoor lounges",
+        "Traditional hammam with marble dome and massage room",
+        "Fully equipped gym opening to the garden",
+        "Private cinema with professional sound system",
+        "Games room with boxing area",
+        "Veranda, outdoor bar, and shaded lounges",
+        "Professional kitchen with pantry & laundry area",
+        "Independent service quarters & garage for 3–5 cars",
+        "Mature gardens with ornamental plants, orchard, vegetable patch, and chicken coop",
+        "Advanced technical systems: wells with filtration, smart lighting, automatic garden lighting",
+        "Full estate security with high-end finishes and durable craftsmanship",
+        "Prime location on RCZ Road, Marrakech, with strong investment and rental potential"
+      ],
+      purchaseOptions: [
+        "Price: €4,200,000 (≈ 45,000,000 MAD)",
+        "Agency fees: +3%"
+      ]
+    },
+    5:{
+      id: 5,
+      title: "Apartment for Sale in Marrakech – Luxury 118m² Flat on Boulevard Abdelkarim El Khatabi",
+      type: "Apartment",
+      price: 2200000, // MAD pour le meublé (≈ 2,200,000 MAD)
+      location: "Boulevard Abdelkarim El Khatabi, Marrakech, Morocco",
+      bedrooms: 2,
+      bathrooms: 2, // estimation : 1 pour master suite + 1 pour la 2ème chambre
+      area: 118, // 118 m²
+      status: "For Sale",
+      featured: false,
+      description:
+        "This luxury 118m² apartment in Marrakech’s prestigious hotel district offers modern design, multiple balconies, and exclusive amenities. Perfect for families, professionals, and investors, it combines prime location, comfort, and long-term investment potential.",
+      images: [property5, property51, property52, property53, property54, property55, property56, property57, property58, property59, property50],
+      features: [
+        "Master suite with private balcony",
+        "Second bedroom with balcony access",
+        "Bright, spacious living room",
+        "Fully equipped modern kitchen with balcony",
+        "Access to secure residential complex",
+        "Large communal swimming pool",
+        "Centralized Carrier air conditioning",
+        "Underground parking with private storage",
+        "24/7 building security",
+        "Prime location in Marrakech’s hotel district near restaurants, cafés, and shopping centers",
+        "Strong rental potential and long-term property value appreciation",
+        "Perfect for families, professionals, and expatriates",
+        "Flexible purchase options: furnished or unfurnished",
+        "Balconies in every room for natural light and ventilation"
+      ],
+      purchaseOptions: [
+        "Furnished: 2,200,000 MAD",
+        "Unfurnished: 2,000,000 MAD",
+        "Agency fees: +3%"
+      ]
+    }
+    
+    
   };
 
   const propertyId = parseInt(id || '1');
