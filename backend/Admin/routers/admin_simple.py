@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Form, Request, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from datetime import datetime
 import json
@@ -178,6 +179,18 @@ async def admin_login(
 
 # JSON login/logout for SPA
 
+@router.options("/api/admin/login")
+async def admin_login_options():
+    """Handle preflight CORS requests for admin login"""
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 @router.post("/api/admin/login")
 async def admin_login_json(payload: dict):
@@ -193,14 +206,32 @@ async def admin_login_json(payload: dict):
             samesite="none",
             secure=True,
         )
+        # Ajouter les headers CORS explicitement
+        response.headers["Access-Control-Allow-Origin"] = "https://gateone.immo"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
         return response
     raise HTTPException(status_code=401, detail="Identifiants incorrects")
 
+
+@router.options("/api/admin/logout")
+async def admin_logout_options():
+    """Handle preflight CORS requests for admin logout"""
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 @router.post("/api/admin/logout")
 async def admin_logout_json():
     response = JSONResponse({"ok": True})
     response.delete_cookie(key="admin_session", path="/")
+    response.headers["Access-Control-Allow-Origin"] = "https://gateone.immo"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
 # Dashboard simple
@@ -730,11 +761,27 @@ async def admin_properties_page():
 # Endpoints JSON Admin (SPA)
 
 
+@router.options("/api/admin/me")
+async def admin_me_options():
+    """Handle preflight CORS requests for admin me"""
+    return JSONResponse(
+        content={},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
+
 @router.get("/api/admin/me")
 async def admin_me(request: Request):
     """Retourne l'état de session admin via cookie."""
     is_authenticated = request.cookies.get("admin_session") == "authenticated"
-    return {"authenticated": is_authenticated}
+    response = JSONResponse({"authenticated": is_authenticated})
+    response.headers["Access-Control-Allow-Origin"] = "https://gateone.immo"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 
 @router.get("/api/admin/stats")

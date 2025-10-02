@@ -54,8 +54,18 @@ app.add_middleware(
         "https://gateone.immo"
     ],
     allow_credentials=True,
-    allow_methods=["*"],   # <-- ici, accepte tous les methods
-    allow_headers=["*"],   # <-- accepte tous les headers envoyés par le navigateur
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+    ],
 )
 
 # Initialize chatbot on startup
