@@ -41,4 +41,7 @@ xgboost
 joblib
 email-validator
 
+# Database
+pymongo>=4.0.0
+
 

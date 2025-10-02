@@ -19,7 +19,13 @@ except Exception:
 # Import routers
 from chatbot_routes import chatbot_router
 from email_routes import email_router
-from properties_routes import router as properties_router
+try:
+    from properties_routes import router as properties_router
+    PROPERTIES_AVAILABLE = True
+except Exception as e:
+    print(f"⚠️  Warning: properties routes not loaded: {e}")
+    properties_router = None
+    PROPERTIES_AVAILABLE = False
 
 # Import chatbot module for status
 import chatbot_api as ca
@@ -76,7 +82,9 @@ async def startup_event() -> None:
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
-app.include_router(properties_router)
+# Properties routes (optional)
+if PROPERTIES_AVAILABLE and properties_router:
+    app.include_router(properties_router)
 # Admin auth routes (login/logout, me)
 if admin:
     app.include_router(admin.router)

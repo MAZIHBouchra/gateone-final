@@ -1,24 +1,72 @@
 from fastapi import APIRouter, HTTPException
 from typing import Optional, List, Dict, Any
 import os
-from pymongo import MongoClient
-from bson import ObjectId
-from datetime import datetime
 
 router = APIRouter()
 
-# Configuration MongoDB
-MONGO_URI = os.getenv(
-    "MONGO_URI",
-    "mongodb+srv://orchidland55_db_user:wXw52DtrnbrDBk80@cluster0.c7pm1fd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-)
-DATABASE_NAME = os.getenv("DATABASE_NAME", "real_estate")
+# Configuration MongoDB avec gestion d'erreur
+try:
+    from pymongo import MongoClient
+    from bson import ObjectId
+    from datetime import datetime
+    
+    MONGO_URI = os.getenv(
+        "MONGO_URI",
+        "mongodb+srv://orchidland55_db_user:wXw52DtrnbrDBk80@cluster0.c7pm1fd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    )
+    DATABASE_NAME = os.getenv("DATABASE_NAME", "real_estate")
+    
+    def get_db():
+        """Connexion à MongoDB Atlas"""
+        client = MongoClient(MONGO_URI)
+        db = client[DATABASE_NAME]
+        return db
+    
+    MONGO_AVAILABLE = True
+except ImportError:
+    print("⚠️  Warning: pymongo not available, using mock data")
+    MONGO_AVAILABLE = False
+    
+    def get_db():
+        return None
 
-def get_db():
-    """Connexion à MongoDB Atlas"""
-    client = MongoClient(MONGO_URI)
-    db = client[DATABASE_NAME]
-    return db
+# Données de fallback si MongoDB n'est pas disponible
+MOCK_PROPERTIES = [
+    {
+        "id": 1,
+        "title": "Luxury Apartment for Sale in Marrakech",
+        "type": "Apartment",
+        "price": 3000000,
+        "location": "Marrakech",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "area": 147,
+        "status": "For Sale",
+        "featured": True,
+        "description": "Luxury apartment with terraces and parking",
+        "image": "/images/property-1.jpg",
+        "images": ["/images/property-1.jpg"],
+        "features": ["Terrace", "Parking", "Modern finishes"],
+        "yearBuilt": 2020,
+        "garage": 1,
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
+    }
+]
+
+MOCK_ARTICLES = [
+    {
+        "id": 1,
+        "title": "Guide d'investissement immobilier au Maroc",
+        "content": "Article sur l'investissement immobilier...",
+        "excerpt": "Découvrez les meilleures opportunités d'investissement",
+        "image": "/images/article-1.jpg",
+        "category": "Investment",
+        "tags": ["investment", "morocco"],
+        "created_at": "2024-01-01T00:00:00",
+        "updated_at": "2024-01-01T00:00:00"
+    }
+]
 
 @router.get("/api/properties")
 async def get_properties(
@@ -32,7 +80,13 @@ async def get_properties(
 ) -> List[Dict[str, Any]]:
     """Récupérer toutes les propriétés avec filtres optionnels"""
     try:
+        if not MONGO_AVAILABLE:
+            return MOCK_PROPERTIES
+            
         db = get_db()
+        if not db:
+            return MOCK_PROPERTIES
+            
         properties_collection = db.properties
         
         # Construction du filtre de recherche
@@ -78,13 +132,27 @@ async def get_properties(
         return properties_list
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des propriétés: {str(e)}")
+        print(f"Error fetching properties: {e}")
+        return MOCK_PROPERTIES
 
 @router.get("/api/properties/{property_id}")
 async def get_property(property_id: int) -> Dict[str, Any]:
     """Récupérer une propriété par son ID"""
     try:
+        if not MONGO_AVAILABLE:
+            # Chercher dans les données mock
+            for prop in MOCK_PROPERTIES:
+                if prop["id"] == property_id:
+                    return prop
+            raise HTTPException(status_code=404, detail="Propriété non trouvée")
+            
         db = get_db()
+        if not db:
+            for prop in MOCK_PROPERTIES:
+                if prop["id"] == property_id:
+                    return prop
+            raise HTTPException(status_code=404, detail="Propriété non trouvée")
+            
         properties_collection = db.properties
         
         # Chercher par ID numérique
@@ -101,13 +169,24 @@ async def get_property(property_id: int) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération de la propriété: {str(e)}")
+        print(f"Error fetching property {property_id}: {e}")
+        # Fallback aux données mock
+        for prop in MOCK_PROPERTIES:
+            if prop["id"] == property_id:
+                return prop
+        raise HTTPException(status_code=404, detail="Propriété non trouvée")
 
 @router.get("/api/articles")
 async def get_articles() -> List[Dict[str, Any]]:
     """Récupérer tous les articles"""
     try:
+        if not MONGO_AVAILABLE:
+            return MOCK_ARTICLES
+            
         db = get_db()
+        if not db:
+            return MOCK_ARTICLES
+            
         articles_collection = db.articles
         
         articles_cursor = articles_collection.find().sort("created_at", -1)
@@ -123,13 +202,26 @@ async def get_articles() -> List[Dict[str, Any]]:
         return articles_list
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération des articles: {str(e)}")
+        print(f"Error fetching articles: {e}")
+        return MOCK_ARTICLES
 
 @router.get("/api/articles/{article_id}")
 async def get_article(article_id: int) -> Dict[str, Any]:
     """Récupérer un article par son ID"""
     try:
+        if not MONGO_AVAILABLE:
+            for article in MOCK_ARTICLES:
+                if article["id"] == article_id:
+                    return article
+            raise HTTPException(status_code=404, detail="Article non trouvé")
+            
         db = get_db()
+        if not db:
+            for article in MOCK_ARTICLES:
+                if article["id"] == article_id:
+                    return article
+            raise HTTPException(status_code=404, detail="Article non trouvé")
+            
         articles_collection = db.articles
         
         # Chercher par ID numérique
@@ -146,4 +238,8 @@ async def get_article(article_id: int) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur lors de la récupération de l'article: {str(e)}")
+        print(f"Error fetching article {article_id}: {e}")
+        for article in MOCK_ARTICLES:
+            if article["id"] == article_id:
+                return article
+        raise HTTPException(status_code=404, detail="Article non trouvé")
