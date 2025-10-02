@@ -123,7 +123,7 @@ const Properties = () => {
               {property.location}
             </div>
             <div className="text-2xl font-playfair font-bold text-primary">
-              ${property.price.toLocaleString()}
+              €{property.price.toLocaleString()}
             </div>
           </div>
           <div className="flex justify-between text-sm text-muted-foreground border-t pt-4">
