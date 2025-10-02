@@ -19,6 +19,7 @@ except Exception:
 # Import routers
 from chatbot_routes import chatbot_router
 from email_routes import email_router
+from properties_routes import router as properties_router
 
 # Import chatbot module for status
 import chatbot_api as ca
@@ -43,6 +44,7 @@ app.add_middleware(
         "http://localhost:8080",
         "http://127.0.0.1:8080",
         "https://appealing-smile-production.up.railway.app",
+        "https://gateone-deploy-production.up.railway.app",
         "https://gateone.immo"
     ],
     allow_credentials=True,
@@ -74,6 +76,7 @@ async def startup_event() -> None:
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
+app.include_router(properties_router)
 # Admin auth routes (login/logout, me)
 if admin:
     app.include_router(admin.router)
