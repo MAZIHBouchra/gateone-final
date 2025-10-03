@@ -31,8 +31,9 @@ const Header = () => {
             <img
               src={Logo}
               alt="GateOne"
-              className="h-8 w-auto group-hover:scale-105 transition-transform duration-300"
+              className="h-10 md:h-12 w-auto group-hover:scale-105 transition-transform duration-300"
             />
+            <span className="text-2xl md:text-3xl font-playfair font-bold text-primary">GateOne</span>
           </Link>
 
           {/* Desktop Navigation */}
