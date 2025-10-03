@@ -25,13 +25,13 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
       <div className="container-custom">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img
               src={Logo}
               alt="GateOne"
-              className="h-10 md:h-12 w-auto group-hover:scale-105 transition-transform duration-300"
+              className="h-14 md:h-16 w-auto group-hover:scale-105 transition-transform duration-300"
             />
             <span className="text-2xl md:text-3xl font-playfair font-bold text-primary">GateOne</span>
           </Link>
