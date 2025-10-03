@@ -1,0 +1,12 @@
+<svg width="128" height="32" viewBox="0 0 128 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="128" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#g)"/>
+  <path d="M12 22h8a2 2 0 0 0 0-4h-6v-4h6a2 2 0 0 0 0-4h-8v12z" fill="white"/>
+  <text x="40" y="22" font-family="'Segoe UI', Roboto, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">GateOne</text>
+</svg>
+

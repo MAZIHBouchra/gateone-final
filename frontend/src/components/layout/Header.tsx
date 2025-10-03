@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Moon, Sun, Home, Menu, X } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
+import Logo from '@/assets/logo.svg';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,11 +27,13 @@ const Header = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <div className="w-4 h-4 bg-primary-foreground rounded-full"></div>
-            </div>
-            <span className="text-2xl font-playfair font-bold text-primary">GateOne</span>
+          <Link to="/" className="flex items-center space-x-3 group">
+            <img
+              src="/logo.png"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).src = (Logo as unknown as string); }}
+              alt="GateOne"
+              className="h-8 w-auto group-hover:scale-105 transition-transform duration-300"
+            />
           </Link>
 
           {/* Desktop Navigation */}
