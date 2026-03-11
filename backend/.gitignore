@@ -1,0 +1,14 @@
+# Environnement Python (Très important pour ne pas pusher tes biblio)
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Fichiers de configuration SECRETS (Priorité Phase 1)
+.env
+.env.local
+
+# Fichiers système
+.DS_Store
+Thumbs.db
