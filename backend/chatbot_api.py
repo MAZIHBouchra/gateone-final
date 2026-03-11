@@ -7,19 +7,29 @@ from typing import Optional
 import uvicorn
 from contextlib import asynccontextmanager
 
-# Updated LangChain imports
+# --- Imports LangChain mis à jour et corrigés ---
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_classic.chains import ConversationalRetrievalChain
+from langchain_classic.memory import ConversationBufferMemory
 from langchain_core.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     ChatPromptTemplate
 )
+# -----------------------------------------
+
+#03/06/2026
+import os
+from dotenv import load_dotenv
+
+# Charger les variables d'environnement depuis le fichier .env
+load_dotenv()
+#*************************************************************
 
 qa_chain = None
 memory_store = {}
@@ -73,7 +83,7 @@ def initialize_rag_system():
         
         # Initialize embeddings
         embedding_model = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-base-en-v1.5",
+            model_name="BAAI/bge-small-en-v1.5",
             encode_kwargs={'normalize_embeddings': True}
         )
         
@@ -85,15 +95,15 @@ def initialize_rag_system():
         # Initialize LLM with updated parameters
         global llm
         llm = ChatOpenAI(
-        model="mistralai/mistral-small-3.1-24b-instruct",
-        base_url="https://openrouter.ai/api/v1",
-        api_key="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",
-        temperature=0.1,  # Slightly higher for more natural responses
-        max_tokens=1024,
-        top_p=0.9,
-        frequency_penalty=0.1,
-        presence_penalty=0.1
-    )
+            model="mistralai/mistral-small-3.1-24b-instruct",
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"), # On récupère la clé ici !
+            temperature=0.1,
+            max_tokens=1024,
+            top_p=0.9,
+            frequency_penalty=0.1,
+            presence_penalty=0.1
+        )
         
         # Create custom prompt
         system_template = """

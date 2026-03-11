@@ -21,7 +21,9 @@ export interface Property {
   updated_at?: string;
 }
 
-// Format price with Euro symbol
+/**
+ * Formate le prix avec le symbole Euro (ou MAD selon le besoin de l'agence)
+ */
 export const formatPrice = (price: number): string => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
@@ -31,10 +33,13 @@ export const formatPrice = (price: number): string => {
   }).format(price);
 };
 
-// API functions
+// Configuration de l'URL de base via les variables d'environnement Vite
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? window.location.origin;
 
 export const propertiesApi = {
+  /**
+   * Récupère toutes les propriétés (Accès Public)
+   */
   async getAll(): Promise<Property[]> {
     const response = await fetch(`${BASE_URL}/api/properties`);
     if (!response.ok) {
@@ -43,6 +48,9 @@ export const propertiesApi = {
     return response.json();
   },
 
+  /**
+   * Récupère une propriété par son ID (Accès Public)
+   */
   async getById(id: number): Promise<Property | null> {
     const response = await fetch(`${BASE_URL}/api/properties/${id}`);
     if (!response.ok) {
@@ -54,6 +62,9 @@ export const propertiesApi = {
     return response.json();
   },
 
+  /**
+   * Crée une nouvelle propriété (ACCÈS SÉCURISÉ)
+   */
   async create(property: Omit<Property, 'id' | 'created_at' | 'updated_at'>): Promise<Property> {
     const response = await fetch(`${BASE_URL}/api/properties`, {
       method: 'POST',
@@ -61,13 +72,19 @@ export const propertiesApi = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(property),
+      // IMPORTANT : Permet d'envoyer les cookies d'authentification admin
+      credentials: 'include', 
     });
     if (!response.ok) {
-      throw new Error('Failed to create property');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Unauthorized or Failed to create property');
     }
     return response.json();
   },
 
+  /**
+   * Met à jour une propriété existante (ACCÈS SÉCURISÉ)
+   */
   async update(id: number, property: Partial<Property>): Promise<Property> {
     const response = await fetch(`${BASE_URL}/api/properties/${id}`, {
       method: 'PUT',
@@ -75,19 +92,27 @@ export const propertiesApi = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(property),
+      // IMPORTANT : Permet d'envoyer les cookies d'authentification admin
+      credentials: 'include',
     });
     if (!response.ok) {
-      throw new Error('Failed to update property');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Unauthorized or Failed to update property');
     }
     return response.json();
   },
 
+  /**
+   * Supprime une propriété (ACCÈS SÉCURISÉ)
+   */
   async delete(id: number): Promise<void> {
     const response = await fetch(`${BASE_URL}/api/properties/${id}`, {
       method: 'DELETE',
+      // IMPORTANT : Permet d'envoyer les cookies d'authentification admin
+      credentials: 'include',
     });
     if (!response.ok) {
-      throw new Error('Failed to delete property');
+      throw new Error('Unauthorized or Failed to delete property');
     }
   },
 };
