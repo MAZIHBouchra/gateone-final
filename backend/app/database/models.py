@@ -40,14 +40,20 @@ class Agent(Base):
 
 class Property(Base):
     __tablename__ = "properties"
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), nullable=False)
-    description = Column(Text)
+    description = Column(Text) # On stocke ici les 'features'
     price = Column(Numeric(15, 2), nullable=False)
     location = Column(String(100))
     neighborhood = Column(String(100))
     area_sqm = Column(Integer)
-    status = Column(String(50), default="available")
+    bedrooms = Column(Integer) 
+    bathrooms = Column(Integer)
+    type = Column(String(50)) # villa, apartment, riad
+    # ---------------------------------
+    
+    status = Column(String(20), default="available")
     agent_id = Column(Integer, ForeignKey("agents.id"))
     
     agent = relationship("Agent", back_populates="properties")
