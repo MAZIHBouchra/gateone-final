@@ -4,8 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, conint, confloat
 from typing import Annotated, Dict, Optional, Any
 
-from price_model import PredictorService
-
+from app.services.price_model import PredictorService
 price_router = APIRouter(prefix="/price", tags=["price"])
 
 
