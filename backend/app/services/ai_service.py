@@ -22,7 +22,7 @@ class AIService:
     # --- 1. LOGIQUE DE RÉDACTION VALIDÉE PAR LE MARKETING (INCHANGÉE) ---
     def _run_ai_generation(self, data: dict, language: str = "English"):
         """
-        Fonction interne qui contient ton 'Master Prompt' validé.
+        Fonction interne qui contient notre 'Master Prompt' validé.
         """
         main_keyword = f"{data.get('type')} for {data.get('intent')} in {data.get('location')}"
         

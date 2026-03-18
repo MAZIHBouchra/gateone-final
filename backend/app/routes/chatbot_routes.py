@@ -2,9 +2,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
-# Import chatbot module (module import keeps live references)
-import chatbot_api as ca
-
+# Import chatbot module 
+from app.services import chatbot_api as ca
 # Create router
 chatbot_router = APIRouter(prefix="/chat", tags=["chatbot"])
 

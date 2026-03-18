@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 # --- CONFIGURATION DU CHEMIN .ENV ---
 # On détermine le chemin absolu du fichier .env (un dossier au-dessus de 'database')
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 env_path = BASE_DIR / '.env'
 
 # Chargement des variables d'environnement

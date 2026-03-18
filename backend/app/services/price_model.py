@@ -4,8 +4,7 @@ from pathlib import Path
 import os
 from typing import Dict, Any
 
-from xgb_real_estate import XGBoostRealEstatePredictor
-
+from app.services.xgb_real_estate import XGBoostRealEstatePredictor
 
 class PredictorService:
     _instance: "PredictorService | None" = None
