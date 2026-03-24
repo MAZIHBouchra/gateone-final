@@ -18,7 +18,7 @@ class LeadStatus(str, enum.Enum):
 class DocType(str, enum.Enum):
     contract = "contract"
     id_card = "id_card"
-    title_deed = "title_deed"
+    title_deed = "lease_agreement"
     lease_agreement = "lease_agreement"
 
 class ActionCategory(str, enum.Enum):
@@ -28,7 +28,19 @@ class ActionCategory(str, enum.Enum):
     download_pdf = "download_pdf"
     view_listing = "view_listing"
 
-# --- Tables ---
+class BlogStatus(str, enum.Enum): # Nouveau pour les blogs
+    draft = "draft"
+    published = "published"
+    archived = "archived"
+
+class SocialPlatform(str, enum.Enum): # Nouveau pour les réseaux sociaux
+    instagram = "instagram"
+    facebook = "facebook"
+    linkedin = "linkedin"
+    whatsapp = "whatsapp"
+
+
+# --- TABLES ---
 
 class Agent(Base):
     __tablename__ = "agents"
@@ -37,28 +49,28 @@ class Agent(Base):
     last_name = Column(String(100))
     email = Column(String(150), unique=True, index=True)
     properties = relationship("Property", back_populates="agent")
+    blogs = relationship("Blog", back_populates="author_agent") # Nouvelle relation pour les blogs
 
 class Property(Base):
     __tablename__ = "properties"
-
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(255), nullable=False)
-    description = Column(Text) # On stocke ici les 'features'
+    description = Column(Text) # Stocke les features brutes
     price = Column(Numeric(15, 2), nullable=False)
     location = Column(String(100))
     neighborhood = Column(String(100))
     area_sqm = Column(Integer)
-    bedrooms = Column(Integer) 
+    bedrooms = Column(Integer)
     bathrooms = Column(Integer)
+    status = Column(String(50), default="available") # available, sold, rented
     type = Column(String(50)) # villa, apartment, riad
-    # ---------------------------------
-    
-    status = Column(String(20), default="available")
     agent_id = Column(Integer, ForeignKey("agents.id"))
     
     agent = relationship("Agent", back_populates="properties")
     media = relationship("PropertyMedia", back_populates="property", cascade="all, delete-orphan")
     documents = relationship("DocumentIntelligence", back_populates="property")
+    ai_articles = relationship("AIContentCache", back_populates="property", cascade="all, delete-orphan") # Renommée pour plus de clarté
+    social_posts = relationship("SocialPost", back_populates="property", cascade="all, delete-orphan") # Nouvelle relation
 
 class PropertyMedia(Base):
     __tablename__ = "property_media"
@@ -85,8 +97,10 @@ class MarketIntelligence(Base):
     city = Column(String(100), default="Marrakech")
     neighborhood = Column(String(100))
     avg_price_sqm = Column(Numeric(10, 2))
-    demand_level = Column(Integer)
-    trend_date = Column(DateTime, default=datetime.utcnow)
+    demand_index = Column(Integer)
+    supply_count = Column(Integer)
+    trend_direction = Column(String(20)) # 'up', 'down', 'stable'
+    recorded_at = Column(DateTime, default=datetime.utcnow)
 
 class Lead(Base):
     __tablename__ = "leads"
@@ -94,8 +108,8 @@ class Lead(Base):
     full_name = Column(String(150))
     email = Column(String(150), unique=True)
     current_status = Column(SQLEnum(LeadStatus), default=LeadStatus.new)
-    ai_score = Column(Numeric(3, 2), default=0.0)
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"))
+    ai_score = Column(Numeric(5, 2), default=0.0) # Augmenté la précision à 2 décimales
+    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True) # Peut être null si le lead n'est pas lié à un bien précis
     interactions = relationship("UserInteraction", back_populates="lead")
 
 class UserInteraction(Base):
@@ -103,27 +117,44 @@ class UserInteraction(Base):
     id = Column(Integer, primary_key=True, index=True)
     lead_id = Column(UUID(as_uuid=True), ForeignKey("leads.id"))
     action_type = Column(SQLEnum(ActionCategory))
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"))
+    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True)
     duration_seconds = Column(Integer)
     timestamp = Column(DateTime, default=datetime.utcnow)
     lead = relationship("Lead", back_populates="interactions")
 
+# --- NOUVELLE TABLE POUR LES ARTICLES DE BLOG ---
+class Blog(Base):
+    __tablename__ = "blogs"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    author_id = Column(Integer, ForeignKey("agents.id"), nullable=True) # Qui a écrit/validé le blog
+    target_region = Column(String(50)) # 'Africa', 'Gulf', 'Morocco_MRE'
+    topic = Column(String(255), nullable=False)
+    seo_title = Column(String(255))
+    content = Column(Text, nullable=False) # L'article de fond avec stats
+    status = Column(SQLEnum(BlogStatus), default=BlogStatus.draft) # draft, published
+    created_at = Column(DateTime, default=datetime.utcnow)
+    author_agent = relationship("Agent", back_populates="blogs")
+    social_posts = relationship("SocialPost", back_populates="blog", cascade="all, delete-orphan") # Lien vers les posts sociaux du blog
+
+# --- NOUVELLE TABLE POUR LES PUBLICATIONS SUR LES RÉSEAUX SOCIAUX ---
+class SocialPost(Base):
+    __tablename__ = "social_posts"
+    id = Column(Integer, primary_key=True, index=True)
+    # Peut être lié à une 'Property' OU à un 'Blog'
+    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True)
+    blog_id = Column(UUID(as_uuid=True), ForeignKey("blogs.id"), nullable=True)
+    platform = Column(SQLEnum(SocialPlatform), nullable=False) # Instagram, Facebook, LinkedIn
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    property = relationship("Property", back_populates="social_posts")
+    blog = relationship("Blog", back_populates="social_posts")
+
 class AIContentCache(Base):
     __tablename__ = "ai_content_cache"
-
     id = Column(Integer, primary_key=True, index=True)
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id", ondelete="CASCADE"))
+    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id", ondelete="CASCADE"), nullable=True) # Peut être null si on génère du contenu non lié à un bien
     language = Column(String(10), nullable=False) # 'fr', 'en', 'ar'
-    
-    # Le Titre H1 optimisé pour Google
     seo_title = Column(String(255)) 
-    
-    # Le corps de l'article (Type TEXT car 1500 mots = environ 10 000 caractères)
-    # PostgreSQL gère très bien les textes longs sans limite de taille fixe
     article_body = Column(Text, nullable=False) 
-    
-    # Mots-clés pour les balises Meta de Google
     meta_keywords = Column(Text) 
-    
-    # Date de génération (pour savoir s'il faut rafraîchir l'article plus tard)
     generated_at = Column(DateTime, default=datetime.utcnow)

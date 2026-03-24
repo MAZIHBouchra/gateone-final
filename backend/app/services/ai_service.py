@@ -19,8 +19,8 @@ class AIService:
             max_tokens=3000
         )
 
-    # --- 1. LOGIQUE DE RÉDACTION VALIDÉE PAR LE MARKETING (INCHANGÉE) ---
-    def _run_ai_generation(self, data: dict, language: str = "English"):
+    # --- 1. LOGIQUE DE RÉDACTION VALIDÉE PAR LE MARKETING  ---
+    def generate_seo_article(self, data: dict, language: str = "English"):
         """
         Fonction interne qui contient notre 'Master Prompt' validé.
         """
@@ -75,7 +75,7 @@ class AIService:
         full_lang = "English" if lang == "en" else "French"
         
         # On lance la génération
-        content = self._run_ai_generation(property_data, full_lang)
+        content = self.generate_seo_article(property_data, full_lang)
         
         return content
 
@@ -101,3 +101,42 @@ class AIService:
         
         print(f"Article archivé avec succès dans PostgreSQL.")
         return new_cache_entry
+    
+    # --- NOUVELLE FONCTION POUR LES RÉSEAUX SOCIAUX ---
+    async def generate_social_media_pack(self, article_content: str, property_data: dict):
+        """
+        Prend l'article expert et les données techniques pour créer 
+        des publications adaptées aux réseaux sociaux.
+        """
+        print(f" IA : Création du pack réseaux sociaux...")
+
+        social_prompt = f"""
+        En tant que Responsable Communication de prestige pour GateOne.immo, transforme l'article suivant en deux publications sobres, élégantes et à forte valeur ajoutée.
+        
+        ARTICLE DE RÉFÉRENCE : {article_content[:1000]}...
+        DONNÉES TECHNIQUES : {property_data}
+
+        RÈGLES D'OR (STRICTES) :
+        - ÉVITE le style "IA" : pas de phrases d'accroche trop enthousiastes ou génériques.
+        - SOBRIÉTÉ : Utilise MAXIMUM 1 ou 2 emojis discrets par publication (exemple : ✨ ou 📍).
+        - TON : Professionnel, narratif, s'adressant à une clientèle fortunée. On ne vend pas, on invite à découvrir.
+
+        1. POST INSTAGRAM :
+        - Style : Storytelling épuré. Une phrase d'accroche courte, un paragraphe descriptif sur l'atmosphère du bien, et un appel à l'action minimaliste.
+        - Hashtags : 3 à 5 hashtags maximum (ex: #MarrakechRealEstate #Architecture).
+
+        2. POST FACEBOOK :
+        - Style : Informatif et sérieux. Focus sur l'exclusivité du quartier et l'opportunité d'investissement. 
+        - Structure : Paragraphes fluides sans listes à puces excessives.
+
+        Réponds au format JSON comme ceci : 
+        {{
+            "instagram": "le texte ici",
+            "facebook": "le texte ici"
+        }}
+        """
+
+        # Appel à l'IA (Mistral)
+        response = self.llm.invoke(social_prompt)
+        
+        return response.content
