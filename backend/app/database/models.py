@@ -158,3 +158,5 @@ class AIContentCache(Base):
     article_body = Column(Text, nullable=False) 
     meta_keywords = Column(Text) 
     generated_at = Column(DateTime, default=datetime.utcnow)
+
+    property = relationship("Property", back_populates="ai_articles")

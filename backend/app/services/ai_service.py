@@ -13,10 +13,12 @@ class AIService:
         # CONFIGURATION VALIDÉE (Mistral via OpenRouter)
         self.llm = ChatOpenAI(
             model="mistralai/mistral-small-3.1-24b-instruct",
+            #model="meta-llama/llama-3.1-8b-instruct:free",
+            #model="openrouter/auto",
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
             temperature=0.3,
-            max_tokens=3000
+            max_tokens=1500
         )
 
     # --- 1. LOGIQUE DE RÉDACTION VALIDÉE PAR LE MARKETING  ---
