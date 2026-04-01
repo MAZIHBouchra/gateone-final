@@ -6,6 +6,8 @@ import io
 import os
 import uvicorn
 from PIL import Image, ImageDraw, ImageFont
+from app.routes.blogs_routes import router as blogs_router
+
 
 # Routes du projet
 from routers import articles
@@ -40,6 +42,7 @@ app.include_router(properties_router)
 app.include_router(admin.router)
 # Routes Upload
 app.include_router(upload.router, prefix="/api")
+
 
 # ---- Fichiers statiques ----
 app.mount("/images", StaticFiles(directory="static/images"), name="images")

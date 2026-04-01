@@ -4,6 +4,7 @@ import uvicorn
 import os
 import sys
 from app.routes.leads_routes import router as leads_router
+from app.routes.blogs_routes import router as blogs_router
 
 # Ajout du chemin racine pour éviter les erreurs d'import
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -81,6 +82,7 @@ app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
 app.include_router(leads_router)
+app.include_router(blogs_router)
 # Properties routes (optional)
 if PROPERTIES_AVAILABLE and properties_router:
     app.include_router(properties_router)
