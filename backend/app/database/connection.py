@@ -27,7 +27,11 @@ if not SQLALCHEMY_DATABASE_URL:
 
 # 1. Création du moteur (Engine)
 # Pour PostgreSQL, on n'a pas besoin de 'check_same_thread' comme sur SQLite
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# On ajoute pool_pre_ping pour gérer les déconnexions du Cloud (Neon)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True
+    )
 
 # 2. Création de la fabrique de sessions (SessionLocal)
 # On désactive autocommit et autoflush pour avoir un contrôle total sur les transactions
