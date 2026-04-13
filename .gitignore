@@ -1,16 +1,32 @@
-# --- Backend ---
-backend/venv/
-backend/.env
-backend/__pycache__/
-backend/*.pyc
+# Environnement Python (Très important pour ne pas pusher tes biblio)
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
 
-# --- Frontend ---
-frontend/node_modules/
-frontend/.env
-frontend/.env.local
-frontend/dist/
-frontend/.next/
+# Fichiers de configuration SECRETS (Priorité Phase 1)
+.env
+.env.local
 
-# --- System ---
+# Fichiers système
 .DS_Store
 Thumbs.db
+venv/
+__pycache__/
+*.csv
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+instance/
+.webassets-cache
+.pytest_cache/
+.coverage
+.cache
+.pytest_cache
+
+
+
