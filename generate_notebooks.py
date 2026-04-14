@@ -19,6 +19,55 @@ def create_notebook(property_type, transaction_type='vente'):
     source_file = f"../../data/marrakech_immo_{transaction_type}_features/{filename}".strip()
     output_file = f"{p_type_clean}_{transaction_type}_cleaned.csv"
     
+    if property_type == 'riad':
+        load_source = [
+            "import pandas as pd\n",
+            "import numpy as np\n",
+            "import matplotlib.pyplot as plt\n",
+            "import seaborn as sns\n",
+            "import os\n",
+            "\n",
+            "# Load multiple files to concatenate\n",
+            f"file_paths = [\n",
+            f"    '../../data/marrakech_immo_{transaction_type}_features/riad_{transaction_type}.csv',\n",
+            f"    '../../data/marrakech_immo_{transaction_type}_features/riad_rénové_{transaction_type}.csv'\n",
+            "]\n",
+            "dfs = []\n",
+            "for fp in file_paths:\n",
+            "    if os.path.exists(fp):\n",
+            "        dfs.append(pd.read_csv(fp))\n",
+            "        print(f\"Successfully loaded {fp}\")\n",
+            "    else:\n",
+            "        print(f\"WARNING: File not found at {fp}\")\n",
+            "\n",
+            "if dfs:\n",
+            "    df = pd.concat(dfs, ignore_index=True)\n",
+            "    print(f\"Merged DataFrame shape: {df.shape}\")\n",
+            "    display(df.head())\n",
+            "else:\n",
+            "    print(\"ERROR: No files were found to load.\")\n"
+        ]
+    else:
+        load_source = [
+            "import pandas as pd\n",
+            "import numpy as np\n",
+            "import matplotlib.pyplot as plt\n",
+            "import seaborn as sns\n",
+            "import os\n",
+            "\n",
+            "# File path\n",
+            f"file_path = '{source_file}'\n",
+            "\n",
+            "# Load data\n",
+            "if os.path.exists(file_path):\n",
+            "    df = pd.read_csv(file_path)\n",
+            "    print(f\"Successfully loaded {file_path}\")\n",
+            "    display(df.head())\n",
+            "else:\n",
+            "    print(f\"ERROR: File not found at {file_path}\")\n",
+            "    print(f\"Current working directory: {os.getcwd()}\")"
+        ]
+    
     notebook = {
         "cells": [
             {
@@ -34,25 +83,7 @@ def create_notebook(property_type, transaction_type='vente'):
                 "execution_count": None,
                 "metadata": {},
                 "outputs": [],
-                "source": [
-                    "import pandas as pd\n",
-                    "import numpy as np\n",
-                    "import matplotlib.pyplot as plt\n",
-                    "import seaborn as sns\n",
-                    "import os\n",
-                    "\n",
-                    "# File path\n",
-                    f"file_path = '{source_file}'\n",
-                    "\n",
-                    "# Load data\n",
-                    "if os.path.exists(file_path):\n",
-                    "    df = pd.read_csv(file_path)\n",
-                    "    print(f\"Successfully loaded {file_path}\")\n",
-                    "    display(df.head())\n",
-                    "else:\n",
-                    "    print(f\"ERROR: File not found at {file_path}\")\n",
-                    "    print(f\"Current working directory: {os.getcwd()}\")"
-                ]
+                "source": load_source
             },
             {
                 "cell_type": "markdown",
@@ -90,8 +121,44 @@ def create_notebook(property_type, transaction_type='vente'):
                     "if 'df' in locals():\n",
                     "    # Checking for null values\n",
                     "    null_counts = df.isnull().sum()\n",
-                    "    print(\"Columns with null values:\")\n",
-                    "    print(null_counts[null_counts > 0])"
+                    "    print(\"Columns with null values before cleaning:\")\n",
+                    "    print(null_counts[null_counts > 0])\n",
+                    "    \n",
+                    "    # 1. Variables numériques : imputation par la médiane\n",
+                    "    num_cols_to_fill = ['prix_num', 'surface_num', 'prix_m2', 'prix_m2_median_quartier']\n",
+                    "    for col in num_cols_to_fill:\n",
+                    "        if col in df.columns:\n",
+                    "            df[col] = df[col].fillna(df[col].median())\n",
+                    "            \n",
+                    "    # 2. Variables catégorielles : imputation par le mode (valeur la plus fréquente)\n",
+                    "    cat_cols_mode = ['agence', 'type_bien', 'localisation']\n",
+                    "    for col in cat_cols_mode:\n",
+                    "        if col in df.columns:\n",
+                    "            mode_val = df[col].mode()\n",
+                    "            if not mode_val.empty:\n",
+                    "                df[col] = df[col].fillna(mode_val[0])\n",
+                    "            \n",
+                    "    # 3. Champs texte : on met 'Non spécifié'\n",
+                    "    text_cols = ['titre', 'description', 'prix', 'surface', 'url']\n",
+                    "    for col in text_cols:\n",
+                    "        if col in df.columns:\n",
+                    "            df[col] = df[col].fillna('Non spécifié')\n",
+                    "    \n",
+                    f"    if '{property_type}' == 'terrain':\n",
+                    "        # 4. Spécifique aux terrains : pas de chambres/sdb\n",
+                    "        if 'chambres' in df.columns:\n",
+                    "            df['chambres'] = df['chambres'].fillna('0')\n",
+                    "        if 'salles_bain' in df.columns:\n",
+                    "            df['salles_bain'] = df['salles_bain'].fillna(0.0)\n",
+                    "        if 'surface_terrain' in df.columns and 'surface_num' in df.columns:\n",
+                    "            df['surface_terrain'] = df['surface_terrain'].fillna(df['surface_num'])\n",
+                    "    \n",
+                    "    # id: on supprime les lignes sans ID car c'est crucial\n",
+                    "    if 'id' in df.columns:\n",
+                    "        df.dropna(subset=['id'], inplace=True)\n",
+                    "        \n",
+                    "    print(\"\\nColumns with null values after cleaning:\")\n",
+                    "    print(df.isnull().sum()[df.isnull().sum() > 0])"
                 ]
             },
             {
@@ -197,7 +264,7 @@ def create_notebook(property_type, transaction_type='vente'):
 vente_types = [
     'appartement', 'bureaux', 'commercial', 'duplex', 
     'ferme', 'locaux', "maison_d'hôte", 'maison', 
-    'riad_rénové', 'riad', 'studio', 'terrain', 'villa'
+    'riad', 'studio', 'terrain', 'villa'
 ]
 
 location_types = [
