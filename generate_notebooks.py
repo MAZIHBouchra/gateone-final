@@ -19,55 +19,6 @@ def create_notebook(property_type, transaction_type='vente'):
     source_file = f"../../data/marrakech_immo_{transaction_type}_features/{filename}".strip()
     output_file = f"{p_type_clean}_{transaction_type}_cleaned.csv"
     
-    if property_type == 'riad':
-        load_source = [
-            "import pandas as pd\n",
-            "import numpy as np\n",
-            "import matplotlib.pyplot as plt\n",
-            "import seaborn as sns\n",
-            "import os\n",
-            "\n",
-            "# Load multiple files to concatenate\n",
-            f"file_paths = [\n",
-            f"    '../../data/marrakech_immo_{transaction_type}_features/riad_{transaction_type}.csv',\n",
-            f"    '../../data/marrakech_immo_{transaction_type}_features/riad_rénové_{transaction_type}.csv'\n",
-            "]\n",
-            "dfs = []\n",
-            "for fp in file_paths:\n",
-            "    if os.path.exists(fp):\n",
-            "        dfs.append(pd.read_csv(fp))\n",
-            "        print(f\"Successfully loaded {fp}\")\n",
-            "    else:\n",
-            "        print(f\"WARNING: File not found at {fp}\")\n",
-            "\n",
-            "if dfs:\n",
-            "    df = pd.concat(dfs, ignore_index=True)\n",
-            "    print(f\"Merged DataFrame shape: {df.shape}\")\n",
-            "    display(df.head())\n",
-            "else:\n",
-            "    print(\"ERROR: No files were found to load.\")\n"
-        ]
-    else:
-        load_source = [
-            "import pandas as pd\n",
-            "import numpy as np\n",
-            "import matplotlib.pyplot as plt\n",
-            "import seaborn as sns\n",
-            "import os\n",
-            "\n",
-            "# File path\n",
-            f"file_path = '{source_file}'\n",
-            "\n",
-            "# Load data\n",
-            "if os.path.exists(file_path):\n",
-            "    df = pd.read_csv(file_path)\n",
-            "    print(f\"Successfully loaded {file_path}\")\n",
-            "    display(df.head())\n",
-            "else:\n",
-            "    print(f\"ERROR: File not found at {file_path}\")\n",
-            "    print(f\"Current working directory: {os.getcwd()}\")"
-        ]
-    
     notebook = {
         "cells": [
             {
@@ -83,7 +34,25 @@ def create_notebook(property_type, transaction_type='vente'):
                 "execution_count": None,
                 "metadata": {},
                 "outputs": [],
-                "source": load_source
+                "source": [
+                    "import pandas as pd\n",
+                    "import numpy as np\n",
+                    "import matplotlib.pyplot as plt\n",
+                    "import seaborn as sns\n",
+                    "import os\n",
+                    "\n",
+                    "# File path\n",
+                    f"file_path = '{source_file}'\n",
+                    "\n",
+                    "# Load data\n",
+                    "if os.path.exists(file_path):\n",
+                    "    df = pd.read_csv(file_path)\n",
+                    "    print(f\"Successfully loaded {file_path}\")\n",
+                    "    display(df.head())\n",
+                    "else:\n",
+                    "    print(f\"ERROR: File not found at {file_path}\")\n",
+                    "    print(f\"Current working directory: {os.getcwd()}\")"
+                ]
             },
             {
                 "cell_type": "markdown",
@@ -144,12 +113,26 @@ def create_notebook(property_type, transaction_type='vente'):
                     "        if col in df.columns:\n",
                     "            df[col] = df[col].fillna('Non spécifié')\n",
                     "    \n",
-                    f"    if '{property_type}' == 'terrain':\n",
-                    "        # 4. Spécifique aux terrains : pas de chambres/sdb\n",
-                    "        if 'chambres' in df.columns:\n",
-                    "            df['chambres'] = df['chambres'].fillna('0')\n",
-                    "        if 'salles_bain' in df.columns:\n",
-                    "            df['salles_bain'] = df['salles_bain'].fillna(0.0)\n",
+                    "    # 4. Traitement des chambres et salles de bain\n",
+                    f"    non_residential = ['terrain', 'locaux', 'commercial', 'bureaux']\n",
+                    f"    if '{property_type}' in non_residential:\n",
+                    "        if 'chambres_num' in df.columns: df['chambres_num'] = df['chambres_num'].fillna(0.0)\n",
+                    "        if 'chambres' in df.columns: df['chambres'] = df['chambres'].fillna('0')\n",
+                    "        if 'salles_bain_num' in df.columns: df['salles_bain_num'] = df['salles_bain_num'].fillna(0.0)\n",
+                    "        if 'salles_bain' in df.columns: df['salles_bain'] = df['salles_bain'].fillna('0')\n",
+                    f"    else:\n",
+                    "        if 'chambres_num' in df.columns and not df['chambres_num'].isnull().all():\n",
+                    "            mean_ch = round(df['chambres_num'].mean())\n",
+                    "            df['chambres_num'] = df['chambres_num'].fillna(mean_ch)\n",
+                    "            if 'chambres' in df.columns: df['chambres'] = df['chambres'].fillna(str(int(mean_ch)))\n",
+                    "        if 'salles_bain_num' in df.columns and not df['salles_bain_num'].isnull().all():\n",
+                    "            mean_sb = round(df['salles_bain_num'].mean())\n",
+                    "            df['salles_bain_num'] = df['salles_bain_num'].fillna(mean_sb)\n",
+                    "            if 'salles_bain' in df.columns: df['salles_bain'] = df['salles_bain'].fillna(str(int(mean_sb)))\n",
+                    "    # 5. Traitement de la surface du terrain\n",
+                    "    if '{property_type}' in ['appartement', 'studio', 'duplex']:\n",
+                    "        if 'surface_terrain' in df.columns: df['surface_terrain'] = df['surface_terrain'].fillna(0.0)\n",
+                    "    else:\n",
                     "        if 'surface_terrain' in df.columns and 'surface_num' in df.columns:\n",
                     "            df['surface_terrain'] = df['surface_terrain'].fillna(df['surface_num'])\n",
                     "    \n",
