@@ -4,27 +4,28 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-# 1. Configuration du PATH (Indispensable pour la Clean Architecture)
+# 1. Configuration du PATH
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# 2. Imports des Routeurs (Couche Routing)
+# 2. Imports des Routeurs
 from app.routes.chatbot_routes import chatbot_router
 from app.routes.email_routes import email_router
 from app.routes.price_routes import price_router
 from app.routes.leads_routes import router as leads_router
 from app.routes.blogs_routes import router as blogs_router
 from app.routes.analytics_routes import router as analytics_router
-from app.routes.admin_routes import router as admin_router # Le nouveau !
+from app.routes.admin_routes import router as admin_router
+# --- MODIFICATION ICI : Import du nouveau routeur Dashboard ---
+from app.routes.dashboard_routes import router as dashboard_router 
 
-# 3. Gestion des imports optionnels ou complexes
+# 3. Gestion des imports optionnels
 try:
     from app.routes.properties_routes import router as properties_router
     PROPERTIES_AVAILABLE = True
 except ImportError as e:
-    print(f" Warning: properties routes not loaded: {e}")
+    print(f" ⚠️ Warning: properties routes not loaded: {e}")
     PROPERTIES_AVAILABLE = False
 
-# Import du service chatbot (Cœur IA)
 try:
     from app.services import chatbot_api as ca
 except ImportError:
@@ -37,7 +38,7 @@ app = FastAPI(
     description="Unified Backend for AI Real Estate Services"
 )
 
-# 5. Configuration CORS (Sécurité)
+# 5. Configuration CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -53,29 +54,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 6. Événements de démarrage (Startup)
+# 6. Événements de démarrage
 @app.on_event("startup")
 async def startup_event() -> None:
-    print(" Starting GateOne unified API with Clean Architecture...")
+    print(" 🚀 Starting GateOne unified API with Clean Architecture...")
     success = ca.initialize_rag_system()
     if success:
-        print(" AI Chatbot Engine: READY")
+        print(" ✅ AI Chatbot Engine: READY")
     else:
-        print(" AI Chatbot Engine: FAILED")
+        print(" ❌ AI Chatbot Engine: FAILED")
 
-# 7. Enregistrement des Routes (Ordre logique)
-app.include_router(admin_router) # On commence par l'Admin
+# 7. Enregistrement des Routes
+app.include_router(admin_router)
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
 app.include_router(leads_router)
 app.include_router(blogs_router)
 app.include_router(analytics_router)
+# --- MODIFICATION ICI : Enregistrement du routeur Dashboard ---
+app.include_router(dashboard_router) 
 
 if PROPERTIES_AVAILABLE:
     app.include_router(properties_router)
 
-# 8. Endpoints de base (Health & Root)
+# 8. Endpoints de base
 @app.get("/")
 async def root():
     return {
@@ -92,5 +95,4 @@ async def health_check():
     }
 
 if __name__ == "__main__":
-    # Lancement du serveur sur le port 8000
     uvicorn.run(app, host="0.0.0.0", port=8000)
