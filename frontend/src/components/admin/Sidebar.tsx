@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom'; // Pour la navigation
+import { Link, useLocation } from 'react-router-dom'; // For navigation
 import { 
   LayoutDashboard, 
   Home, 
@@ -11,15 +11,15 @@ import {
 } from 'lucide-react';
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Vue d\'ensemble', path: '/admin' },
-  { icon: Home, label: 'Propriétés', path: '/admin/properties' },
+  { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
+  { icon: Home, label: 'Properties', path: '/admin/properties' },
   { icon: Sparkles, label: 'AI Content Studio', path: '/admin/studio' },
   { icon: Users, label: 'Intelligence Leads', path: '/admin/leads' },
-  { icon: Settings, label: 'Paramètres', path: '/admin/settings' },
+  { icon: Settings, label: 'Settings', path: '/admin/settings' },
 ];
 
 export default function Sidebar() {
-  const location = useLocation(); // Récupère l'URL actuelle pour savoir quel bouton surligner
+  const location = useLocation(); // Gets current URL to highlight active button
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#2D3321] text-[#F9F7F2] flex flex-col shadow-2xl z-50">
@@ -56,11 +56,11 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* 3. FOOTER / DECONNEXION */}
+      {/* 3. FOOTER / LOGOUT */}
       <div className="p-4 border-t border-white/10">
         <button className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium">
           <LogOut size={20} />
-          Déconnexion
+          Logout
         </button>
         <div className="mt-4 px-4">
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">Orchid Island Real Estate</p>
