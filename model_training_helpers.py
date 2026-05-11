@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split, RandomizedSearchCV, GridSearchCV
 from sklearn.preprocessing import RobustScaler, OneHotEncoder, TargetEncoder
+from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_selection import SelectKBest, f_regression
@@ -14,6 +15,32 @@ def preprocess_data(df, property_type='appartement'):
     Réalise le feature engineering et la suppression des outliers.
     """
     df_eng = df.copy()
+    
+    # 0. Extraction du quartier depuis localisation si disponible
+    if 'localisation' in df_eng.columns and 'quartier' in df_eng.columns:
+        def extract_quartier_from_loc(loc):
+            loc = str(loc).lower()
+            if 'tahanaout' in loc: return 'Route de Tahanaout'
+            if 'amelkis' in loc: return 'Amelkis'
+            if 'ouarzazate' in loc: return 'Route de Ouarzazate'
+            if 'amezmiz' in loc or 'amizmiz' in loc: return "Route d'Amizmiz"
+            if 'fez' in loc or 'fès' in loc: return 'Route de Fès'
+            if 'ourika' in loc: return "Route d'Ourika"
+            if 'targa' in loc: return 'Targa'
+            if 'palmeraie' in loc: return 'Palmeraie'
+            if 'agdal' in loc: return 'Agdal'
+            if 'gueliz' in loc or 'guéliz' in loc: return 'Guéliz'
+            if 'hivernage' in loc: return 'Hivernage'
+            if 'casablanca' in loc: return 'Route de Casablanca'
+            if 'mohammed vi' in loc: return 'Mohammed VI'
+            if 'sidi abdellah ghiat' in loc or 'sidi a. ghiat' in loc: return 'Sidi Abdellah Ghiat'
+            if 'assif' in loc: return 'Assif'
+            if 'azzouzia' in loc: return 'Azzouzia'
+            return 'Autre'
+        
+        # On ne remplace que si c'est 'Autre' ou vide
+        mask = (df_eng['quartier'] == 'Autre') | (df_eng['quartier'].isna())
+        df_eng.loc[mask, 'quartier'] = df_eng.loc[mask, 'localisation'].apply(extract_quartier_from_loc)
     
     # 1. Nettoyage de l'étage (conversion en numérique)
     if 'etage' in df_eng.columns:
@@ -45,6 +72,10 @@ def preprocess_data(df, property_type='appartement'):
         if 'surface_num' in df_eng.columns:
             df_eng['surface_score_interaction'] = df_eng['surface_num'] * df_eng['score_commodites']
             
+    if 'salles_bain_num' in df_eng.columns and 'chambres_num' in df_eng.columns:
+        df_eng['ratio_bain_chambre'] = df_eng['salles_bain_num'] / (df_eng['chambres_num'].replace(0, 1))
+        df_eng['interaction_bain_chambre'] = df_eng['salles_bain_num'] * df_eng['chambres_num']
+        
     if 'quartier' in df_eng.columns:
         luxe_quartiers = ['Agdal', 'Hivernage', 'Palmeraie', 'Guéliz', 'Targa']
         df_eng['is_luxury_location'] = df_eng['quartier'].apply(lambda x: 1 if str(x) in luxe_quartiers else 0)
@@ -52,11 +83,18 @@ def preprocess_data(df, property_type='appartement'):
     if 'prix_m2_median_quartier' in df_eng.columns and 'surface_num' in df_eng.columns:
         df_eng['prix_estime_quartier'] = df_eng['prix_m2_median_quartier'] * df_eng['surface_num']
     
+    if 'surface_num' in df_eng.columns and 'is_luxury_location' in df_eng.columns:
+        df_eng['surface_luxury_interaction'] = df_eng['surface_num'] * df_eng['is_luxury_location']
+    
     # 3. Text features from description (if available)
     if 'description' in df_eng.columns:
-        keywords = ['luxe', 'standing', 'neuf', 'rénové', 'moderne', 'calme', 'vue atlas', 'piscine', 'sécurisée', 'ascenseur', 'parking', 'ensoleillé']
+        if property_type == 'villa':
+            keywords = ['luxe', 'standing', 'neuf', 'rénové', 'moderne', 'calme', 'vue atlas', 'piscine', 'sécurisée', 'garage', 'golf', 'cheminée', 'puits', 'sans vis-à-vis', 'jardin', 'traditionnel', 'suite']
+        else:
+            keywords = ['luxe', 'standing', 'neuf', 'rénové', 'moderne', 'calme', 'vue atlas', 'piscine', 'sécurisée', 'ascenseur', 'parking', 'ensoleillé']
+            
         for kw in keywords:
-            col_name = f'kw_{kw.replace(" ", "_")}'
+            col_name = f'kw_{kw.replace(" ", "_").replace("-", "_").replace("à", "a")}'
             df_eng[col_name] = df_eng['description'].fillna('').str.lower().str.contains(kw).astype(int)
     
     # 4. Outlier removal intelligent et plus strict
@@ -73,13 +111,26 @@ def preprocess_data(df, property_type='appartement'):
                 
                 # Filtrage des surfaces
                 df_eng = df_eng[(df_eng['surface_num'] >= 35) & (df_eng['surface_num'] <= 250)]
+        
+        elif property_type == 'villa':
+            # Filtrage pour les villas (marché plus large)
+            df_eng = df_eng[(df_eng['prix_num'] >= 800000) & (df_eng['prix_num'] <= 40000000)]
             
-            # Suppression des anomalies via Isolation Forest (optionnel mais puissant)
-            # On ne le fait que si on a assez de colonnes numériques
+            if 'surface_num' in df_eng.columns:
+                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
+                # Filtrage sur le prix au m2
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 4000) & (df_eng['temp_prix_m2'] <= 50000)]
+                df_eng = df_eng.drop(columns=['temp_prix_m2'])
+                
+                # Filtrage des surfaces habitables (pas le terrain)
+                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 2500)]
+            
+            # Suppression des anomalies via Isolation Forest
             iso_features = ['prix_num', 'surface_num', 'chambres_num', 'salles_bain_num']
             iso_features = [f for f in iso_features if f in df_eng.columns]
             if len(df_eng) > 100:
-                iso = IsolationForest(contamination=0.03, random_state=42)
+                # Contamination plus faible pour garder les villas d'exception
+                iso = IsolationForest(contamination=0.015, random_state=42)
                 preds = iso.fit_predict(df_eng[iso_features])
                 df_eng = df_eng[preds == 1]
             
@@ -118,8 +169,14 @@ def model_pipeline(num_columns, cat_columns, model):
     Crée un pipeline de prétraitement et de modélisation.
     Utilise TargetEncoder pour les variables catégorielles (plus efficace pour le prix).
     """
-    numeric_transform = Pipeline(steps=[("scaler", RobustScaler())])
-    categoric_transform = Pipeline(steps=[("encode", TargetEncoder())])
+    numeric_transform = Pipeline(steps=[
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", RobustScaler())
+    ])
+    categoric_transform = Pipeline(steps=[
+        ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
+        ("encode", TargetEncoder())
+    ])
 
     preprocessor = ColumnTransformer(
         transformers=[
