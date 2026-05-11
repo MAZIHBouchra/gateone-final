@@ -14,14 +14,6 @@ import Contact from "./pages/Contact";
 import Investment from "./pages/Investment";
 //import PricePrediction from "./pages/PricePrediction";
 import NotFound from "./pages/NotFound";
-import AdminLogin from "./pages/AdminLogin";
-//import AdminDashboard from "./pages/AdminDashboard";
-//import AdminArticles from "./pages/AdminArticles";
-//import AdminProperties from "./pages/AdminProperties";
-//import AdminAddArticle from "./pages/AdminAddArticle";
-//import AdminEditArticle from "./pages/AdminEditArticle";
-//import AdminAddProperty from "./pages/AdminAddProperty";
-//import AdminEditProperty from "./pages/AdminEditProperty";
 
 // --- NOUVEAUX IMPORTS D'EXCELLENCE ---
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -29,6 +21,7 @@ import AdminAIStudio from "./pages/admin/AdminAIStudio";
 import PropertiesPage from './pages/admin/PropertiesPage';
 import LeadsPage from './pages/admin/LeadsPage';
 import BlogStudio from './pages/admin/BlogStudio';
+import AdminLogin from "./pages/admin/AdminLogin";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +50,7 @@ const App = () => (
               <Route path="studio" element={<AdminAIStudio />} />
               <Route path="leads" element={<LeadsPage />} />
               <Route path="blogs" element={<BlogStudio />} />
+			  <Route path="/admin/login" element={<AdminLogin />} />
             </Route>
           </Routes>
         </BrowserRouter>

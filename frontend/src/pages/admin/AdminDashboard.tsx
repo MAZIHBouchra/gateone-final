@@ -1,12 +1,17 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Importe le hook de navigation
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Sparkles, Home, Users, FileText, TrendingUp, Plus } from 'lucide-react';
+import { Sparkles, Home, Users, TrendingUp, Plus } from 'lucide-react';
 
 export default function Dashboard() {
-  const navigate = useNavigate(); // 2. Initialise le navigateur
+  const navigate = useNavigate();
+  
+  // État pour le nom de l'agent
+  const [agentName, setAgentName] = useState("Agent");
 
+  // État pour les statistiques
   const [stats, setStats] = useState({
     online_listings: 0,
     qualified_leads: 0,
@@ -15,11 +20,17 @@ export default function Dashboard() {
   });
 
   useEffect(() => {
-    // Fetch stats from the new API endpoint
+    // 1. Récupérer le nom de l'agent stocké lors de la connexion
+    const storedName = localStorage.getItem('agent_name');
+    if (storedName) {
+      setAgentName(storedName);
+    }
+
+    // 2. Fetch des statistiques réelles depuis le Backend
     fetch('http://localhost:8000/api/dashboard/stats')
       .then(res => res.json())
       .then(data => setStats(data))
-	  .catch(err => console.log("Stats fetch error:", err));
+      .catch(err => console.error("Stats fetch error:", err));
   }, []);
 
   return (
@@ -27,11 +38,16 @@ export default function Dashboard() {
       <header className="mb-10 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-serif font-bold text-[#2D3321]">Executive Dashboard</h1>
-          <p className="text-gray-500 mt-1 italic">Welcome back, Bouchra. AI Infrastructure is active.</p>
+          {/* Message de bienvenue dynamique */}
+          <p className="text-gray-500 mt-1 italic">
+            Welcome back, <span className="text-[#C7A987] font-semibold">{agentName}</span>. AI Infrastructure is active.
+          </p>
         </div>
+        
         <button
-		onClick={() => navigate('/admin/blogs')}
-		className="bg-[#000] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl">
+          onClick={() => navigate('/admin/blogs')}
+          className="bg-[#000] text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-gray-800 transition-all shadow-xl active:scale-95"
+        >
            <Plus size={16} /> New AI Blog Post
         </button>
       </header>
@@ -45,7 +61,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-         {/* Ici vous pouvez mettre vos listes de leads ou graphiques */}
+         {/* Tu pourras ajouter ici des graphiques Recharts ou la liste des derniers leads plus tard */}
       </div>
     </AdminLayout>
   );
@@ -61,7 +77,9 @@ function StatCard({ title, value, icon: Icon, trend, color = "bg-white" }: any) 
         </div>
       </div>
       <div className="text-4xl font-serif font-bold text-[#2D3321] mb-2">{value}</div>
-      <div className="text-[10px] font-bold text-green-600">{trend} <span className="text-gray-400 font-normal ml-1">vs last month</span></div>
+      <div className="text-[10px] font-bold text-green-600">
+        {trend} <span className="text-gray-400 font-normal ml-1">vs last month</span>
+      </div>
     </div>
   );
 }
