@@ -62,6 +62,10 @@ def preprocess_data(df, property_type='appartement'):
         df_eng['etage_num'] = df_eng['etage_num'].fillna(df_eng['etage_num'].median() if not df_eng['etage_num'].isna().all() else 0)
 
     # 2. Feature Engineering
+    if 'surface_num' in df_eng.columns:
+        df_eng['log_surface_num'] = np.log1p(df_eng['surface_num'])
+        df_eng['surface_2'] = df_eng['surface_num'] ** 2
+        
     if 'surface_num' in df_eng.columns and 'chambres_num' in df_eng.columns:
         df_eng['surface_par_chambre'] = df_eng['surface_num'] / (df_eng['chambres_num'].replace(0, 1))
         
@@ -75,6 +79,7 @@ def preprocess_data(df, property_type='appartement'):
     if 'salles_bain_num' in df_eng.columns and 'chambres_num' in df_eng.columns:
         df_eng['ratio_bain_chambre'] = df_eng['salles_bain_num'] / (df_eng['chambres_num'].replace(0, 1))
         df_eng['interaction_bain_chambre'] = df_eng['salles_bain_num'] * df_eng['chambres_num']
+        df_eng['total_rooms'] = df_eng['chambres_num'] + df_eng['salles_bain_num']
         
     if 'quartier' in df_eng.columns:
         luxe_quartiers = ['Agdal', 'Hivernage', 'Palmeraie', 'Guéliz', 'Targa']
@@ -85,8 +90,20 @@ def preprocess_data(df, property_type='appartement'):
     
     if 'surface_num' in df_eng.columns and 'is_luxury_location' in df_eng.columns:
         df_eng['surface_luxury_interaction'] = df_eng['surface_num'] * df_eng['is_luxury_location']
-    
-    # 3. Text features from description (if available)
+        
+    if 'is_luxury_location' in df_eng.columns and 'score_commodites' in df_eng.columns:
+        df_eng['luxury_commodities_interaction'] = df_eng['is_luxury_location'] * df_eng['score_commodites']
+        
+    if 'surface_num' in df_eng.columns and 'total_rooms' in df_eng.columns:
+        df_eng['surface_per_room'] = df_eng['surface_num'] / (df_eng['total_rooms'].replace(0, 1))
+        
+    if property_type == 'villa' and 'jardin' in df_eng.columns and 'piscine' in df_eng.columns:
+        df_eng['jardin_piscine_interaction'] = df_eng['jardin'] * df_eng['piscine']
+        
+    if 'etage_num' in df_eng.columns and 'ascenseur' in df_eng.columns:
+        df_eng['etage_sans_ascenseur'] = ((df_eng['etage_num'] > 2) & (df_eng['ascenseur'] == 0)).astype(int)
+
+    # 3. Text features from description (if available) - KEEPING for backward compatibility but won't be used if description is dropped
     if 'description' in df_eng.columns:
         if property_type == 'villa':
             keywords = ['luxe', 'standing', 'neuf', 'rénové', 'moderne', 'calme', 'vue atlas', 'piscine', 'sécurisée', 'garage', 'golf', 'cheminée', 'puits', 'sans vis-à-vis', 'jardin', 'traditionnel', 'suite']
@@ -100,37 +117,58 @@ def preprocess_data(df, property_type='appartement'):
     # 4. Outlier removal intelligent et plus strict
     if 'prix_num' in df_eng.columns:
         if property_type == 'appartement':
-            # On resserre la fourchette de prix pour éliminer le bruit extrême
-            df_eng = df_eng[(df_eng['prix_num'] >= 250000) & (df_eng['prix_num'] <= 3000000)]
-            
-            if 'surface_num' in df_eng.columns:
-                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
-                # Filtrage plus strict sur le prix au m2 (le coeur du marché)
-                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 5000) & (df_eng['temp_prix_m2'] <= 22000)]
-                df_eng = df_eng.drop(columns=['temp_prix_m2'])
-                
-                # Filtrage des surfaces
-                df_eng = df_eng[(df_eng['surface_num'] >= 35) & (df_eng['surface_num'] <= 250)]
-        
-        elif property_type == 'villa':
-            # Filtrage pour les villas (marché plus large)
-            df_eng = df_eng[(df_eng['prix_num'] >= 800000) & (df_eng['prix_num'] <= 40000000)]
+            # On élargit légèrement pour inclure le haut de gamme qui aide le R2 si cohérent
+            df_eng = df_eng[(df_eng['prix_num'] >= 200000) & (df_eng['prix_num'] <= 5000000)]
             
             if 'surface_num' in df_eng.columns:
                 df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
                 # Filtrage sur le prix au m2
-                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 4000) & (df_eng['temp_prix_m2'] <= 50000)]
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 4500) & (df_eng['temp_prix_m2'] <= 28000)]
                 df_eng = df_eng.drop(columns=['temp_prix_m2'])
                 
-                # Filtrage des surfaces habitables (pas le terrain)
-                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 2500)]
+                # Filtrage des surfaces
+                df_eng = df_eng[(df_eng['surface_num'] >= 30) & (df_eng['surface_num'] <= 350)]
+        
+        elif property_type == 'villa':
+            # Filtrage pour les villas (marché plus large, on capture le luxe jusqu'à 50M)
+            df_eng = df_eng[(df_eng['prix_num'] >= 800000) & (df_eng['prix_num'] <= 50000000)]
             
-            # Suppression des anomalies via Isolation Forest
+            if 'surface_num' in df_eng.columns:
+                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
+                # Filtrage sur le prix au m2 pour les villas
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 3000) & (df_eng['temp_prix_m2'] <= 60000)]
+                df_eng = df_eng.drop(columns=['temp_prix_m2'])
+                
+                # Filtrage des surfaces habitables
+                df_eng = df_eng[(df_eng['surface_num'] >= 80) & (df_eng['surface_num'] <= 2500)]
+            
+            # Suppression des anomalies via Isolation Forest plus stricte
             iso_features = ['prix_num', 'surface_num', 'chambres_num', 'salles_bain_num']
             iso_features = [f for f in iso_features if f in df_eng.columns]
             if len(df_eng) > 100:
-                # Contamination plus faible pour garder les villas d'exception
-                iso = IsolationForest(contamination=0.015, random_state=42)
+                # Contamination légèrement plus forte pour enlever le bruit
+                iso = IsolationForest(contamination=0.03, random_state=42)
+                preds = iso.fit_predict(df_eng[iso_features])
+                df_eng = df_eng[preds == 1]
+            
+        elif property_type == 'terrain':
+            # Filtrage plus strict pour les terrains pour améliorer le R2
+            df_eng = df_eng[(df_eng['prix_num'] >= 300000) & (df_eng['prix_num'] <= 30000000)]
+            
+            if 'surface_num' in df_eng.columns:
+                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
+                # Filtrage sur le prix au m2 (évite les terrains agricoles vs urbains trop disparates)
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 100) & (df_eng['temp_prix_m2'] <= 15000)]
+                df_eng = df_eng.drop(columns=['temp_prix_m2'])
+                
+                # Filtrage des surfaces (de 100m2 à 100,000m2)
+                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 100000)]
+            
+            # Isolation Forest pour les terrains
+            iso_features = ['prix_num', 'surface_num']
+            iso_features = [f for f in iso_features if f in df_eng.columns]
+            if len(df_eng) > 100:
+                iso = IsolationForest(contamination=0.05, random_state=42)
                 preds = iso.fit_predict(df_eng[iso_features])
                 df_eng = df_eng[preds == 1]
             
@@ -170,8 +208,7 @@ def model_pipeline(num_columns, cat_columns, model):
     Utilise TargetEncoder pour les variables catégorielles (plus efficace pour le prix).
     """
     numeric_transform = Pipeline(steps=[
-        ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", RobustScaler())
+        ("imputer", SimpleImputer(strategy="median"))
     ])
     categoric_transform = Pipeline(steps=[
         ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
@@ -188,7 +225,6 @@ def model_pipeline(num_columns, cat_columns, model):
     return Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            ("feature_selection", SelectKBest(score_func=f_regression, k='all')),
             ("model", model)
         ]
     )
