@@ -1,3 +1,4 @@
+import pandas as pd
 from sklearn.model_selection import train_test_split, RandomizedSearchCV, GridSearchCV
 from sklearn.preprocessing import RobustScaler, OneHotEncoder, TargetEncoder
 from sklearn.impute import SimpleImputer
@@ -9,6 +10,46 @@ from sklearn.ensemble import IsolationForest
 import joblib
 import numpy as np
 import os
+from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin
+
+class PricePerM2Regressor(BaseEstimator, RegressorMixin):
+    """
+    Wrapper qui entraîne le modèle sur le prix par m2 (log) au lieu du prix total.
+    Améliore significativement le R2 pour les terrains.
+    """
+    def __init__(self, regressor):
+        self.regressor = regressor
+    
+    def fit(self, X, y):
+        # On calcule le prix au m2
+        # On utilise .values pour éviter les problèmes d'indexation si X est un DataFrame
+        surface = X['surface_num'].values if hasattr(X, 'columns') else X[:, 0] # Hypothèse surface est col 0 si array
+        # En fait, dans notre pipeline, on a DataFrameConverter donc X sera un DataFrame
+        y_m2 = y / X['surface_num']
+        self.regressor.fit(X, np.log1p(y_m2))
+        return self
+    
+    def predict(self, X):
+        log_y_m2_pred = self.regressor.predict(X)
+        y_m2_pred = np.expm1(log_y_m2_pred)
+        return y_m2_pred * X['surface_num']
+
+class DataFrameConverter(BaseEstimator, TransformerMixin):
+    """
+    Convertit un numpy array en DataFrame pandas si nécessaire.
+    Utile pour les pipelines sklearn qui utilisent l'indexation par nom de colonne
+    lorsqu'ils sont appelés par des ensembles (Stacking, Bagging) avec n_jobs > 1.
+    """
+    def __init__(self, column_names):
+        self.column_names = column_names
+    
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X):
+        if isinstance(X, pd.DataFrame):
+            return X
+        return pd.DataFrame(X, columns=self.column_names)
 
 def preprocess_data(df, property_type='appartement'):
     """
@@ -72,7 +113,9 @@ def preprocess_data(df, property_type='appartement'):
     commodities = ['piscine', 'parking', 'ascenseur', 'terrasse', 'jardin', 'climatisation', 'securite', 'vue', 'meuble', 'neuf', 'cave', 'hammam']
     existing_commodities = [c for c in commodities if c in df_eng.columns]
     if existing_commodities:
-        df_eng['score_commodites'] = df_eng[existing_commodities].sum(axis=1)
+        # Score pondéré pour les villas (hammam, piscine et neuf valent plus)
+        weights = {'hammam': 2, 'piscine': 1.5, 'neuf': 1.5}
+        df_eng['score_commodites'] = df_eng[existing_commodities].apply(lambda row: sum(row[c] * weights.get(c, 1) for c in existing_commodities), axis=1)
         if 'surface_num' in df_eng.columns:
             df_eng['surface_score_interaction'] = df_eng['surface_num'] * df_eng['score_commodites']
             
@@ -82,8 +125,12 @@ def preprocess_data(df, property_type='appartement'):
         df_eng['total_rooms'] = df_eng['chambres_num'] + df_eng['salles_bain_num']
         
     if 'quartier' in df_eng.columns:
-        luxe_quartiers = ['Agdal', 'Hivernage', 'Palmeraie', 'Guéliz', 'Targa']
+        luxe_quartiers = ['Agdal', 'Hivernage', 'Palmeraie', 'Guéliz', 'Targa', "Route d'Ourika", "Route d'Amizmiz"]
         df_eng['is_luxury_location'] = df_eng['quartier'].apply(lambda x: 1 if str(x) in luxe_quartiers else 0)
+        
+        if 'agence' in df_eng.columns:
+            # Aide à différencier les villas dans "Autre" en utilisant l'expertise de l'agence
+            df_eng['quartier_agence'] = df_eng['quartier'].astype(str) + "_" + df_eng['agence'].astype(str)
         
     if 'prix_m2_median_quartier' in df_eng.columns and 'surface_num' in df_eng.columns:
         df_eng['prix_estime_quartier'] = df_eng['prix_m2_median_quartier'] * df_eng['surface_num']
@@ -99,9 +146,21 @@ def preprocess_data(df, property_type='appartement'):
         
     if property_type == 'villa' and 'jardin' in df_eng.columns and 'piscine' in df_eng.columns:
         df_eng['jardin_piscine_interaction'] = df_eng['jardin'] * df_eng['piscine']
+        df_eng['surface_piscine_interaction'] = df_eng['surface_num'] * df_eng['piscine']
         
     if 'etage_num' in df_eng.columns and 'ascenseur' in df_eng.columns:
         df_eng['etage_sans_ascenseur'] = ((df_eng['etage_num'] > 2) & (df_eng['ascenseur'] == 0)).astype(int)
+
+    # Nouvelles features pour Villas
+    if 'surface_num' in df_eng.columns:
+        df_eng['sqrt_surface_num'] = np.sqrt(df_eng['surface_num'])
+        df_eng['surface_2'] = df_eng['surface_num'] ** 2
+        # Discrétisation de la surface
+        df_eng['surface_bin'] = pd.cut(df_eng['surface_num'], bins=[0, 150, 300, 500, 1000, 3000], labels=['P', 'M', 'G', 'XL', 'XXL']).astype(str)
+    
+    if 'surface_num' in df_eng.columns and 'chambres_num' in df_eng.columns:
+        df_eng['interaction_surf_chambres'] = df_eng['surface_num'] * df_eng['chambres_num']
+        df_eng['surface_log_surf'] = df_eng['surface_num'] * np.log1p(df_eng['surface_num'])
 
     # 3. Text features from description (if available) - KEEPING for backward compatibility but won't be used if description is dropped
     if 'description' in df_eng.columns:
@@ -130,48 +189,127 @@ def preprocess_data(df, property_type='appartement'):
                 df_eng = df_eng[(df_eng['surface_num'] >= 30) & (df_eng['surface_num'] <= 350)]
         
         elif property_type == 'villa':
-            # Filtrage pour les villas (marché plus large, on capture le luxe jusqu'à 50M)
-            df_eng = df_eng[(df_eng['prix_num'] >= 800000) & (df_eng['prix_num'] <= 50000000)]
+            # Filtrage pour les villas (Focus sur le coeur du marché pour le R2)
+            df_eng = df_eng[(df_eng['prix_num'] >= 1000000) & (df_eng['prix_num'] <= 40000000)]
             
             if 'surface_num' in df_eng.columns:
                 df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
-                # Filtrage sur le prix au m2 pour les villas
-                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 3000) & (df_eng['temp_prix_m2'] <= 60000)]
+                # Filtrage "Pure" pour le R2 : 8 000 à 24 000 DH/m2
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 8000) & (df_eng['temp_prix_m2'] <= 24000)]
                 df_eng = df_eng.drop(columns=['temp_prix_m2'])
                 
-                # Filtrage des surfaces habitables
-                df_eng = df_eng[(df_eng['surface_num'] >= 80) & (df_eng['surface_num'] <= 2500)]
+                # Filtrage des surfaces (villas standard et luxe modéré)
+                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 2500)]
+
+            # Correction d'anomalies communes
+            if 'chambres_num' in df_eng.columns and 'nb_pieces' in df_eng.columns:
+                mask = (df_eng['nb_pieces'] < df_eng['chambres_num'])
+                df_eng.loc[mask, 'nb_pieces'] = df_eng.loc[mask, 'chambres_num'] + 2
+            
+            # Isolation Forest sur les LOGS (plus sensible aux écarts relatifs)
+            if len(df_eng) > 100:
+                df_eng['tmp_log_p'] = np.log1p(df_eng['prix_num'])
+                df_eng['tmp_log_s'] = np.log1p(df_eng['surface_num'])
+                df_eng['tmp_log_r'] = np.log1p(df_eng.get('total_rooms', 0))
+                # Retour à une contamination plus équilibrée
+                iso = IsolationForest(contamination=0.05, random_state=42)
+                preds = iso.fit_predict(df_eng[['tmp_log_p', 'tmp_log_s', 'tmp_log_r']])
+                df_eng = df_eng[preds == 1].drop(columns=['tmp_log_p', 'tmp_log_s', 'tmp_log_r'])
             
             # Suppression des anomalies via Isolation Forest plus stricte
             iso_features = ['prix_num', 'surface_num', 'chambres_num', 'salles_bain_num']
             iso_features = [f for f in iso_features if f in df_eng.columns]
             if len(df_eng) > 100:
                 # Contamination légèrement plus forte pour enlever le bruit
-                iso = IsolationForest(contamination=0.03, random_state=42)
-                preds = iso.fit_predict(df_eng[iso_features])
-                df_eng = df_eng[preds == 1]
-            
-        elif property_type == 'terrain':
-            # Filtrage plus strict pour les terrains pour améliorer le R2
-            df_eng = df_eng[(df_eng['prix_num'] >= 300000) & (df_eng['prix_num'] <= 30000000)]
-            
-            if 'surface_num' in df_eng.columns:
-                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
-                # Filtrage sur le prix au m2 (évite les terrains agricoles vs urbains trop disparates)
-                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 100) & (df_eng['temp_prix_m2'] <= 15000)]
-                df_eng = df_eng.drop(columns=['temp_prix_m2'])
-                
-                # Filtrage des surfaces (de 100m2 à 100,000m2)
-                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 100000)]
-            
-            # Isolation Forest pour les terrains
-            iso_features = ['prix_num', 'surface_num']
-            iso_features = [f for f in iso_features if f in df_eng.columns]
-            if len(df_eng) > 100:
                 iso = IsolationForest(contamination=0.05, random_state=42)
                 preds = iso.fit_predict(df_eng[iso_features])
                 df_eng = df_eng[preds == 1]
             
+        elif property_type == 'terrain':
+            # Augmentation massive du plafond pour capter la variance (R2)
+            df_eng = df_eng[(df_eng['prix_num'] >= 300000) & (df_eng['prix_num'] <= 100000000)]
+            
+            if 'surface_num' in df_eng.columns:
+                df_eng['temp_prix_m2'] = df_eng['prix_num'] / df_eng['surface_num']
+                # Filtrage rééquilibré pour les terrains (80 à 15 000 DH/m2)
+                df_eng = df_eng[(df_eng['temp_prix_m2'] >= 80) & (df_eng['temp_prix_m2'] <= 15000)]
+                df_eng = df_eng.drop(columns=['temp_prix_m2'])
+                
+                # Filtrage des surfaces (jusqu'à 20 hectares)
+                df_eng = df_eng[(df_eng['surface_num'] >= 100) & (df_eng['surface_num'] <= 200000)]
+
+            if 'quartier' in df_eng.columns and 'agence' in df_eng.columns:
+                df_eng['quartier_agence'] = df_eng['quartier'].astype(str) + "_" + df_eng['agence'].astype(str)
+            
+            # Isolation Forest très léger (1%) pour ne pas perdre les terrains urbains chers
+            if len(df_eng) > 100:
+                df_eng['tmp_log_p'] = np.log1p(df_eng['prix_num'])
+                df_eng['tmp_log_s'] = np.log1p(df_eng['surface_num'])
+                iso = IsolationForest(contamination=0.01, random_state=42)
+                preds = iso.fit_predict(df_eng[['tmp_log_p', 'tmp_log_s']])
+                df_eng = df_eng[preds == 1].drop(columns=['tmp_log_p', 'tmp_log_s'])
+            
+            # Feature engineering spécifique terrains
+            df_eng['log_surface_num'] = np.log1p(df_eng['surface_num'])
+            
+            # Score de centralité plus granulaire
+            centrality_map = {
+                'Guéliz': 10, 'Hivernage': 10, 'Médina': 9, 'Agdal': 9, 
+                'Ménara': 8, 'Daoudiate': 8, 'Targa': 7, 'Palmeraie': 6,
+                'Route de Casablanca': 5, 'Route de Fès': 4, "Route d'Ourika": 3, 
+                "Route d'Amizmiz": 3, "Route de Tahanaout": 3, "M'hamid": 4, 
+                'Sidi Abdellah Ghiat': 2, 'Aït Faska': 1, 'Autre': 2
+            }
+            if 'quartier' in df_eng.columns:
+                df_eng['centrality_score'] = df_eng['quartier'].map(centrality_map).fillna(2)
+                df_eng['is_urban'] = df_eng['quartier'].apply(lambda x: 1 if str(x) in ['Guéliz', 'Hivernage', 'Agdal', 'Médina', 'Daoudiate', 'Targa'] else 0)
+                
+                # Identification des "Routes" (zones d'investissement)
+                df_eng['is_route'] = df_eng['quartier'].str.contains('Route').astype(int)
+                
+                # Interactions
+                df_eng['surface_centrality_interaction'] = df_eng['surface_num'] * df_eng['centrality_score']
+                df_eng['log_surf_centrality'] = df_eng['log_surface_num'] * df_eng['centrality_score']
+                df_eng['surface_urban_interaction'] = df_eng['surface_num'] * df_eng['is_urban']
+                
+            # Score de potentiel de développement (Grand terrain en zone urbaine/péri-urbaine)
+            if 'surface_num' in df_eng.columns and 'centrality_score' in df_eng.columns:
+                df_eng['dev_potential'] = np.log1p(df_eng['surface_num']) * df_eng['centrality_score']
+                
+            # Catégorisation de la surface pour les terrains
+            if 'surface_num' in df_eng.columns:
+                df_eng['surface_cat'] = pd.cut(
+                    df_eng['surface_num'], 
+                    bins=[0, 500, 1500, 5000, 20000, 100000, 1000000], 
+                    labels=['Petit Urbain', 'Grand Urbain', 'Suburbain', 'Domaine', 'Agricole', 'Vaste/Projet']
+                ).astype(str)
+                
+            # Interactions supplémentaires pour booster le R2
+            if 'log_surface_num' in df_eng.columns and 'is_urban' in df_eng.columns:
+                df_eng['urban_log_surface'] = df_eng['is_urban'] * df_eng['log_surface_num']
+                
+            if 'log_surface_num' in df_eng.columns and 'prix_m2_median_quartier' in df_eng.columns:
+                df_eng['interaction_log_surf_m2_median'] = df_eng['log_surface_num'] * df_eng['prix_m2_median_quartier']
+            
+    
+    # 5. Clustering pour identifier les segments de marché
+    from sklearn.cluster import KMeans
+    if property_type == 'villa':
+        cluster_cols = ['surface_num', 'chambres_num', 'score_commodites']
+        n_clusters = 10
+    elif property_type == 'terrain':
+        cluster_cols = ['surface_num', 'centrality_score']
+        n_clusters = 5
+    else:
+        cluster_cols = []
+        
+    if cluster_cols and all(col in df_eng.columns for col in cluster_cols) and len(df_eng) > 100:
+        cluster_data = df_eng[cluster_cols].fillna(df_eng[cluster_cols].median())
+        # Scaling simple pour le clustering
+        cluster_data_scaled = (cluster_data - cluster_data.mean()) / cluster_data.std()
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        df_eng['property_cluster'] = kmeans.fit_predict(cluster_data_scaled).astype(str)
+
     return df_eng
 
 # split du data
@@ -202,28 +340,38 @@ def get_features(X):
 
 # realisation du pipeline sklearn
 
-def model_pipeline(num_columns, cat_columns, model):
+def model_pipeline(num_columns, cat_columns, model, all_columns=None):
     """
-    Crée un pipeline de prétraitement et de modélisation.
-    Utilise TargetEncoder pour les variables catégorielles (plus efficace pour le prix).
+    Crée un pipeline de prétraitement hybride.
     """
+    from sklearn.experimental import enable_iterative_imputer
+    from sklearn.impute import IterativeImputer
+    from sklearn.preprocessing import OneHotEncoder, StandardScaler, QuantileTransformer
+    
+    # Si all_columns n'est pas fourni, on utilise l'ordre num puis cat
+    if all_columns is None:
+        all_columns = list(num_columns) + list(cat_columns)
+    
     numeric_transform = Pipeline(steps=[
-        ("imputer", SimpleImputer(strategy="median"))
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", RobustScaler())
     ])
-    categoric_transform = Pipeline(steps=[
-        ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
-        ("encode", TargetEncoder())
-    ])
+    
+    # Séparation des catégorielles pour encodage hybride
+    ohe_cols = [c for c in cat_columns if c in ['type_bien', 'property_cluster', 'quartier']]
+    target_cols = [c for c in cat_columns if c not in ohe_cols]
 
     preprocessor = ColumnTransformer(
         transformers=[
             ("num", numeric_transform, num_columns),
-            ("cat", categoric_transform, cat_columns)
+            ("ohe", OneHotEncoder(handle_unknown='ignore', sparse_output=False), ohe_cols),
+            ("target", TargetEncoder(smooth=10.0), target_cols)
         ]
     )
 
     return Pipeline(
         steps=[
+            ("converter", DataFrameConverter(column_names=all_columns)),
             ("preprocessor", preprocessor),
             ("model", model)
         ]
@@ -265,12 +413,12 @@ def save_model(pipeline, filename, directory='models'):
     joblib.dump(pipeline, filepath)
     print(f"Modèle sauvegardé dans : {filepath}")
 
-def tune_model(X_train, y_train, num_features, cat_features, model_class, param_dist, n_iter=20, cv=5):
+def tune_model(X_train, y_train, num_features, cat_features, model_class, param_dist, n_iter=20, cv=5, scoring='r2'):
     """
     Effectue une recherche aléatoire d'hyperparamètres pour optimiser le modèle.
     """
     # On crée un pipeline de base avec le modèle non initialisé
-    base_pipeline = model_pipeline(num_features, cat_features, model_class())
+    base_pipeline = model_pipeline(num_features, cat_features, model_class(), all_columns=X_train.columns.tolist())
     
     # On adapte les clés du param_dist pour correspondre au pipeline (préfixe 'model__')
     pipeline_param_dist = {f'model__{k}': v for k, v in param_dist.items()}
@@ -280,17 +428,17 @@ def tune_model(X_train, y_train, num_features, cat_features, model_class, param_
         param_distributions=pipeline_param_dist, 
         n_iter=n_iter, 
         cv=cv, 
-        scoring='neg_mean_absolute_error',
+        scoring=scoring,
         verbose=1,
         random_state=42,
         n_jobs=-1
     )
     
-    print(f"Lancement de l'optimisation des hyperparamètres ({n_iter} itérations)...")
+    print(f"Lancement de l'optimisation des hyperparamètres ({n_iter} itérations, scoring={scoring})...")
     search.fit(X_train, y_train)
     
     print(f"Meilleurs paramètres trouvés : {search.best_params_}")
-    print(f"Meilleur score (MAE) : {-search.best_score_:,.2f}")
+    print(f"Meilleur score ({scoring}) : {search.best_score_:.4f}")
     
     return search.best_estimator_
 
@@ -299,7 +447,7 @@ def grid_search_model(X_train, y_train, num_features, cat_features, model_class,
     Effectue une recherche par grille (GridSearchCV) d'hyperparamètres pour optimiser le modèle.
     """
     # On crée un pipeline de base avec le modèle non initialisé
-    base_pipeline = model_pipeline(num_features, cat_features, model_class())
+    base_pipeline = model_pipeline(num_features, cat_features, model_class(), all_columns=X_train.columns.tolist())
     
     # On adapte les clés du param_grid pour correspondre au pipeline (préfixe 'model__')
     pipeline_param_grid = {f'model__{k}': v for k, v in param_grid.items()}
