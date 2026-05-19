@@ -1,0 +1,51 @@
+{
+  "date": "2026-05-18",
+  "modele": "XGBRegressor",
+  "n_lignes_train": 4142,
+  "n_lignes_test": 1036,
+  "n_features": 25,
+  "features": [
+    "surface_num",
+    "chambres_num",
+    "salles_bain_num",
+    "etage",
+    "etage_known",
+    "surface_par_chambre",
+    "score_standing",
+    "surface_x_quartier",
+    "prix_m2_moy_quartier",
+    "surface_relative",
+    "nb_equipements",
+    "piscine",
+    "parking",
+    "ascenseur",
+    "terrasse",
+    "jardin",
+    "climatisation",
+    "securite",
+    "vue",
+    "meuble",
+    "neuf",
+    "cave",
+    "hammam",
+    "quartier_clean",
+    "localisation_fine"
+  ],
+  "metriques_test": {
+    "R2": 0.7228,
+    "MAE": 253397.0,
+    "RMSE": 402785.0,
+    "MAPE": 19.35
+  },
+  "hyperparametres": {
+    "n_estimators": 938,
+    "learning_rate": 0.04786443142949678,
+    "max_depth": 6,
+    "subsample": 0.8909903874773909,
+    "colsample_bytree": 0.8839826559890444,
+    "min_child_weight": 3,
+    "reg_alpha": 0.030867789701680037,
+    "reg_lambda": 4.593187959680031,
+    "gamma": 0.07300130946362801
+  }
+}
