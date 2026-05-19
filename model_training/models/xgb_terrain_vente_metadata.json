@@ -4,7 +4,7 @@
   "type_bien": "terrain_vente",
   "n_lignes_train": 974,
   "n_lignes_test": 244,
-  "n_features": 42,
+  "n_features": 44,
   "features": [
     "surface_num",
     "log_surface",
@@ -21,6 +21,8 @@
     "log_prix_estime",
     "nb_listings_quartier",
     "km_distance",
+    "ratio_pm2_city",
+    "km_x_log_surface",
     "score_terrain",
     "score_standing",
     "nb_equipements",
@@ -50,25 +52,25 @@
     "source_clean"
   ],
   "metriques_test": {
-    "R2": 0.3823,
-    "MAE": 1663737.0,
-    "RMSE": 3598519.0,
-    "MAPE": 67.15,
-    "CV_R2_mean": 0.4982,
-    "CV_R2_std": 0.0466
+    "R2": 0.3865,
+    "MAE": 1640212.0,
+    "RMSE": 3586095.0,
+    "MAPE": 66.07,
+    "CV_R2_mean": 0.4936,
+    "CV_R2_std": 0.0411
   },
   "best_params": {
-    "n_estimators": 2375,
-    "learning_rate": 0.005067135799696334,
-    "max_depth": 3,
-    "max_leaves": 36,
-    "subsample": 0.671367903363463,
-    "colsample_bytree": 0.5522921307381061,
-    "colsample_bylevel": 0.562977194482294,
-    "min_child_weight": 5,
-    "reg_alpha": 0.0102514824358619,
-    "reg_lambda": 0.20002398240789143,
-    "gamma": 0.11955402354812622
+    "n_estimators": 2182,
+    "learning_rate": 0.027595447930763673,
+    "max_depth": 6,
+    "max_leaves": 43,
+    "subsample": 0.8039610168351743,
+    "colsample_bytree": 0.5928126427210324,
+    "colsample_bylevel": 0.5300455566310018,
+    "min_child_weight": 6,
+    "reg_alpha": 0.17035135235374574,
+    "reg_lambda": 1.5956247443531595,
+    "gamma": 1.011871419429241
   },
   "quartiers_connus": [
     "Autre",
