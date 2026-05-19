@@ -25,10 +25,13 @@ from xgboost import XGBRegressor
 NUMERIC_FEATURES = [
     "surface_num",            # Surface brute du terrain (m²)
     "log_surface",            # Log(surface) — distribution très étalée pour terrains
+    "log_surface_sq",         # Log(surface)² — terme quadratique pour non-linéarité
     "palier_surface",         # Catégorie de taille (0–5)
     "surface_relative",       # Surface vs moyenne du quartier
     "surface_x_quartier",     # Interaction surface × prix médian quartier
+    "surface_log_x_pm2",      # Interaction log_surface × prix/m² quartier
     "prix_m2_moy_quartier",   # Prix/m² moyen dans le quartier
+    "prix_m2_std_quartier",   # Écart-type prix/m² dans le quartier (variance territoriale)
     "prix_median_quartier",   # Prix médian du quartier
     "score_terrain",          # Score équipements spécifiques terrain
     "score_standing",         # Score équipements standing général
@@ -99,9 +102,9 @@ def load_data(path: str):
     df = df[(df["_pm2"] >= PRIX_M2_MIN) & (df["_pm2"] <= PRIX_M2_MAX)].copy()
     df.drop(columns=["_pm2"], inplace=True)
 
-    # ── Outliers prix (log-échelle, percentile 1-99) ─────────────────────
+    # ── Outliers prix (log-échelle, percentile 2-98) — filtrage renforcé
     log_p = np.log(df["prix_num"])
-    df = df[(log_p >= log_p.quantile(0.01)) & (log_p <= log_p.quantile(0.99))].copy()
+    df = df[(log_p >= log_p.quantile(0.02)) & (log_p <= log_p.quantile(0.98))].copy()
 
     # ── Colonnes non pertinentes pour terrain ────────────────────────────
     df["etage"]          = 0
@@ -112,7 +115,7 @@ def load_data(path: str):
     # ── Reconstruction quartier_clean ────────────────────────────────────
     if "quartier_clean" not in df.columns:
         if "quartier" in df.columns:
-            top_q = df["quartier"].value_counts().index[:10]
+            top_q = df["quartier"].value_counts().index[:15]
             df["quartier_clean"] = df["quartier"].apply(
                 lambda x: x if x in top_q else "Autre"
             )
@@ -127,10 +130,20 @@ def load_data(path: str):
     df = df.join(q_pm2, on="quartier_clean")
     df.rename(columns={"_pm2q": "prix_m2_moy_quartier"}, inplace=True)
 
+    # Écart-type prix/m² par quartier (signal de variance territoriale)
+    q_pm2_std = df.groupby("quartier_clean").apply(
+        lambda g: (g["prix_num"] / g["surface_num"]).std()
+    ).rename("_pm2std")
+    df = df.join(q_pm2_std, on="quartier_clean")
+    df.rename(columns={"_pm2std": "prix_m2_std_quartier"}, inplace=True)
+    df["prix_m2_std_quartier"].fillna(0, inplace=True)
+
     df["prix_median_quartier"] = q_median
     df["surface_x_quartier"]   = df["surface_num"] * q_median / 1e6
     df["surface_relative"]     = df["surface_num"] / df.groupby("quartier_clean")["surface_num"].transform("mean")
     df["log_surface"]          = np.log1p(df["surface_num"])
+    df["log_surface_sq"]       = df["log_surface"] ** 2   # terme quadratique
+    df["surface_log_x_pm2"]    = df["log_surface"] * df["prix_m2_moy_quartier"] / 1e3  # interaction
     df["palier_surface"]       = pd.cut(
         df["surface_num"],
         bins=[0, 200, 500, 1000, 5000, 20000, np.inf],
@@ -195,15 +208,17 @@ def build_pipeline(X_train, xgb_params: dict = None):
 
     # Paramètres par défaut optimisés pour terrains (log-prix, forte variance)
     default_xgb = dict(
-        n_estimators      = 1200,
-        learning_rate     = 0.015,
+        n_estimators      = 1500,
+        learning_rate     = 0.01,
         max_depth         = 6,
+        max_leaves        = 31,
         subsample         = 0.75,
         colsample_bytree  = 0.80,
-        min_child_weight  = 5,
-        reg_alpha         = 0.01,
-        reg_lambda        = 0.05,
-        gamma             = 0.10,
+        min_child_weight  = 3,
+        reg_alpha         = 0.05,
+        reg_lambda        = 0.1,
+        gamma             = 0.05,
+        tree_method       = "hist",
         random_state      = 42,
         n_jobs            = -1,
         early_stopping_rounds = None,
@@ -384,6 +399,17 @@ def predict_price(pipeline, terrain: dict) -> float:
     # Calcul automatique des features dérivées si absentes
     if "log_surface" not in t:
         t["log_surface"] = np.log1p(t["surface_num"])
+
+    if "log_surface_sq" not in t:
+        t["log_surface_sq"] = t["log_surface"] ** 2
+
+    if "surface_log_x_pm2" not in t:
+        t["surface_log_x_pm2"] = (
+            t["log_surface"] * t.get("prix_m2_moy_quartier", 0) / 1e3
+        )
+
+    if "prix_m2_std_quartier" not in t:
+        t["prix_m2_std_quartier"] = 0.0  # neutre si quartier inconnu
 
     if "palier_surface" not in t:
         s = t["surface_num"]
