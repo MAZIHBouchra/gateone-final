@@ -2,16 +2,19 @@
   "date": "2026-05-19",
   "modele": "XGBRegressor",
   "type_bien": "terrain_vente",
-  "n_lignes_train": 997,
-  "n_lignes_test": 250,
-  "n_features": 28,
+  "n_lignes_train": 974,
+  "n_lignes_test": 244,
+  "n_features": 31,
   "features": [
     "surface_num",
     "log_surface",
+    "log_surface_sq",
     "palier_surface",
     "surface_relative",
     "surface_x_quartier",
+    "surface_log_x_pm2",
     "prix_m2_moy_quartier",
+    "prix_m2_std_quartier",
     "prix_median_quartier",
     "score_terrain",
     "score_standing",
@@ -36,26 +39,29 @@
     "quartier_clean"
   ],
   "metriques_test": {
-    "R2": 0.222,
-    "MAE": 2847467.0,
-    "RMSE": 6724487.0,
-    "MAPE": 91.92,
-    "CV_R2_mean": 0.4783,
-    "CV_R2_std": 0.0525
+    "R2": 0.3615,
+    "MAE": 1731528.0,
+    "RMSE": 3658373.0,
+    "MAPE": 73.0,
+    "CV_R2_mean": 0.4704,
+    "CV_R2_std": 0.0395
   },
   "best_params": {
-    "n_estimators": 1067,
-    "learning_rate": 0.006283130387556863,
-    "max_depth": 7,
-    "subsample": 0.7322030716208178,
-    "colsample_bytree": 0.7853851519280007,
-    "min_child_weight": 3,
-    "reg_alpha": 0.011166599575914544,
-    "reg_lambda": 0.03828308283030621,
-    "gamma": 1.1953995578046421
+    "n_estimators": 1593,
+    "learning_rate": 0.005237141585570181,
+    "max_depth": 4,
+    "max_leaves": 26,
+    "subsample": 0.727716961869072,
+    "colsample_bytree": 0.7917460549376074,
+    "colsample_bylevel": 0.6399649242111781,
+    "min_child_weight": 2,
+    "reg_alpha": 0.006164780639493819,
+    "reg_lambda": 0.32997642296743723,
+    "gamma": 1.4380372718091226
   },
   "quartiers_connus": [
     "Autre",
+    "Route d'Amizmiz",
     "Palmeraie",
     "Route de Fès",
     "Route d'Ourika",
@@ -64,7 +70,8 @@
     "Médina",
     "Targa",
     "Guéliz",
-    "Hivernage"
+    "Hivernage",
+    "Daoudiate"
   ],
   "filtres_cleaning": {
     "surface_min_m2": 50,
