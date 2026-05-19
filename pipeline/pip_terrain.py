@@ -37,6 +37,7 @@ NUMERIC_FEATURES = [
     "prix_estime",            # surface × prix_m2_moy (estimation directe du prix)
     "log_prix_estime",        # log de l'estimation directe → très proche de la cible
     "nb_listings_quartier",   # Liquidité / confiance du quartier
+    "km_distance",            # Distance en km depuis titre/localisation (0 si inconnu)
     "score_terrain",          # Score équipements spécifiques terrain
     "score_standing",         # Score équipements standing général
     "nb_equipements",         # Nb total équipements
@@ -52,6 +53,10 @@ BINARY_FEATURES = [
     "piscine", "parking", "jardin", "securite", "vue",
     "terrasse", "neuf", "meuble", "climatisation", "hammam", "cave", "ascenseur",
     "is_particulier",   # Particulier vs professionnel
+    "is_industriel",    # Terrain industriel (+0.82 log_prix)
+    "is_lotissement",   # Terrain lotissement (-0.31 log_prix)
+    "is_agricole",      # Terrain agricole (+0.22 log_prix)
+    "is_zone_villa",    # Zone villa (+0.18 log_prix)
 ]
 
 CATEGORICAL_FEATURES = [
@@ -141,7 +146,29 @@ def load_data(path: str):
         else:
             raise ValueError("Aucune colonne quartier trouvée dans le CSV.")
 
-    # ── Feature Engineering ──────────────────────────────────────────────
+    # ── Keywords NLP — type de terrain (titre + description) ──────────────────
+    import re
+    def kw_flag(col, pattern):
+        if col not in df.columns:
+            return 0
+        return df[col].str.lower().str.contains(pattern, na=False, regex=False).astype(int)
+
+    df["is_industriel"] = kw_flag("titre", "industriel") | kw_flag("description", "industriel")
+    df["is_lotissement"] = kw_flag("titre", "lotissement") | kw_flag("description", "lotissement")
+    df["is_agricole"]   = kw_flag("titre", "agricole")   | kw_flag("description", "agricole")
+    df["is_zone_villa"] = kw_flag("titre", "zone villa")  | kw_flag("description", "zone villa")
+
+    def extract_km(text):
+        if pd.isna(text): return 0
+        m = re.search(r"km\s*(\d+)", str(text).lower())
+        return int(m.group(1)) if m else 0
+
+    df["km_distance"] = df["titre"].apply(extract_km)
+    mask_no_km = df["km_distance"] == 0
+    if "localisation" in df.columns:
+        df.loc[mask_no_km, "km_distance"] = df.loc[mask_no_km, "localisation"].apply(extract_km)
+
+    # ── Feature Engineering numérique ────────────────────────────────
     q_median = df.groupby("quartier_clean")["prix_num"].transform("median")
     q_pm2    = df.groupby("quartier_clean").apply(
         lambda g: (g["prix_num"] / g["surface_num"]).mean()
