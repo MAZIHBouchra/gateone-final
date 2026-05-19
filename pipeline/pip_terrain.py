@@ -28,11 +28,15 @@ NUMERIC_FEATURES = [
     "log_surface_sq",         # Log(surface)² — terme quadratique pour non-linéarité
     "palier_surface",         # Catégorie de taille (0–5)
     "surface_relative",       # Surface vs moyenne du quartier
+    "residuel_surface",       # Déviation absolue vs médiane quartier
     "surface_x_quartier",     # Interaction surface × prix médian quartier
     "surface_log_x_pm2",      # Interaction log_surface × prix/m² quartier
     "prix_m2_moy_quartier",   # Prix/m² moyen dans le quartier
     "prix_m2_std_quartier",   # Écart-type prix/m² dans le quartier (variance territoriale)
     "prix_median_quartier",   # Prix médian du quartier
+    "prix_estime",            # surface × prix_m2_moy (estimation directe du prix)
+    "log_prix_estime",        # log de l'estimation directe → très proche de la cible
+    "nb_listings_quartier",   # Liquidité / confiance du quartier
     "score_terrain",          # Score équipements spécifiques terrain
     "score_standing",         # Score équipements standing général
     "nb_equipements",         # Nb total équipements
@@ -141,9 +145,13 @@ def load_data(path: str):
     df["prix_median_quartier"] = q_median
     df["surface_x_quartier"]   = df["surface_num"] * q_median / 1e6
     df["surface_relative"]     = df["surface_num"] / df.groupby("quartier_clean")["surface_num"].transform("mean")
+    df["residuel_surface"]     = df["surface_num"] - df.groupby("quartier_clean")["surface_num"].transform("median")
     df["log_surface"]          = np.log1p(df["surface_num"])
     df["log_surface_sq"]       = df["log_surface"] ** 2   # terme quadratique
     df["surface_log_x_pm2"]    = df["log_surface"] * df["prix_m2_moy_quartier"] / 1e3  # interaction
+    df["prix_estime"]          = df["surface_num"] * df["prix_m2_moy_quartier"]
+    df["log_prix_estime"]      = np.log1p(df["prix_estime"])  # ≈ cible, signal très fort
+    df["nb_listings_quartier"] = df.groupby("quartier_clean")["prix_num"].transform("count")
     df["palier_surface"]       = pd.cut(
         df["surface_num"],
         bins=[0, 200, 500, 1000, 5000, 20000, np.inf],
@@ -410,6 +418,18 @@ def predict_price(pipeline, terrain: dict) -> float:
 
     if "prix_m2_std_quartier" not in t:
         t["prix_m2_std_quartier"] = 0.0  # neutre si quartier inconnu
+
+    if "prix_estime" not in t:
+        t["prix_estime"] = t["surface_num"] * t.get("prix_m2_moy_quartier", 0)
+
+    if "log_prix_estime" not in t:
+        t["log_prix_estime"] = np.log1p(t.get("prix_estime", 0))
+
+    if "nb_listings_quartier" not in t:
+        t["nb_listings_quartier"] = 10  # valeur neutre si quartier inconnu
+
+    if "residuel_surface" not in t:
+        t["residuel_surface"] = 0.0  # neutre si info quartier indisponible
 
     if "palier_surface" not in t:
         s = t["surface_num"]
