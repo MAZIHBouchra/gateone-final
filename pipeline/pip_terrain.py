@@ -38,6 +38,8 @@ NUMERIC_FEATURES = [
     "log_prix_estime",        # log de l'estimation directe → très proche de la cible
     "nb_listings_quartier",   # Liquidité / confiance du quartier
     "km_distance",            # Distance en km depuis titre/localisation (0 si inconnu)
+    "ratio_pm2_city",         # Prix/m² quartier / moyenne ville (position relative dans le marché)
+    "km_x_log_surface",       # Interaction distance × log_surface (crucial pour les Routes)
     "score_terrain",          # Score équipements spécifiques terrain
     "score_standing",         # Score équipements standing général
     "nb_equipements",         # Nb total équipements
@@ -194,6 +196,11 @@ def load_data(path: str):
     df["prix_estime"]          = df["surface_num"] * df["prix_m2_moy_quartier"]
     df["log_prix_estime"]      = np.log1p(df["prix_estime"])  # ≈ cible, signal très fort
     df["nb_listings_quartier"] = df.groupby("quartier_clean")["prix_num"].transform("count")
+
+    # Ratio prix/m² quartier vs ville (position relative dans le marché)
+    city_pm2 = df["prix_num"].sum() / df["surface_num"].sum()
+    df["ratio_pm2_city"]    = df["prix_m2_moy_quartier"] / city_pm2
+    df["km_x_log_surface"]  = df["km_distance"] * df["log_surface"]
     df["palier_surface"]       = pd.cut(
         df["surface_num"],
         bins=[0, 200, 500, 1000, 5000, 20000, np.inf],
@@ -478,6 +485,12 @@ def predict_price(pipeline, terrain: dict) -> float:
 
     if "source_clean" not in t:
         t["source_clean"] = "avito"  # source la plus fréquente
+
+    if "ratio_pm2_city" not in t:
+        t["ratio_pm2_city"] = 1.0  # neutre = prix moyen de la ville
+
+    if "km_x_log_surface" not in t:
+        t["km_x_log_surface"] = 0.0  # neutre si km inconnu
 
     if "palier_surface" not in t:
         s = t["surface_num"]
