@@ -51,10 +51,12 @@ NUMERIC_FEATURES = [
 BINARY_FEATURES = [
     "piscine", "parking", "jardin", "securite", "vue",
     "terrasse", "neuf", "meuble", "climatisation", "hammam", "cave", "ascenseur",
+    "is_particulier",   # Particulier vs professionnel
 ]
 
 CATEGORICAL_FEATURES = [
     "quartier_clean",
+    "source_clean",     # Plateforme de scraping (avito/sarouty/agenz/promoimmo)
 ]
 
 TARGET_RAW = "prix_num"
@@ -115,6 +117,19 @@ def load_data(path: str):
     df["etage_known"]    = 0
     df["chambres_num"]   = 0
     df["salles_bain_num"] = 0
+
+    # ── Source (plateforme de scraping) ─────────────────────────────────
+    if "source" in df.columns:
+        top_sources = df["source"].value_counts().index[:5].tolist()
+        df["source_clean"] = df["source"].apply(lambda x: x if x in top_sources else "autre_src")
+    else:
+        df["source_clean"] = "inconnu"
+
+    # ── Agence type (Particulier vs Professionnel) ─────────────────────────
+    if "agence" in df.columns:
+        df["is_particulier"] = df["agence"].str.lower().str.contains("particulier", na=False).astype(int)
+    else:
+        df["is_particulier"] = 0
 
     # ── Reconstruction quartier_clean ────────────────────────────────────
     if "quartier_clean" not in df.columns:
@@ -430,6 +445,12 @@ def predict_price(pipeline, terrain: dict) -> float:
 
     if "residuel_surface" not in t:
         t["residuel_surface"] = 0.0  # neutre si info quartier indisponible
+
+    if "is_particulier" not in t:
+        t["is_particulier"] = 0  # professionnel par défaut
+
+    if "source_clean" not in t:
+        t["source_clean"] = "avito"  # source la plus fréquente
 
     if "palier_surface" not in t:
         s = t["surface_num"]
