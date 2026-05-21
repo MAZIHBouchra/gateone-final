@@ -1,116 +1,96 @@
+import os
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import os
-import sys
-from app.routes.leads_routes import router as leads_router
-from app.routes.blogs_routes import router as blogs_router
 
-# Ajout du chemin racine pour éviter les erreurs d'import
+# 1. Configuration du PATH (Indispensable pour la Clean Architecture)
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Import des routeurs depuis la nouvelle structure
+# 2. Imports des Routeurs (Couche Routing)
 from app.routes.chatbot_routes import chatbot_router
 from app.routes.email_routes import email_router
 from app.routes.price_routes import price_router
+from app.routes.leads_routes import router as leads_router
+from app.routes.blogs_routes import router as blogs_router
+from app.routes.analytics_routes import router as analytics_router
+from app.routes.admin_routes import router as admin_router # Le nouveau !
 
+# 3. Gestion des imports optionnels ou complexes
 try:
     from app.routes.properties_routes import router as properties_router
     PROPERTIES_AVAILABLE = True
 except ImportError as e:
-    print(f"⚠️  Warning: properties routes not loaded: {e}")
-    properties_router = None
+    print(f" Warning: properties routes not loaded: {e}")
     PROPERTIES_AVAILABLE = False
 
-# Import du service chatbot (déplacé dans services)
+# Import du service chatbot (Cœur IA)
 try:
     from app.services import chatbot_api as ca
 except ImportError:
-    import chatbot_api as ca # Fallback si pas encore déplacé
+    import chatbot_api as ca 
 
+# 4. Initialisation de l'Application
 app = FastAPI(
     title="GateOne API - Orchid Island", 
     version="1.1.0",
     description="Unified Backend for AI Real Estate Services"
 )
 
-# CORS middleware
+# 5. Configuration CORS (Sécurité)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:8081",
-        "http://127.0.0.1:8081",
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "https://appealing-smile-production.up.railway.app",
-        "https://gateone-deploy-production.up.railway.app",
-        "https://gateone.immo"
+        "http://localhost:8081", "http://127.0.0.1:8081",
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:8080", "http://127.0.0.1:8080",
+        "https://gateone.immo",
+        "https://gateone-deploy-production.up.railway.app"
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=[
-        "Accept",
-        "Accept-Language",
-        "Content-Language",
-        "Content-Type",
-        "Authorization",
-        "X-Requested-With",
-        "Origin",
-        "Access-Control-Request-Method",
-        "Access-Control-Request-Headers",
-    ],
-
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# Initialize chatbot on startup
+# 6. Événements de démarrage (Startup)
 @app.on_event("startup")
 async def startup_event() -> None:
-    print("🚀 Starting GateOne unified API with Clean Architecture...")
-    # Initialisation du RAG (IA)
+    print(" Starting GateOne unified API with Clean Architecture...")
     success = ca.initialize_rag_system()
     if success:
-        print("✅ AI Chatbot Engine: READY")
+        print(" AI Chatbot Engine: READY")
     else:
-        print("❌ AI Chatbot Engine: FAILED")
+        print(" AI Chatbot Engine: FAILED")
 
-# Include routers
+# 7. Enregistrement des Routes (Ordre logique)
+app.include_router(admin_router) # On commence par l'Admin
 app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
 app.include_router(leads_router)
 app.include_router(blogs_router)
-# Properties routes (optional)
-if PROPERTIES_AVAILABLE and properties_router:
+app.include_router(analytics_router)
+
+if PROPERTIES_AVAILABLE:
     app.include_router(properties_router)
 
-# Root endpoint
+# 8. Endpoints de base (Health & Root)
 @app.get("/")
 async def root():
     return {
         "status": "online",
-        "architecture": "Clean Architecture V1",
+        "architecture": "Clean Architecture V1.1",
         "documentation": "/docs"
     }
 
-# Health check endpoint
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
     return {
         "status": "healthy",
-        "services": {
-            "chatbot": "/chat/status",
-            "email": "/email/config"
-        },
         "chatbot_initialized": ca.qa_chain is not None
     }
 
 if __name__ == "__main__":
+    # Lancement du serveur sur le port 8000
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-

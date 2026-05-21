@@ -24,28 +24,26 @@ class AIService:
         )
 
     def _clean_json_response(self, raw_text: str) -> dict:
-        """
-        Nettoie la réponse brute de l'IA pour extraire un JSON valide.
-        C'est la protection contre l'erreur 'Invalid control character'.
-        """
         try:
-            # 1. Retirer les balises de code Markdown (```json ... ```)
-            text = re.sub(r'```json|```', '', raw_text).strip()
+            # Nettoyage plus agressif
+            text = raw_text.strip()
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
             
-            # 2. Remplacer les vrais retours à la ligne à l'intérieur des textes par des \n
-            # pour éviter l'erreur 'Invalid control character'
-            text = text.replace('\n', '\\n')
+            # Suppression des caractères de contrôle invisibles qui font planter JSON
+            text = "".join(char for char in text if ord(char) >= 32)
             
-            # 3. Réparer les accolades et crochets qui ont été "échappés" par erreur au point 2
-            text = text.replace('\\n{', '{').replace('}\\n', '}').replace('\\n[', '[').replace(']\\n', ']')
-            text = text.replace('",\\n"', '","').replace('":\\n"', '":"')
-
             return json.loads(text)
         except Exception as e:
-            print(f"⚠️ Erreur de nettoyage JSON : {e}. Tentative de parsing simple.")
-            # Fallback : on tente un chargement simple si le nettoyage a échoué
-            clean_text = re.sub(r'```json|```', '', raw_text).strip()
-            return json.loads(clean_text)
+            print(f" Échec total du parsing JSON. Sauvegarde en mode texte brut.")
+            # Si le JSON est mort, on crée un dictionnaire de secours 
+            # pour ne pas perdre les 1500 mots générés !
+            return {
+                "seo_title": "Article Généré",
+                "body_content": raw_text, # On garde tout le texte brut
+                "instagram": "Voir texte brut",
+                "facebook": "Voir texte brut"
+            }
 
     # --- 1. GÉNÉRATION DE L'ARTICLE SEO (LOGIQUE VALIDÉE) ---
     def generate_seo_article(self, data: dict, language: str = "English"):
@@ -156,7 +154,7 @@ class AIService:
     # --- 4. ORCHESTRATEUR ÉDITORIAL (BLOG) ---
     async def generate_expert_blog_workflow(self, db: Session, topic: str, region: str, keywords: list):
         try:
-            print(f"✍️ Rédaction de l'article expert pour {region}...")
+            print(f" Rédaction de l'article expert pour {region}...")
             focus_keyword = keywords[0]
             
             blog_prompt = f"""
