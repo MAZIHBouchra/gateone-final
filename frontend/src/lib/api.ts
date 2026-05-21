@@ -31,31 +31,41 @@ export const propertiesApi = {
   },
 
   // 2. AJOUTER UN BIEN AVEC IA
-  async addWithAI(formData: any) {
+  async addWithAI(formData: any, imageFile: File | null) {
+    // 1. On crée le conteneur FormData
+    const data = new FormData();
+
+    // 2. On ajoute les champs textuels un par un (doit correspondre aux noms dans le Backend)
+    data.append("title", formData.title);
+    data.append("price", formData.price.toString());
+    data.append("location", formData.location);
+    data.append("neighborhood", formData.neighborhood || "N/A");
+    data.append("type", formData.type);
+    data.append("bedrooms", formData.bedrooms.toString());
+    data.append("bathrooms", formData.bathrooms.toString());
+    data.append("area_sqm", formData.area_sqm.toString());
+    data.append("intent", formData.intent);
+    data.append("features", `Plot: ${formData.plot_size || 0}m2, Features: ${formData.features}`);
+    data.append("status", formData.status || "available");
+
+    // 3. On ajoute le fichier s'il existe
+    if (imageFile) {
+      data.append("image", imageFile);
+    }
+
+    // 4. On envoie la requête (Attention : ne PAS mettre de Content-Type header !)
     const response = await fetch(`${API_BASE_URL}/properties/add-with-ai`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: formData.title,
-        intent: formData.intent,
-        price: parseFloat(formData.price) || 0,
-        location: formData.location,
-        neighborhood: formData.neighborhood || "Non spécifié",
-        type: formData.type,
-        bedrooms: parseInt(formData.bedrooms) || 0,
-        bathrooms: parseInt(formData.bathrooms) || 0,
-        area_sqm: parseInt(formData.area_sqm) || 0,
-        status: formData.status || "available",
-        features: `Plot size: ${formData.plot_size || 0}m2, Features: ${formData.features}`
-      }),
+      body: data, 
     });
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Error 422 or 500");
+        throw new Error(errorData.detail || "Upload failed");
     }
     return response.json();
   },
+
 
   // 3. RÉCUPÉRER L'ARTICLE IA
   async getAIArticle(propertyId: string) {

@@ -1,235 +1,364 @@
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import CEO from '@/assets/CEO.jpg';
+import React from 'react';
 
-import { 
-  Award, 
-  Users, 
-  Home, 
-  TrendingUp, 
-  Target, 
-  Heart, 
-  Shield,
-  Star,
-  Phone,
-  Mail
+import Navbar from '@/components/public/Navbar';
+
+import {
+  ShieldCheck,
+  Target,
+  Award,
+  Sparkles,
+  Database,
+  BrainCircuit,
+  Building2,
+  ArrowRight,
+  Users,
+  FileText,
+  BarChart3
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import ChatBot from '@/components/layout/ChatBot';
-import orchid from '@/assets/orchid.jpg';
 
-const About = () => {
-  const stats = [
-    { icon: Home, number: "350+", label: "Properties Sold" },
-    { icon: Users, number: "1785+", label: "Happy Clients" },
-    { icon: Award, number: "254+", label: "Project Complete" },
-    { icon: TrendingUp, number: "116", label: "Winning Awards" },
-  ];
-
-  const values = [
-    {
-      icon: Heart,
-      title: "Client-Centered",
-      description: "Every decision we make puts our clients' needs and dreams at the forefront."
-    },
-    {
-      icon: Shield,
-      title: "Integrity",
-      description: "We operate with complete transparency and honesty in all our dealings."
-    },
-    {
-      icon: Target,
-      title: "Excellence",
-      description: "We strive for perfection in every service we provide and every relationship we build."
-    },
-    {
-      icon: Star,
-      title: "Innovation",
-      description: "We embrace technology and modern methods to enhance your real estate experience."
-    }
-  ];
-
-  const ceo = {
-    name: "Mohamed Dekkak",
-    role: "CEO & Founder",
-    experience: "15+ years",
-    specialization: "Luxury Properties & Commercial Real Estate",
-    image: CEO,
-    bio: "Mohamed Dekkak is a visionary entrepreneur and social advocate, founding Orchid Island Real Estate Agency and Adgeco Group. He leads multiple organizations across business, finance, and social impact, including Gate One Properties, CARLAC, and the Arab Peace Corp Foundation. Deeply committed to cultural and community development, he also holds honorary and executive roles in several non-profits supporting education, peace, and heritage.",
-    phone: "+212 622222202",
-  };
+export default function About() {
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <ChatBot />
-      
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container-custom text-center">
-          <h1 className="text-4xl md:text-6xl font-playfair font-bold text-primary mb-6">
-            About GateOne
+
+    <div className="min-h-screen bg-white overflow-hidden">
+
+      <Navbar />
+
+      {/* HERO SECTION */}
+      <section className="relative pt-40 pb-32 px-8 overflow-hidden text-white">
+
+        {/* Background */}
+        <div className="absolute inset-0 z-0">
+
+          <img
+            src="https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070&auto=format&fit=crop"
+            className="w-full h-full object-cover"
+            alt="Luxury Real Estate"
+          />
+
+          <div className="absolute inset-0 bg-[#0B1F33]/85" />
+        </div>
+
+        {/* Decorative Blur */}
+        <div className="absolute inset-0 bg-[#5DA9E9]/5 pointer-events-none" />
+
+        <div className="max-w-6xl mx-auto relative z-10 text-center">
+
+          <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.5em] mb-6 block">
+
+            About Orchid Island
+          </span>
+
+          <h1 className="text-6xl md:text-8xl font-serif font-bold leading-[1.1] tracking-tighter mb-10">
+
+            Reinventing Luxury <br />
+            Real Estate Intelligence
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            We're not just real estate agents - we're your partners in finding the perfect property 
-            and making sound investment decisions. Discover our story, values, and the team that makes it all possible.
+
+          <p className="max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed font-serif italic">
+
+            Orchid Island is a luxury real estate
+            intelligence platform specialized in
+            premium asset management, AI-driven
+            operations and high-value client
+            experiences across Morocco’s elite
+            property market.
           </p>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary">
-                Our Mission
+      {/* STATS */}
+      <section className="py-20 px-8 border-b border-gray-100">
+
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-10">
+
+          {[
+            {
+              number: "AI",
+              label: "Powered Operations"
+            },
+            {
+              number: "24/7",
+              label: "Data Synchronization"
+            },
+            {
+              number: "Premium",
+              label: "Client Experience"
+            },
+            {
+              number: "Secure",
+              label: "Legal Infrastructure"
+            }
+          ].map((item, i) => (
+
+            <div
+              key={i}
+              className="text-center"
+            >
+
+              <h2 className="text-5xl font-serif font-bold text-[#0B1F33] mb-3">
+
+                {item.number}
               </h2>
-              <div className="w-20 h-1 bg-accent rounded-full"></div>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                At GateOne, we believe that finding the perfect property in Marrakech should be more than 
-                just a transaction, it should be a truly exceptional experience. With many years of experience 
-                in the Marrakech real estate market, we have helped multiple clients discover luxury villas, 
-                traditional riads, and exclusive investment properties across the Red City.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                As a leading real estate agency in Marrakech, we specialize in high-end properties, offering 
-                tailor-made solutions for both local and international clients. Our dedicated team combines 
-                deep local knowledge, market expertise, and personalized service to guide you through every 
-                step – whether you're buying, selling, or investing in Marrakech real estate.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Today, we're proud to have helped over 1,000 clients find their perfect homes and 
-                assisted countless investors in building wealth through strategic real estate decisions. 
-                Our success is measured not just in properties sold, but in dreams realized and futures secured.
+
+              <p className="text-[10px] uppercase font-bold tracking-[0.3em] text-gray-400">
+
+                {item.label}
               </p>
             </div>
-            <div className="relative">
-              <img 
-                src={orchid}
-                alt="GateOne office"
-                className="w-full h-96 object-cover rounded-xl shadow-lg"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent rounded-xl"></div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="section-padding bg-muted/30">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary mb-4">
-              Our Track Record
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Numbers that reflect our commitment to excellence
+      {/* CORE OPERATIONS */}
+      <section className="py-28 px-8 bg-[#F8FAFC]">
+
+        <div className="max-w-7xl mx-auto">
+
+          <div className="text-center mb-20">
+
+            <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-[#5DA9E9] mb-4">
+
+              Core Operations
             </p>
+
+            <h2 className="text-5xl font-serif font-bold text-[#0B1F33]">
+
+              Intelligent Business Processes
+            </h2>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <Card key={index} className="p-8 text-center hover:shadow-lg transition-shadow duration-300">
-                <stat.icon className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <div className="text-3xl font-playfair font-bold text-primary mb-2">{stat.number}</div>
-                <div className="text-muted-foreground">{stat.label}</div>
-              </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+            {[
+              {
+                icon: Users,
+                title: "Client Relationship Intelligence",
+                desc: "Advanced CRM workflows combining behavioral analysis, prospect qualification and personalized client experiences."
+              },
+
+              {
+                icon: Building2,
+                title: "Real Estate Portfolio Management",
+                desc: "Real-time synchronization of luxury property assets, technical information and multichannel publishing."
+              },
+
+              {
+                icon: BarChart3,
+                title: "Transaction Orchestration",
+                desc: "Coordinated management of high-value transactions involving agents, clients and institutional stakeholders."
+              },
+
+              {
+                icon: FileText,
+                title: "Legal & Administrative AI",
+                desc: "AI-assisted analysis, preparation and secure archiving of contractual and legal documentation."
+              }
+
+            ].map((item, i) => (
+
+              <div
+                key={i}
+                className="bg-white rounded-[2.5rem] p-10 border border-gray-100 hover:shadow-[0_20px_60px_rgba(11,31,51,0.08)] transition-all duration-700 group"
+              >
+
+                <div className="w-16 h-16 bg-[#5DA9E9]/10 text-[#5DA9E9] rounded-2xl flex items-center justify-center mb-8 group-hover:bg-[#0B1F33] group-hover:text-white transition-all">
+
+                  <item.icon size={30} />
+                </div>
+
+                <h3 className="text-2xl font-serif font-bold text-[#0B1F33] mb-5">
+
+                  {item.title}
+                </h3>
+
+                <p className="text-gray-500 leading-relaxed italic">
+
+                  {item.desc}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary mb-4">
-              Our Values
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The principles that guide everything we do and shape how we serve our clients
+      {/* DATA SECTION */}
+      <section className="py-28 px-8">
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+
+          {/* LEFT */}
+          <div>
+
+            <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-[#5DA9E9] mb-5">
+
+              Data & Infrastructure
             </p>
+
+            <h2 className="text-5xl font-serif font-bold text-[#0B1F33] mb-8 leading-tight">
+
+              Enterprise-grade <br />
+              architecture powered <br />
+              by intelligent systems
+            </h2>
+
+            <p className="text-gray-500 leading-relaxed text-lg italic mb-10">
+
+              Orchid Island operates through a
+              robust digital ecosystem capable of
+              processing heterogeneous data flows,
+              including legal documents, high-definition
+              media assets, transactional histories
+              and behavioral analytics.
+            </p>
+
+            <div className="space-y-6">
+
+              {[
+                "AI-assisted document analysis",
+                "Secure legal archiving systems",
+                "Real-time data consistency",
+                "Luxury property intelligence"
+              ].map((item, i) => (
+
+                <div
+                  key={i}
+                  className="flex items-center gap-4"
+                >
+
+                  <div className="w-3 h-3 rounded-full bg-[#5DA9E9]" />
+
+                  <span className="text-[#0B1F33] font-medium">
+
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow duration-300 group">
-                <value.icon className="w-12 h-12 mx-auto mb-4 text-primary group-hover:text-accent transition-colors" />
-                <h3 className="text-xl font-playfair font-semibold text-primary mb-3">{value.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
-              </Card>
-            ))}
+
+          {/* RIGHT */}
+          <div className="bg-[#0B1F33] rounded-[3rem] p-14 text-white relative overflow-hidden">
+
+            <div className="absolute inset-0 bg-[#5DA9E9]/5 pointer-events-none" />
+
+            <div className="relative z-10">
+
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center mb-10 text-[#5DA9E9]">
+
+                <BrainCircuit size={40} />
+              </div>
+
+              <h3 className="text-4xl font-serif font-bold mb-8 leading-tight">
+
+                AI-driven operational excellence
+              </h3>
+
+              <p className="text-gray-300 leading-relaxed mb-10 italic">
+
+                Combining luxury real estate expertise
+                with advanced automation technologies,
+                Orchid Island delivers institutional-grade
+                intelligence and premium client servicing.
+              </p>
+
+              <button className="bg-[#5DA9E9] text-white px-10 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest hover:bg-sky-400 transition-all flex items-center gap-3">
+
+                Explore the Ecosystem
+
+                <ArrowRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CEO Section */}
-      <section className="section-padding bg-muted/30">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold text-primary mb-4">
-              Meet Our CEO
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              The experienced professional dedicated to making your real estate dreams come true
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 max-w-md">
-              <div className="relative">
-                <img
-                  src={ceo.image}
-                  alt={ceo.name}
-                  className="w-full h-64 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
-              </div>
-              <div className="p-6 space-y-4">
-                <div>
-                  <h3 className="text-xl font-playfair font-semibold text-primary">{ceo.name}</h3>
-                  <Badge variant="secondary" className="mt-1">{ceo.role}</Badge>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div><strong>Experience:</strong> {ceo.experience}</div>
-                  <div><strong>Specialization:</strong> {ceo.specialization}</div>
-                </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">{ceo.bio}</p>
-                <div className="space-y-2 text-sm border-t pt-4">
-                  <div className="flex items-center">
-                    <Phone className="w-4 h-4 mr-2 text-primary" />
-                    {ceo.phone}
-                  </div>
-                  </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {/* VALUES */}
+      <section className="py-28 px-8 bg-[#F8FAFC]">
 
-      {/* CTA */}
-      <section className="section-padding bg-primary text-primary-foreground">
-        <div className="container-custom text-center">
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-6">
-            Ready to Work With Us?
-          </h2>
-          <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Whether you're buying, selling, or investing, our team is here to guide you 
-            through every step of your real estate journey.
+        <div className="max-w-6xl mx-auto text-center">
+
+          <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-[#5DA9E9] mb-5">
+
+            Institutional Standards
           </p>
-          <Link to="/contact">
-            <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
-              Get in Touch
-            </Button>
-          </Link>
+
+          <h2 className="text-5xl font-serif font-bold text-[#0B1F33] mb-20">
+
+            Built on trust, precision & security
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+
+            {[
+              {
+                icon: Award,
+                title: "Luxury Excellence"
+              },
+
+              {
+                icon: Target,
+                title: "Strategic Precision"
+              },
+
+              {
+                icon: ShieldCheck,
+                title: "Legal Security"
+              }
+
+            ].map((item, i) => (
+
+              <div
+                key={i}
+                className="bg-white rounded-[2.5rem] p-12 border border-gray-100"
+              >
+
+                <div className="w-20 h-20 bg-[#5DA9E9]/10 text-[#5DA9E9] rounded-3xl flex items-center justify-center mx-auto mb-8">
+
+                  <item.icon size={36} />
+                </div>
+
+                <h3 className="text-2xl font-serif font-bold text-[#0B1F33]">
+
+                  {item.title}
+                </h3>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <Footer />
+      {/* FINAL CTA */}
+      <section className="px-8 pb-20">
+
+        <div className="max-w-7xl mx-auto bg-[#0B1F33] rounded-[3rem] p-16 md:p-24 relative overflow-hidden text-center text-white">
+
+          <div className="absolute inset-0 bg-[#5DA9E9]/5 opacity-50 pointer-events-none" />
+
+          <div className="relative z-10">
+
+            <h2 className="text-5xl font-serif font-bold mb-8">
+
+              Transforming luxury real estate through intelligence
+            </h2>
+
+            <p className="max-w-3xl mx-auto text-gray-400 mb-12 text-lg font-serif italic">
+
+              Orchid Island combines advanced
+              technology, AI-powered workflows
+              and institutional expertise to redefine
+              premium real estate operations.
+            </p>
+
+            <button className="bg-[#5DA9E9] text-white px-12 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-2xl hover:bg-sky-400 transition-all">
+
+              Contact Our Team
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};
-
-export default About;
+}

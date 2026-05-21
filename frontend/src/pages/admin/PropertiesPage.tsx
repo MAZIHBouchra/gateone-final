@@ -12,11 +12,13 @@ import {
   Share2, 
   ExternalLink,
   Loader2,
-  Sparkles, // <-- IL MANQUAIT CELUI-LÀ
-  Search as SearchIcon
+  Sparkles
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+
+// Interface étendue pour inclure la photo (à ajouter dans ton fichier api.ts si ce n'est pas fait)
+// export interface Property { ... thumbnail_url?: string; ... }
 
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -102,6 +104,7 @@ export default function PropertiesPage() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#F9F7F2] text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold border-b border-gray-100">
+              {/* CORRECTION ICI : JUSTE LE TITRE D'EN-TETE */}
               <th className="px-8 py-5 text-left">Property Asset</th>
               <th className="px-8 py-5 text-left">Location</th>
               <th className="px-8 py-5 text-left">Price</th>
@@ -115,16 +118,25 @@ export default function PropertiesPage() {
             ) : filteredProperties.length === 0 ? (
               <tr><td colSpan={5} className="py-20 text-center text-gray-400 italic">No properties found.</td></tr>
             ) : (
-              filteredProperties.map((prop) => (
+              filteredProperties.map((prop: any) => ( // Note: utiliser prop: any temporairement si le type thumbnail_url n'est pas encore défini
                 <tr key={prop.id} className="hover:bg-[#F9F7F2]/30 transition-all group">
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="bg-[#2D3321] text-[#C7A987] w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-[#2D3321]/10">
-                        <Home size={20} />
+                      {/* ZONE VISUELLE : PHOTO CLOUDINARY OU ICONE */}
+                      <div className="bg-[#2D3321] text-[#C7A987] w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden border border-white/10 relative">
+                        {prop.thumbnail_url ? (
+                          <img 
+                            src={prop.thumbnail_url} 
+                            alt={prop.title} 
+                            className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" 
+                          />
+                        ) : (
+                          <Home size={20} />
+                        )}
                       </div>
                       <div>
-                        <div className="font-serif font-bold text-[#2D3321] text-base">{prop.title}</div>
-                        <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-0.5">{prop.type} • {prop.area_sqm} sqm</div>
+                        <div className="font-serif font-bold text-[#2D3321] text-base leading-tight">{prop.title}</div>
+                        <div className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">{prop.type} • {prop.area_sqm} sqm</div>
                       </div>
                     </div>
                   </td>
@@ -136,7 +148,7 @@ export default function PropertiesPage() {
                   </td>
                   <td className="px-8 py-6">
                     <div className="font-serif font-bold text-[#C7A987] text-lg">
-                      {prop.price ? prop.price.toLocaleString() : '0'} <span className="text-[10px] ml-0.5 uppercase">MAD</span>
+                      {prop.price ? Number(prop.price).toLocaleString() : '0'} <span className="text-[10px] ml-0.5 uppercase font-sans">MAD</span>
                     </div>
                   </td>
                   <td className="px-8 py-6">
@@ -162,11 +174,12 @@ export default function PropertiesPage() {
         </table>
       </div>
 
-      {/* --- INTELLIGENCE MODAL --- */}
+      {/* --- MODAL RESTANT (inchangé mais corrigé structurellement) --- */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-[#2D3321]/60 backdrop-blur-md flex items-center justify-center z-[100] p-6">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-5xl h-[85vh] overflow-hidden shadow-2xl flex flex-col border border-white/20">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-5xl h-[85vh] overflow-hidden shadow-2xl flex flex-col border border-white/20 animate-in zoom-in-95 duration-200">
             
+            {/* Modal Header */}
             <div className="px-10 py-8 border-b border-gray-100 flex justify-between items-center bg-[#F9F7F2]/50">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#2D3321] rounded-2xl flex items-center justify-center text-[#C7A987]">
@@ -185,6 +198,7 @@ export default function PropertiesPage() {
               </button>
             </div>
 
+            {/* Modal Tabs & Content Area - Inchangés car déjà bons */}
             <div className="px-10 py-4 flex gap-8 border-b border-gray-50">
                 <button 
                     onClick={() => setActiveTab('article')}
@@ -213,11 +227,7 @@ export default function PropertiesPage() {
               ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     {activeTab === 'article' ? (
-                        <article className="prose prose-stone max-w-none 
-                            prose-headings:font-serif prose-headings:text-[#2D3321] 
-                            prose-p:text-[#2D3321]/80 prose-p:leading-relaxed
-                            prose-table:border prose-table:rounded-2xl prose-table:overflow-hidden
-                            prose-th:bg-[#F9F7F2] prose-th:p-4 prose-td:p-4">
+                        <article className="prose prose-stone max-w-none prose-headings:font-serif prose-headings:text-[#2D3321] prose-p:text-[#2D3321]/80 prose-p:leading-relaxed prose-table:border prose-table:rounded-2xl prose-table:overflow-hidden prose-th:bg-[#F9F7F2] prose-th:p-4 prose-td:p-4">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {aiArticle.content}
                             </ReactMarkdown>
