@@ -1,5 +1,5 @@
 import os
-import json
+import re
 from sqlalchemy.orm import Session
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -8,94 +8,83 @@ from uuid import uuid4
 
 class BlogService:
     def __init__(self):
-        # Configuration optimisée pour les longs textes (3000 tokens)
         self.llm = ChatOpenAI(
-            model="mistralai/mistral-small-3.1-24b-instruct",
+            model="mistralai/mistral-large-2407",
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
-            temperature=0.5, # Équilibre entre expertise et fluidité
-            max_tokens=3000 
+            temperature=0.7,
+            max_tokens=8000 
         )
 
     def _get_region_context(self, region: str):
         contexts = {
-            "Africa": "Maroc comme hub financier et logistique pour l'Afrique subsaharienne (CFC).",
-            "Gulf": "Comparaison de rentabilité Marrakech vs Dubaï, fiscalité avantageuse et ROI locatif.",
-            "Morocco_MRE": "Investissement affectif, sécurité foncière et préparation de la retraite au pays."
+            "Africa": "Morocco as a financial and logistical hub.",
+            "Gulf": "Marrakech ROI vs Dubai, tax advantages.",
+            "Europe_MRE": "Secure investment for the diaspora.",
+            "Global": "Luxury real estate lifestyle."
         }
-        return contexts.get(region, "Expertise immobilière globale au Maroc.")
+        return contexts.get(region, "Real estate expertise.")
 
     async def generate_industrial_blog(self, db: Session, topic: str, region: str, keywords: list):
-        """
-        Génère un article expert de 1200+ mots conforme aux standards Yoast SEO et E-E-A-T.
-        """
-        print(f" IA : Rédaction d'un article SEO pour la cible : {region}")
+        print(f"🤖 AI: Writing long-form article for {region}...")
         
-        focus_keyword = keywords[0]
         region_context = self._get_region_context(region)
         
-        system_prompt = (
-            "You are a professional SEO Copywriter and Real Estate Analyst. "
-            "Your task is to write a 1200-1500 word blog post for WordPress based on Yoast SEO standards. \n"
-            "STRICT FORMATTING RULES: \n"
-            "- Paragraphs: 2-4 lines max (high readability). \n"
-            "- Sentences: Short and active voice. \n"
-            "- Structure: Use H1, multiple H2 and H3 subheadings. \n"
-            "- Tone: Educational, prestigious, and factual (E-E-A-T)."
-        )
-        
         user_prompt = f"""
+        Write a 1500-word expert SEO blog post in English.
         TOPIC: {topic}
-        TARGET REGION: {region} ({region_context})
-        FOCUS KEYWORD: {focus_keyword}
-        SECONDARY KEYWORDS: {", ".join(keywords[1:])}
+        TARGET: {region} ({region_context})
+        KEYWORDS: {", ".join(keywords)}
 
-        REQUIRED OUTPUT STRUCTURE (JSON FORMAT):
-        1. 'seo_title': 50-60 chars, must include "{focus_keyword}" at the start.
-        2. 'slug': Hyphenated, lowercase, includes keyword.
-        3. 'meta_description': 155 chars max with Call-to-action.
-        4. 'introduction': 150 words. The keyword "{focus_keyword}" MUST appear within the first 20 words.
-        5. 'body_content': 1000+ words with H2/H3 tags. Include statistics and lifestyle details.
-        6. 'image_alt_texts': 3 suggestions for royalty-free images with alt-text.
-        7. 'conclusion': Summary + subtle Call-to-action for GateOne.immo.
-
-        Respond ONLY with a valid JSON object.
+        STRUCTURE RULES:
+        1. Start with [METADATA] section containing:
+           SEO_TITLE: (60 chars)
+           SLUG: (url-friendly)
+           META_DESCRIPTION: (150 chars)
+        2. Then use [CONTENT] section for the full 1500-word article in Markdown.
+        3. Use H1, H2, H3 and professional tables.
         """
 
-        prompt_template = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("human", user_prompt)
-        ])
+        response = self.llm.invoke(user_prompt)
+        full_text = response.content
 
-        chain = prompt_template | self.llm
-        
-        # 1. Génération
-        response = chain.invoke({})
-        
-        # On tente de parser le JSON reçu
+        # --- LOGIQUE D'EXTRACTION ROBUSTE (Sans JSON fragile) ---
+        seo_title = topic
+        slug = "new-article"
+        body_content = full_text
+
         try:
-            blog_data = json.loads(response.content)
+            # On cherche les infos entre les balises
+            if "[METADATA]" in full_text and "[CONTENT]" in full_text:
+                parts = full_text.split("[CONTENT]")
+                body_content = parts[1].strip()
+                metadata_part = parts[0]
+                
+                # Extraction par Regex pour plus de sécurité
+                title_match = re.search(r"SEO_TITLE:\s*(.*)", metadata_part)
+                slug_match = re.search(r"SLUG:\s*(.*)", metadata_part)
+                
+                if title_match: seo_title = title_match.group(1).strip()
+                if slug_match: slug = slug_match.group(1).strip().replace("/", "")
         except:
-            # Fallback si l'IA ne renvoie pas un JSON propre
-            blog_data = {
-                "seo_title": f"Expert Insight: {topic}",
-                "body_content": response.content,
-                "meta_description": "Luxury Real Estate investment guide."
-            }
+            pass
 
-        # 2. Sauvegarde dans PostgreSQL
+        # Sauvegarde SQL
         new_blog = Blog(
             id=uuid4(),
             topic=topic,
             target_region=region,
-            content=blog_data.get('body_content'),
+            content=body_content,
             status=BlogStatus.draft,
-            seo_title=blog_data.get('seo_title')
+            seo_title=seo_title
         )
-        
         db.add(new_blog)
         db.commit()
         db.refresh(new_blog)
         
-        print(f" Blog '{topic}' archivé. SEO Score: Optimized.")
-        return blog_data
+        return {
+            "id": str(new_blog.id),
+            "seo_title": seo_title,
+            "slug": slug,
+            "body_content": body_content
+        }

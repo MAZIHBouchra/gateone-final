@@ -27,6 +27,8 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAIStudio from "./pages/admin/AdminAIStudio";
 import PropertiesPage from './pages/admin/PropertiesPage';
+import LeadsPage from './pages/admin/LeadsPage';
+import BlogStudio from './pages/admin/BlogStudio';
 
 const queryClient = new QueryClient();
 
@@ -48,11 +50,14 @@ const App = () => (
             <Route path="/investment" element={<Investment />} />
             
             {/* Admin routes */}
-            {/* LES NOUVELLES ROUTES ADMIN */}
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/properties" element={<PropertiesPage />} />
-            <Route path="/admin/studio" element={<AdminAIStudio />} />
-            <Route path="*" element={<NotFound />} />
+            {/* Remplace tes lignes admin par ce bloc groupé */}
+            <Route path="/admin">
+              <Route index element={<AdminDashboard />} />
+              <Route path="properties" element={<PropertiesPage />} />
+              <Route path="studio" element={<AdminAIStudio />} />
+              <Route path="leads" element={<LeadsPage />} />
+              <Route path="blogs" element={<BlogStudio />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
