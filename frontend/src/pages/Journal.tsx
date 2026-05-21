@@ -1,200 +1,263 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, User, Search, Filter } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import ChatBot from '@/components/layout/ChatBot';
-import { articles, categories } from '@/data/articles';
+"use client";
 
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '@/components/public/Navbar';
 
-const Journal = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+import {
+  Calendar,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  Loader2
+} from 'lucide-react';
 
+export default function Journal() {
 
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const featuredArticles = articles.filter(article => article.featured);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+
+    fetch('http://localhost:8000/api/blogs/')
+      .then(res => res.json())
+      .then(data => {
+
+        setArticles(
+          data.filter((a: any) =>
+            a.status === "published"
+          )
+        );
+
+        setLoading(false);
+
+      })
+      .catch(() => setLoading(false));
+
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <ChatBot />
-      
-      {/* Hero Section */}
-      <section className="pt-24 pb-12 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container-custom text-center">
-          <h1 className="text-4xl md:text-6xl font-playfair font-bold text-primary mb-6">
-            Real Estate Journal
+
+    <div className="min-h-screen bg-white">
+
+      <Navbar />
+
+      {/* HERO SECTION */}
+      <section className="relative pt-40 pb-28 px-8 overflow-hidden text-white">
+
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+
+          <img
+            src="https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070&auto=format&fit=crop"
+            className="w-full h-full object-cover"
+            alt="Luxury Editorial"
+          />
+
+          <div className="absolute inset-0 bg-[#0B1F33]/80" />
+        </div>
+
+        {/* Decorative Blur */}
+        <div className="absolute top-0 left-0 w-full h-full bg-[#5DA9E9]/5 pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto relative z-10 text-center">
+
+          <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.5em] mb-6 block">
+            Intelligence Reports
+          </span>
+
+          <h1 className="text-6xl md:text-7xl font-serif font-bold mb-8 tracking-tighter leading-tight">
+
+            The Future of <br />
+            Real Estate Intelligence
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Stay informed with expert insights, market trends, and valuable tips from the world of real estate
+
+          <p className="text-lg text-gray-300 font-serif italic max-w-3xl mx-auto leading-relaxed">
+            Strategic insights, investment forecasts,
+            AI-powered analytics and premium market
+            intelligence shaping the future of luxury
+            real estate across Morocco.
           </p>
         </div>
       </section>
 
-      {/* Featured Articles */}
-      <section className="py-12 bg-background">
-        <div className="container-custom">
-          <h2 className="text-2xl md:text-3xl font-playfair font-bold text-primary mb-8">Featured Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredArticles.slice(0, 3).map((article) => (
-              <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                <div className="relative overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
-                    Featured
-                  </Badge>
-                </div>
-                <div className="p-6">
-                  <Badge variant="secondary" className="mb-3">{article.category}</Badge>
-                  <h3 className="text-xl font-playfair font-semibold text-primary mb-3 group-hover:text-accent transition-colors">
-                    {article.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-                    <div className="flex items-center space-x-3">
-                      </div>
-                    <div className="flex items-center">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {article.readTime}
-                    </div>
-                  </div>
-                  <Link to={`/article/${article.id}`}>
-                    <Button className="w-full btn-primary">Read Article</Button>
-                  </Link>
-                </div>
-              </Card>
-            ))}
+      {/* ARTICLES */}
+      <main className="max-w-7xl mx-auto px-8 py-24">
+
+        {/* Section Heading */}
+        <div className="flex justify-between items-end mb-20">
+
+          <div>
+
+            <p className="text-[10px] uppercase font-bold tracking-[0.4em] text-[#5DA9E9] mb-3">
+              Editorial Selection
+            </p>
+
+            <h2 className="text-5xl font-serif font-bold text-[#0B1F33]">
+              Latest Intelligence
+            </h2>
           </div>
         </div>
-      </section>
 
-      {/* Search and Filters */}
-      <section className="py-8 bg-muted/30 border-y border-border">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search articles..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full sm:w-48">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {filteredArticles.length} article{filteredArticles.length !== 1 ? 's' : ''} found
-            </div>
-          </div>
-        </div>
-      </section>
+        {loading ? (
 
-      {/* All Articles */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <h2 className="text-2xl md:text-3xl font-playfair font-bold text-primary mb-8">All Articles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredArticles.map((article) => (
-              <Card key={article.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                <div className="relative overflow-hidden">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute top-4 left-4 flex gap-2">
-                    <Badge variant="secondary">{article.category}</Badge>
-                    {article.featured && (
-                      <Badge className="bg-accent text-accent-foreground">Featured</Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="p-6 space-y-4">
-                  <h3 className="text-xl font-playfair font-semibold text-primary group-hover:text-accent transition-colors line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-4">
-                    <div className="flex items-center space-x-3">
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {article.readTime}
-                    </div>
-                  </div>
-                  <Link to={`/article/${article.id}`}>
-                    <Button variant="outline" className="w-full">Read Article</Button>
-                  </Link>
-                </div>
-              </Card>
-            ))}
+          <div className="flex flex-col items-center justify-center py-32 text-gray-300">
+
+            <Loader2
+              className="animate-spin mb-4"
+              size={40}
+            />
+
+            <p className="font-serif italic text-lg text-gray-400">
+              Loading intelligence archives...
+            </p>
           </div>
 
-          {filteredArticles.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground text-lg">No articles found matching your search criteria.</p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedCategory('all');
-                }}
+        ) : articles.length === 0 ? (
+
+          <div className="text-center py-32 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
+
+            <p className="text-gray-400 italic">
+              No intelligence reports published yet.
+            </p>
+          </div>
+
+        ) : (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
+
+            {articles.map((art) => (
+
+              <div
+                key={art.id}
+                onClick={() =>
+                  navigate(`/article/${art.id}`)
+                }
+                className="group cursor-pointer bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 hover:shadow-[0_20px_60px_rgba(11,31,51,0.12)] transition-all duration-700 flex flex-col"
               >
-                Clear Filters
-              </Button>
-            </div>
-          )}
 
-          {/* Load More */}
-          {filteredArticles.length > 0 && (
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Load More Articles
-              </Button>
-            </div>
-          )}
+                {/* IMAGE */}
+                <div className="relative h-72 overflow-hidden">
+
+                  <img
+                    src={
+                      art.thumbnail ||
+                      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+                    }
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1500ms]"
+                    alt={art.topic}
+                  />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F33]/80 to-transparent" />
+
+                  {/* Tag */}
+                  <div className="absolute top-6 left-6">
+
+                    <span className="bg-white/10 backdrop-blur-md border border-white/10 text-[#5DA9E9] px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest shadow-xl">
+
+                      Expert Insight
+                    </span>
+                  </div>
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-8 flex flex-col flex-1">
+
+                  {/* META */}
+                  <div className="flex items-center gap-6 text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-5">
+
+                    <span className="flex items-center gap-2">
+
+                      <Calendar
+                        size={12}
+                        className="text-[#5DA9E9]"
+                      />
+
+                      {new Date(
+                        art.created_at
+                      ).toLocaleDateString()}
+                    </span>
+
+                    <span className="flex items-center gap-2">
+
+                      <Clock size={12} />
+
+                      6 min read
+                    </span>
+                  </div>
+
+                  {/* TITLE */}
+                  <h3 className="text-2xl font-serif font-bold text-[#0B1F33] leading-tight mb-5 group-hover:text-[#5DA9E9] transition-colors">
+
+                    {art.seo_title || art.topic}
+                  </h3>
+
+                  {/* DESC */}
+                  <p className="text-sm text-gray-500 leading-relaxed italic line-clamp-3">
+
+                    Strategic analysis on
+                    {` ${art.target_region} `}
+                    and the evolution of Morocco’s
+                    luxury real estate ecosystem.
+                  </p>
+
+                  {/* CTA */}
+                  <div className="pt-8 mt-auto">
+
+                    <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0B1F33] border-b border-[#0B1F33]/10 pb-1 group-hover:gap-4 group-hover:text-[#5DA9E9] transition-all">
+
+                      Read Intelligence Brief
+
+                      <ArrowRight size={14} />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* CTA SECTION */}
+      <section className="px-8 pb-20">
+
+        <div className="max-w-7xl mx-auto bg-[#0B1F33] rounded-[3rem] p-16 md:p-24 relative overflow-hidden text-center text-white">
+
+          <div className="absolute inset-0 bg-[#5DA9E9]/5 opacity-50 pointer-events-none" />
+
+          <div className="relative z-10">
+
+            <h2 className="text-5xl font-serif font-bold mb-8">
+
+              Stay ahead of the market
+            </h2>
+
+            <p className="max-w-2xl mx-auto text-gray-400 mb-12 text-lg font-serif italic">
+
+              Receive exclusive intelligence reports,
+              investment forecasts and premium
+              off-market opportunities directly
+              from GateOne Intelligence.
+            </p>
+
+            <button className="bg-[#5DA9E9] text-white px-12 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-2xl hover:bg-sky-400 transition-all">
+
+              Subscribe to Reports
+            </button>
+          </div>
         </div>
       </section>
 
-      <Footer />
+      {/* FOOTER */}
+      <footer className="py-14 border-t border-gray-100 text-center text-[10px] uppercase font-bold text-gray-400 tracking-[0.3em]">
+
+        GateOne Intelligence ©
+        {new Date().getFullYear()}
+        — Luxury Real Estate Intelligence
+      </footer>
     </div>
   );
-};
-
-export default Journal;
+}

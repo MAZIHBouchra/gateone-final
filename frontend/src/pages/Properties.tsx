@@ -1,320 +1,331 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import { MapPin, Bed, Bath, Square, Eye, Filter, Grid, List } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import ChatBot from '@/components/layout/ChatBot';
-import { properties } from '@/data/properties';
+"use client";
 
-const Properties = () => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState([100000, 5000000]);
-  const [filters, setFilters] = useState({
-    propertyType: '',
-    location: '',
-    bedrooms: '',
-    bathrooms: '',
-    sortBy: 'newest',
-  });
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { propertiesApi } from '@/lib/api';
+import Navbar from '@/components/public/Navbar';
+import { 
+  MapPin, 
+  Maximize, 
+  Bed, 
+  Search, 
+  ArrowUpRight,
+  Sparkles,
+  Loader2
+} from 'lucide-react';
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
 
-  const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
-    if (viewMode === 'list') {
-      return (
-        <Card className="p-6 hover:shadow-lg transition-shadow duration-300">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-80 flex-shrink-0">
-              <div className="relative overflow-hidden rounded-lg">
-                <img
-                  src={property.image}
-                  alt={property.title}
-                  className="w-full h-48 md:h-full object-cover"
-                />
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <Badge variant="secondary">{property.type}</Badge>
-                  {property.featured && (
-                    <Badge variant="default" className="bg-accent text-accent-foreground">
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 space-y-4">
-              <div>
-                <h3 className="text-2xl font-playfair font-semibold text-primary mb-2">
-                  {property.title}
-                </h3>
-                <div className="flex items-center text-muted-foreground mb-3">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  {property.location}
-                </div>
-                <p className="text-muted-foreground leading-relaxed">{property.description}</p>
-              </div>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Bed className="w-4 h-4 mr-1" />
-                  {property.bedrooms} Beds
-                </div>
-                <div className="flex items-center">
-                  <Bath className="w-4 h-4 mr-1" />
-                  {property.bathrooms} Baths
-                </div>
-                <div className="flex items-center">
-                  <Square className="w-4 h-4 mr-1" />
-                  {property.area.toLocaleString()} m²
-                </div>
-                {property.yearBuilt && <div>Built: {property.yearBuilt}</div>}
-                {property.garage && <div>Garage: {property.garage} cars</div>}
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="text-3xl font-playfair font-bold text-primary">
-                  €{property.price.toLocaleString()}
-                </div>
-                <Link to={`/property/${property.id}`}>
-                  <Button className="btn-primary">View Details</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Card>
-      );
+
+export default function Properties() {
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await propertiesApi.getAll();
+
+        setProperties(
+          data.filter((p: any) => p.status === "available")
+        );
+      } catch (err) {
+        console.error("Discovery error", err);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    return (
-      <Card className="property-card group">
-        <div className="relative overflow-hidden">
-          <img
-            src={property.image}
-            alt={property.title}
-            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-          <div className="absolute top-4 left-4 flex gap-2">
-            <Badge variant="secondary">{property.type}</Badge>
-            {property.featured && (
-              <Badge variant="default" className="bg-accent text-accent-foreground">
-                Featured
-              </Badge>
-            )}
-          </div>
-          <div className="absolute top-4 right-4">
-            <Button size="sm" variant="ghost" className="bg-white/80 hover:bg-white text-primary">
-              <Eye className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-        <div className="p-6 space-y-4">
-          <div>
-            <h3 className="text-xl font-playfair font-semibold text-primary mb-2 group-hover:text-accent transition-colors">
-              {property.title}
-            </h3>
-            <div className="flex items-center text-muted-foreground text-sm mb-3">
-              <MapPin className="w-4 h-4 mr-1" />
-              {property.location}
-            </div>
-            <div className="text-2xl font-playfair font-bold text-primary">
-              €{property.price.toLocaleString()}
-            </div>
-          </div>
-          <div className="flex justify-between text-sm text-muted-foreground border-t pt-4">
-            <div className="flex items-center">
-              <Bed className="w-4 h-4 mr-1" />
-              {property.bedrooms} Beds
-            </div>
-            <div className="flex items-center">
-              <Bath className="w-4 h-4 mr-1" />
-              {property.bathrooms} Baths
-            </div>
-            <div className="flex items-center">
-              <Square className="w-4 h-4 mr-1" />
-              {property.area.toLocaleString()} m²
-            </div>
-          </div>
-          <Link to={`/property/${property.id}`}>
-            <Button className="w-full btn-primary group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-              View Details
-            </Button>
-          </Link>
-        </div>
-      </Card>
-    );
-  };
+    loadData();
+  }, []);
+
+  const filteredProperties = properties.filter((prop) => {
+    const matchesType =
+      filter === "all" || prop.type === filter;
+
+    const matchesSearch =
+      prop.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      prop.location
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    return matchesType && matchesSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <ChatBot />
-      
-      {/* Hero Section */}
-      <section className="pt-24 pb-8 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container-custom">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-playfair font-bold text-primary mb-4">
-              Our Properties
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover your perfect property from our curated collection of premium real estate
+    <div className="min-h-screen bg-white pt-24">
+	  <Navbar />
+
+      {/* HERO SECTION */}
+      <div className="bg-[#0B1F33] text-white pt-32 pb-20 px-8 relative overflow-hidden">
+
+        {/* Overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage:
+              `url('https://www.transparenttextures.com/patterns/arabesque.png')`
+          }}
+        />
+
+        <div className="max-w-7xl mx-auto relative z-10 text-center">
+
+          <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.4em] mb-4 block">
+            Exclusive Collection
+          </span>
+
+          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-10 tracking-tight leading-tight">
+            Discover Exceptional <br />
+            Properties
+          </h1>
+
+          {/* SEARCH BAR */}
+          <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 flex flex-col md:flex-row items-center shadow-2xl">
+
+            <div className="flex-1 flex items-center px-5 w-full">
+              <Search
+                className="text-[#5DA9E9] mr-3"
+                size={18}
+              />
+
+              <input
+                type="text"
+                placeholder="Search city, neighborhood..."
+                className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-gray-300 py-4"
+                value={searchTerm}
+                onChange={(e) =>
+                  setSearchTerm(e.target.value)
+                }
+              />
+            </div>
+
+            <button className="bg-[#5DA9E9] text-white px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-sky-400 transition-all shadow-xl active:scale-95">
+              Refine Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* FILTER BAR */}
+      <div className="max-w-7xl mx-auto px-8 py-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-40 shadow-sm">
+
+        <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
+
+          {["all", "Luxury Villa", "Riad", "Apartment"].map((type) => (
+
+            <button
+              key={type}
+              onClick={() => setFilter(type)}
+              className={`
+                px-6 py-3 rounded-full text-[10px]
+                font-bold uppercase tracking-widest
+                transition-all border whitespace-nowrap
+
+                ${
+                  filter === type
+                    ? "bg-[#0B1F33] text-white border-[#0B1F33] shadow-lg shadow-[#0B1F33]/20"
+                    : "border-gray-200 text-gray-500 hover:border-[#5DA9E9] hover:text-[#5DA9E9]"
+                }
+              `}
+            >
+              {type === "all"
+                ? "All Properties"
+                : type}
+            </button>
+          ))}
+        </div>
+
+        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest hidden md:block">
+          {filteredProperties.length} Properties Available
+        </p>
+      </div>
+
+      {/* PROPERTIES GRID */}
+      <main className="max-w-7xl mx-auto px-8 py-20">
+
+        {loading ? (
+
+          <div className="flex flex-col items-center justify-center py-32 text-gray-300">
+            <Loader2
+              className="animate-spin mb-4"
+              size={40}
+            />
+
+            <p className="font-serif italic text-lg text-gray-400">
+              Loading Premium Assets...
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Filters */}
-      <section className="py-8 border-b border-border">
-        <div className="container-custom">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                Filters
-              </Button>
-              <div className="hidden md:flex items-center gap-2">
-                <Button
-                  variant={viewMode === 'grid' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Showing {properties.length} properties
-            </div>
+        ) : filteredProperties.length === 0 ? (
+
+          <div className="text-center py-32 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
+            <p className="text-gray-400 italic">
+              No properties currently matching your search.
+            </p>
           </div>
 
-          {showFilters && (
-            <Card className="mt-6 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                <Select onValueChange={(value) => handleFilterChange('propertyType', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Property Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="apartment">Apartment</SelectItem>
-                    <SelectItem value="villa">Villa</SelectItem>
-                    <SelectItem value="house">House</SelectItem>
-                    <SelectItem value="penthouse">Penthouse</SelectItem>
-                    <SelectItem value="cottage">Cottage</SelectItem>
-                    <SelectItem value="loft">Loft</SelectItem>
-                  </SelectContent>
-                </Select>
+        ) : (
 
-                <Input
-                  placeholder="Location"
-                  value={filters.location}
-                  onChange={(e) => handleFilterChange('location', e.target.value)}
-                />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
 
-                <Select onValueChange={(value) => handleFilterChange('bedrooms', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Bedrooms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
-                    <SelectItem value="5">5+</SelectItem>
-                  </SelectContent>
-                </Select>
+            {filteredProperties.map((prop) => (
 
-                <Select onValueChange={(value) => handleFilterChange('bathrooms', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Bathrooms" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div
+                key={prop.id}
+                onClick={() =>
+                  navigate(`/property/${prop.id}`)
+                }
+                className="group bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 hover:shadow-[0_20px_60px_rgba(11,31,51,0.12)] transition-all duration-700 cursor-pointer flex flex-col"
+              >
 
-                <Select onValueChange={(value) => handleFilterChange('sortBy', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sort By" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest First</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="area-large">Largest First</SelectItem>
-                    <SelectItem value="area-small">Smallest First</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* IMAGE */}
+                <div className="relative h-[320px] overflow-hidden">
 
-            <div className="space-y-4">
-                <label className="text-sm font-medium">Price Range</label>
-                <Slider
-                  value={priceRange}
-                  onValueChange={setPriceRange}
-                  max={5000000}
-                  min={50000}
-                  step={50000}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>€{priceRange[0].toLocaleString()}</span>
-                  <span>€{priceRange[1].toLocaleString()}</span>
+                  {/* Floating Tag */}
+                  <div className="absolute top-6 left-6 z-10">
+
+                    <div className="bg-[#0B1F33]/40 backdrop-blur-md text-[#5DA9E9] px-4 py-2 rounded-full text-[8px] font-bold uppercase tracking-[0.2em] border border-white/10 flex items-center gap-2 shadow-xl">
+
+                      <div className="w-1 h-1 bg-[#5DA9E9] rounded-full animate-pulse"></div>
+
+                      Curated Choice
+                    </div>
+                  </div>
+
+                  {/* Property Image */}
+                  <img
+                    src={
+                      prop.thumbnail_url ||
+                      "https://images.unsplash.com/photo-1600585154340-be6199f7c096?auto=format&fit=crop&q=80"
+                    }
+                    alt={prop.title}
+                    className="w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-110"
+                  />
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F33]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 flex items-center justify-center">
+
+                    <div className="bg-[#5DA9E9] text-white p-5 rounded-full scale-50 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-700">
+
+                      <ArrowUpRight
+                        size={28}
+                        strokeWidth={2.5}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-8 flex-1 flex flex-col">
+
+                  {/* LOCATION */}
+                  <div className="flex items-center text-[#5DA9E9] gap-1 mb-3">
+
+                    <MapPin size={12} />
+
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                      {prop.location}
+                    </span>
+                  </div>
+
+                  {/* TITLE */}
+                  <h3 className="text-2xl font-serif font-bold text-[#0B1F33] mb-2 leading-tight group-hover:text-[#5DA9E9] transition-colors">
+
+                    {prop.title}
+                  </h3>
+
+                  {/* SUBTITLE */}
+                  <p className="text-gray-400 text-xs font-serif italic mb-8">
+                    {prop.neighborhood ||
+                      "Premium district"}
+                  </p>
+
+                  {/* DETAILS */}
+                  <div className="mt-auto grid grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+
+                    {/* AREA */}
+                    <div className="flex flex-col">
+
+                      <span className="text-[9px] text-gray-400 font-bold uppercase">
+                        Area
+                      </span>
+
+                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
+
+                        <Maximize
+                          size={14}
+                          className="opacity-30"
+                        />
+
+                        <span className="text-xs font-bold">
+                          {prop.area_sqm} m²
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* ROOMS */}
+                    <div className="flex flex-col">
+
+                      <span className="text-[9px] text-gray-400 font-bold uppercase">
+                        Rooms
+                      </span>
+
+                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
+
+                        <Bed
+                          size={14}
+                          className="opacity-30"
+                        />
+
+                        <span className="text-xs font-bold">
+                          {prop.bedrooms} Bed
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* ROI */}
+                    <div className="flex flex-col">
+
+                      <span className="text-[9px] text-gray-400 font-bold uppercase">
+                        AI ROI
+                      </span>
+
+                      <div className="flex items-center gap-1.5 text-[#5DA9E9]">
+
+                        <Sparkles
+                          size={14}
+                          className="opacity-70"
+                        />
+
+                        <span className="text-xs font-bold">
+                          ~12.4%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PRICE */}
+                  <div className="mt-8 flex justify-between items-end">
+
+                    <div className="text-2xl font-serif font-bold text-[#0B1F33]">
+
+                      {Number(prop.price)?.toLocaleString()}
+
+                      <span className="text-[10px] text-[#5DA9E9] uppercase ml-1 tracking-widest font-sans">
+                        MAD
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </Card>
-          )}
-        </div>
-      </section>
-
-      {/* Properties Grid */}
-      <section className="section-padding">
-        <div className="container-custom">
-          <div className={`grid gap-8 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-1'
-          }`}>
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
-
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Load More Properties
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <Footer />
+        )}
+      </main>
     </div>
   );
-};
-
-export default Properties;
+}
