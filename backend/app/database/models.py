@@ -48,6 +48,9 @@ class Agent(Base):
     first_name = Column(String(100))
     last_name = Column(String(100))
     email = Column(String(150), unique=True, index=True)
+    hashed_password = Column(String(255), nullable=False) 
+    role = Column(String(20), default="agent") # 'admin' or 'agent'
+    
     properties = relationship("Property", back_populates="agent")
     blogs = relationship("Blog", back_populates="author_agent") # Nouvelle relation pour les blogs
 
