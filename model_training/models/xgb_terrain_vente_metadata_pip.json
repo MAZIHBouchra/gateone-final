@@ -1,0 +1,19 @@
+{
+  "date": "2026-05-22",
+  "version": "v4_optuna_optimized",
+  "modele": "XGBRegressor",
+  "type_bien": "terrain_vente",
+  "target": "log(pm2)",
+  "n_lignes_train": 1032,
+  "n_lignes_test": 258,
+  "n_features": 67,
+  "n_zones": 43,
+  "metriques_test": {
+    "R2": 0.394,
+    "MAE": 2126078.0,
+    "RMSE": 4525153.0,
+    "MAPE": 78.52
+  },
+  "affichage_site": "Fourchette ±40% obligatoire pour les terrains",
+  "formule": "prix_min = prix_estime × 0.60 | prix_max = prix_estime × 1.60"
+}
