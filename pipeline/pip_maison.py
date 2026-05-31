@@ -1,13 +1,3 @@
-"""
-pip_maison.py — Pipeline de prédiction prix maisons Marrakech
-Caractéristiques données :
-  - 1 528 maisons, ~1 134 après nettoyage
-  - Prix médian : 1 600 000 MAD | Surface médiane : 114 m²
-  - Corrélations fortes : log_surface (0.37), nb_pieces (0.35), chambres_num (0.33)
-  - Zone "Autre" = 704 lignes (62%) — décomposée via localisation fine
-  - 32 entrées EUR → conversion MAD
-  - etage : -1 = inconnu (921 cas)
-"""
 
 import re
 import unicodedata
@@ -162,7 +152,7 @@ def extract_keywords(titre, description=""):
 # ─────────────────────────────────────────────
 def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
-    print(f"✅ Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
+    print(f" Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
 
     # Maisons uniquement
     df = df[df["type_bien"].isin(["Maison", "maison"])].copy()
@@ -415,7 +405,7 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
 # 4. OPTUNA
 # ─────────────────────────────────────────────
 def tune_hyperparams(X_train, y_train, stats, n_trials=150):
-    print(f"🔍 Optuna {n_trials} trials sur X_train (CV 5-fold)...")
+    print(f" Optuna {n_trials} trials sur X_train (CV 5-fold)...")
 
     def objective(trial):
         params = dict(
@@ -440,7 +430,7 @@ def tune_hyperparams(X_train, y_train, stats, n_trials=150):
     study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
 
-    print(f"✅ Meilleur R² CV : {study.best_value:.4f}")
+    print(f" Meilleur R² CV : {study.best_value:.4f}")
     for k, v in study.best_params.items():
         print(f"   {k:30s}: {v}")
     return study.best_params, study
@@ -684,7 +674,7 @@ def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
         result["prix_min"] = round(prix_point * (1 - margin), -3)
         result["prix_max"] = round(prix_point * (1 + margin), -3)
 
-    print(f"\n💰 Maison — {s:.0f} m² | {q}")
+    print(f"\n Maison — {s:.0f} m² | {q}")
     print(f"   Prix estimé : {result['prix_estime']:,.0f} MAD")
     print(f"   Prix/m²     : {result['pm2_estime']:,.0f} MAD/m²")
     return result
@@ -698,7 +688,7 @@ def run_pipeline(tune=True, n_trials=150):
     print("═" * 60)
 
     df = load_data()
-    print("\n📂 Split train/test...")
+    print("\n Split train/test...")
     X_train, X_test, y_train, y_test, df_train, df_test, stats = split_and_encode(df)
 
     xgb_params, study = tune_hyperparams(X_train, y_train, stats, n_trials) if tune else (None, None)
@@ -713,7 +703,7 @@ def run_pipeline(tune=True, n_trials=150):
 
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump({"pipeline": pipeline_final, "stats": stats}, MODEL_PATH)
-    print(f"\n✅ Modèle sauvegardé : {MODEL_PATH}")
+    print(f"\n Modèle sauvegardé : {MODEL_PATH}")
 
     return pipeline_final, stats, metrics, study
 
