@@ -1,21 +1,17 @@
 {
-  "date": "2026-05-21",
+  "date": "2026-05-25",
   "version": "v4_optuna",
   "modele": "XGBRegressor",
   "type_bien": "terrain_vente",
   "target": "log(prix_total)",
-  "n_lignes_train": 1028,
-  "n_lignes_test": 258,
-  "n_features": 39,
-  "n_zones": 38,
+  "n_lignes_train": 262,
+  "n_lignes_test": 66,
+  "n_features": 34,
+  "n_zones": 14,
   "sources": {
-    "avito": 926,
-    "sarouty": 164,
-    "milkiya": 75,
-    "agenz": 66,
-    "promoimmo": 52,
-    "sekna": 2,
-    "2p": 1
+    "milkiya": 142,
+    "sarouty": 121,
+    "agenz": 65
   },
   "features_cles": [
     "log_surface",
@@ -27,23 +23,23 @@
     "kw_agricole"
   ],
   "metriques_test": {
-    "R2": 0.3351,
-    "MAE": 2100269.0,
-    "RMSE": 4469186.0,
-    "MAPE": 75.96
+    "R2": 0.2303,
+    "MAE": 3326.0,
+    "RMSE": 7089.0,
+    "MAPE": 94.2
   },
   "hyperparametres": {
-    "n_estimators": 2476,
-    "learning_rate": 0.0034919475070117082,
-    "max_depth": 4,
-    "max_leaves": 57,
-    "subsample": 0.580682838746663,
-    "colsample_bytree": 0.7879026891282349,
-    "colsample_bylevel": 0.45180953623433107,
+    "n_estimators": 1193,
+    "learning_rate": 0.03703973770780904,
+    "max_depth": 3,
+    "max_leaves": 52,
+    "subsample": 0.5279059220787549,
+    "colsample_bytree": 0.43437684440450836,
+    "colsample_bylevel": 0.7816973295160203,
     "min_child_weight": 2,
-    "reg_alpha": 0.0005743859479728567,
-    "reg_lambda": 0.3208096942120514,
-    "gamma": 0.3477995891513418
+    "reg_alpha": 0.002399259790546269,
+    "reg_lambda": 0.00042892299483002227,
+    "gamma": 1.997813372854284
   },
   "affichage_site": "Fourchette ±40% obligatoire pour les terrains",
   "formule": "prix_min = prix_estime × 0.60 | prix_max = prix_estime × 1.60"
