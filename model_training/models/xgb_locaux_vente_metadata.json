@@ -1,0 +1,44 @@
+{
+  "date": "2026-05-22",
+  "version": "v1_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "locaux_vente",
+  "target": "log(prix/m²) → prix = exp(pred) × surface",
+  "n_lignes_train": 793,
+  "n_lignes_test": 199,
+  "n_features": 31,
+  "n_zones": 14,
+  "types_locaux": {
+    "local_comm": 954,
+    "industriel": 14,
+    "depot": 10,
+    "bureau": 8,
+    "hotel_riad": 4,
+    "salle": 2
+  },
+  "metriques_baseline": {
+    "R2": 0.9815,
+    "MAPE": 9.82
+  },
+  "metriques_test": {
+    "R2": 0.9823,
+    "MAE": 376274.0,
+    "RMSE": 1604510.0,
+    "MAPE": 8.83
+  },
+  "cv_r2_optuna": 0.9902,
+  "hyperparametres": {
+    "n_estimators": 3310,
+    "learning_rate": 0.02059460943703328,
+    "max_depth": 7,
+    "max_leaves": 25,
+    "subsample": 0.7265205811316526,
+    "colsample_bytree": 0.8817535936779622,
+    "colsample_bylevel": 0.8234112605808116,
+    "min_child_weight": 3,
+    "reg_alpha": 0.0005718390052684811,
+    "reg_lambda": 0.03391783436606919,
+    "gamma": 0.0007972681171905648
+  },
+  "note": "Prix/m² médian 19 400 MAD — kw_industriel signal négatif fort"
+}
