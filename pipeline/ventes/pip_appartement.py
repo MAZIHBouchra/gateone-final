@@ -47,7 +47,7 @@ def load_data(path: str):
 
     df = pd.read_csv(path)
 
-    # ── Reconstruire quartier_clean depuis les dummies si nécessaire ──────
+    #  Reconstruire quartier_clean depuis les dummies si nécessaire 
     if "quartier_clean" not in df.columns:
         quartier_cols = [c for c in df.columns if "quartier" in c.lower()]
         if quartier_cols:
@@ -63,7 +63,7 @@ def load_data(path: str):
         # Nettoyer préfixe "clean_" si présent
         df["quartier_clean"] = df["quartier_clean"].str.replace("^clean_", "", regex=True)
 
-    # ── CHANGEMENT 2 : feature engineering dans load_data ────────────────
+    #  CHANGEMENT 2 : feature engineering dans load_data 
     # (créées ici si absentes du CSV, pour éviter le ValueError)
 
     if "surface_par_chambre" not in df.columns:
@@ -140,8 +140,8 @@ def build_pipeline(X_train, xgb_params: dict = None):
 
     # CHANGEMENT 3 : paramètres par défaut = meilleurs params Optuna trouvés
     default_xgb = dict(
-        n_estimators     = 1500,      # augmenté pour compenser lr faible
-        learning_rate    = 0.0119,    # meilleur lr Optuna
+        n_estimators     = 1500,      
+        learning_rate    = 0.0119,    
         max_depth        = 7,
         subsample        = 0.703,
         colsample_bytree = 0.835,
