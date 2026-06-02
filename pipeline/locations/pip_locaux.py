@@ -18,12 +18,12 @@ from xgboost import XGBRegressor
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-# ── CHEMINS ───────────────────────────────────────────────────────────────────
+#  CHEMINS 
 BASE_DIR   = Path(__file__).resolve().parent.parent.parent
 DATA_PATH  = BASE_DIR / "data/marrakech_immo_location/locaux_location.csv"
 MODEL_PATH = BASE_DIR / "model_training/models/xgb_locaux_location.pkl"
 
-# ── CONSTANTES ────────────────────────────────────────────────────────────────
+#  CONSTANTES 
 TARGET_LOG = "log_prix"
 
 NUMERIC_FEATURES = [
@@ -44,7 +44,7 @@ BINARY_FEATURES = [
 CATEGORICAL_FEATURES = ["zone_clean", "type_local", "source_clean"]
 
 
-# ── UTILITAIRES ───────────────────────────────────────────────────────────────
+#  UTILITAIRES ─
 
 def normalize_text(s: str) -> str:
     if not isinstance(s, str):
@@ -82,7 +82,7 @@ def infer_type_local(row: pd.Series) -> str:
     return "local_comm"
 
 
-# ── 1. CHARGEMENT & NETTOYAGE ─────────────────────────────────────────────────
+#  1. CHARGEMENT & NETTOYAGE ─
 
 def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
@@ -91,7 +91,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     # Déduplication
     df = df.drop_duplicates(subset=["prix_num", "surface_num", "localisation"]).copy()
 
-    # ── Zone ──
+    #  Zone 
     if "quartier" in df.columns:
         df["zone_clean"] = df["quartier"].fillna("autre")
     elif "localisation" in df.columns:
@@ -100,11 +100,11 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
         df["zone_clean"] = "autre"
     df["zone_clean"] = df["zone_clean"].apply(normalize_text)
 
-    # ── Surface ──
+    #  Surface 
     df["surface_num"] = pd.to_numeric(df["surface_num"], errors="coerce")
     df = df[df["surface_num"].between(5, 10_000)].copy()
 
-    # ── Prix (loyer mensuel MAD) ──
+    #  Prix (loyer mensuel MAD) 
     df["prix_num"] = pd.to_numeric(df["prix_num"], errors="coerce")
     # Filtres marché locaux location : 500 – 200 000 MAD/mois
     df = df[df["prix_num"].between(500, 200_000)].copy()
@@ -117,31 +117,31 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     log_p = np.log(df["prix_num"])
     df = df[(log_p >= log_p.quantile(0.01)) & (log_p <= log_p.quantile(0.99))].copy()
 
-    # ── NLP keywords ──
+    #  NLP keywords 
     text = (df["titre"].fillna("") + " " + df["description"].fillna("")).str.lower() \
         if "description" in df.columns else df["titre"].fillna("").str.lower()
     kw_df = text.apply(extract_keywords).apply(pd.Series)
     for col in kw_df.columns:
         df[col] = kw_df[col].values
 
-    # ── Type local ──
+    #  Type local 
     if "type_bien" in df.columns:
         mapped = df["type_bien"].fillna("").str.lower().str.strip().map(TYPE_BIEN_MAP)
         df["type_local"] = mapped.where(mapped.notna(), df.apply(infer_type_local, axis=1))
     else:
         df["type_local"] = df.apply(infer_type_local, axis=1)
 
-    # ── Équipements binaires ──
+    #  Équipements binaires 
     for col in ["parking", "ascenseur", "climatisation", "securite",
                 "vue", "neuf", "meuble", "cave", "hammam", "terrasse", "jardin"]:
         if col not in df.columns:
             df[col] = 0
         df[col] = df[col].fillna(0).astype(int)
 
-    # ── Étage ──
+    #  Étage 
     df["etage"] = pd.to_numeric(df.get("etage", 0), errors="coerce").fillna(0).clip(0, 20)
 
-    # ── Source ──
+    #  Source 
     if "source" in df.columns:
         df["source_clean"] = df["source"].fillna("inconnu").str.lower().str.strip()
     elif "agence" in df.columns:
@@ -151,7 +151,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     else:
         df["source_clean"] = "inconnu"
 
-    # ── Features de base ──
+    #  Features de base 
     df["log_surface"]    = np.log1p(df["surface_num"])
     df["log_surface_sq"] = df["log_surface"] ** 2
     df["log_prix"]       = np.log(df["prix_num"])
@@ -164,7 +164,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     return df
 
 
-# ── 2. SPLIT + FEATURE ENGINEERING (sans leakage) ────────────────────────────
+#  2. SPLIT + FEATURE ENGINEERING (sans leakage) 
 
 def build_features(df: pd.DataFrame, stats: dict = None, is_train: bool = True):
     data = df.copy()
@@ -250,7 +250,7 @@ def split_and_encode(df: pd.DataFrame, test_size: float = 0.2, random_state: int
     return X_train, X_test, y_train, y_test, train_df, test_df, stats
 
 
-# ── 3. PIPELINE SKLEARN ───────────────────────────────────────────────────────
+#  3. PIPELINE SKLEARN ─
 
 def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
     if isinstance(stats_or_X, dict):
@@ -277,7 +277,7 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
     return Pipeline([("preprocessor", preprocessor), ("model", XGBRegressor(**default_xgb))])
 
 
-# ── 4. OPTUNA ─────────────────────────────────────────────────────────────────
+#  4. OPTUNA ─
 
 def tune_hyperparams(X_train, y_train, stats, n_trials: int = 40) -> dict:
     print(f"🔍 Tuning hyperparamètres ({n_trials} trials)...")
@@ -304,7 +304,7 @@ def tune_hyperparams(X_train, y_train, stats, n_trials: int = 40) -> dict:
     return study.best_params
 
 
-# ── 5. ENTRAÎNEMENT ───────────────────────────────────────────────────────────
+#  5. ENTRAÎNEMENT ─
 
 def train(pipeline, X_train, y_train):
     print(" Entraînement...")
@@ -312,7 +312,7 @@ def train(pipeline, X_train, y_train):
     return pipeline
 
 
-# ── 6. ÉVALUATION ─────────────────────────────────────────────────────────────
+#  6. ÉVALUATION ─
 
 def evaluate(pipeline, X_train, X_test, y_train, y_test):
     y_pred_tr = pipeline.predict(X_train)
@@ -353,7 +353,7 @@ def evaluate(pipeline, X_train, X_test, y_train, y_test):
     }
 
 
-# ── 7. GRAPHIQUES ─────────────────────────────────────────────────────────────
+#  7. GRAPHIQUES ─
 
 def plot_results(pipeline, X_test, y_test, metrics: dict = None, save_dir: Path = None):
     prix_reel = np.exp(y_test)
@@ -413,7 +413,7 @@ def plot_results(pipeline, X_test, y_test, metrics: dict = None, save_dir: Path 
     plt.show()
 
 
-# ── 8. PRÉDICTION UNITAIRE ────────────────────────────────────────────────────
+#  8. PRÉDICTION UNITAIRE 
 
 def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
     """
@@ -478,7 +478,7 @@ def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
     return result
 
 
-# ── 9. PIPELINE COMPLET ───────────────────────────────────────────────────────
+#  9. PIPELINE COMPLET ─
 
 def run_pipeline(tune: bool = True, n_trials: int = 40):
     print("\n" + "=" * 60)
@@ -510,7 +510,7 @@ def run_pipeline(tune: bool = True, n_trials: int = 40):
     return pipeline_final, stats, metrics
 
 
-# ── POINT D'ENTRÉE ────────────────────────────────────────────────────────────
+#  POINT D'ENTRÉE 
 if __name__ == "__main__":
     pipeline_final, stats, metrics = run_pipeline(tune=True, n_trials=40)
 
