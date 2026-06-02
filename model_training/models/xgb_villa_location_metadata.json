@@ -1,0 +1,40 @@
+{
+  "date": "2026-06-02",
+  "version": "v2_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "villa_vente",
+  "target": "log(prix_total)",
+  "corrections_v2": [
+    "Suppression category_encoders (leakage)",
+    "Suppression surface_terrain_text (3% coverage)",
+    "Groupby features calculées sur train uniquement",
+    "CV sur X_train (pas X_test)"
+  ],
+  "n_lignes_train": 1106,
+  "n_lignes_test": 277,
+  "n_features": 46,
+  "metriques_baseline": {
+    "R2": 0.877,
+    "MAPE": 14.07
+  },
+  "metriques_test": {
+    "R2": 0.8783,
+    "MAE": 3818.0,
+    "RMSE": 5277.0,
+    "MAPE": 13.72
+  },
+  "cv_r2_optuna": 0.8843,
+  "hyperparametres": {
+    "n_estimators": 2800,
+    "learning_rate": 0.005741729032429579,
+    "max_depth": 8,
+    "max_leaves": 13,
+    "subsample": 0.7364947862550204,
+    "colsample_bytree": 0.9979560214932284,
+    "colsample_bylevel": 0.8279355982043013,
+    "min_child_weight": 8,
+    "reg_alpha": 0.0017964438186174735,
+    "reg_lambda": 0.0456613696715407,
+    "gamma": 0.15430690400759922
+  }
+}
