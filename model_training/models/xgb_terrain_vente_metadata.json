@@ -1,5 +1,5 @@
 {
-  "date": "2026-05-25",
+  "date": "2026-06-02",
   "version": "v4_optuna",
   "modele": "XGBRegressor",
   "type_bien": "terrain_vente",
@@ -23,23 +23,23 @@
     "kw_agricole"
   ],
   "metriques_test": {
-    "R2": 0.2303,
-    "MAE": 3326.0,
-    "RMSE": 7089.0,
-    "MAPE": 94.2
+    "R2": 0.2231,
+    "MAE": 3324.0,
+    "RMSE": 7122.0,
+    "MAPE": 81.71
   },
   "hyperparametres": {
-    "n_estimators": 1193,
-    "learning_rate": 0.03703973770780904,
+    "n_estimators": 3716,
+    "learning_rate": 0.0032189605141290673,
     "max_depth": 3,
-    "max_leaves": 52,
-    "subsample": 0.5279059220787549,
-    "colsample_bytree": 0.43437684440450836,
-    "colsample_bylevel": 0.7816973295160203,
-    "min_child_weight": 2,
-    "reg_alpha": 0.002399259790546269,
-    "reg_lambda": 0.00042892299483002227,
-    "gamma": 1.997813372854284
+    "max_leaves": 37,
+    "subsample": 0.5092647939476201,
+    "colsample_bytree": 0.665308053914039,
+    "colsample_bylevel": 0.42637972032255417,
+    "min_child_weight": 20,
+    "reg_alpha": 0.00039866272975555735,
+    "reg_lambda": 0.012296916309767971,
+    "gamma": 0.14791121135985497
   },
   "affichage_site": "Fourchette ±40% obligatoire pour les terrains",
   "formule": "prix_min = prix_estime × 0.60 | prix_max = prix_estime × 1.60"
