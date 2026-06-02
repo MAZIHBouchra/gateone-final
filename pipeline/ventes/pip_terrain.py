@@ -1,28 +1,3 @@
-"""
-pip_terrain_v5.py
-==================
-Pipeline terrain Marrakech — corrigé & amélioré depuis v4.
-
-CORRECTIONS v5 :
-  • surface_num : parse correct des chaînes "695 m²" (regex float)
-  • mub absent du CSV → source_clean recalculé proprement
-  • Suppression des BINARY_FEATURES fantômes (piscine, terrasse, etc.)
-    absent du CSV terrain → remplacé par 0 sans crash
-  • Bug _add_features : score_terrain/score_standing sur colonnes
-    inexistantes → protégé par .get() avec fallback 0
-  • quartier_clean = zone_clean (alias stable, pas de KeyError 'quartier')
-  • target notebook : log(prix) vs log(pm2) → unifié sur log(prix) + retour pm2
-
-AMÉLIORATIONS v5 :
-  • Normalisation localisation avancée (35+ variantes Route Ourika etc.)
-  • Nouveaux NLP : kw_hectare, kw_titre, kw_vue, kw_palmeraie
-  • Feature log_surface corrigé : np.log(surface) au lieu de np.log1p
-  • Interaction kw_immeuble × log_surface (signal fort)
-  • Ridge Stacking léger : XGB + LightGBM → +2-4% R²
-  • Optuna 200 trials avec pruning MedianPruner
-  • Seuil zone : min 4 observations (vs 6 en v4, plus de zones)
-  • MAPE par seuil 10/20/30/50%
-"""
 
 import re, os, json, warnings
 import numpy as np
@@ -41,16 +16,16 @@ from xgboost import XGBRegressor
 
 warnings.filterwarnings("ignore")
 
-# ─── CONSTANTES ───────────────────────────────────────────────────────────────
+#  CONSTANTES 
 
 SURFACE_MIN  = 50
 SURFACE_MAX  = 500_000
 PRIX_M2_MIN  = 50
 PRIX_M2_MAX  = 50_000
 EUR_TO_MAD   = 10.8
-ZONE_MIN_OBS = 4          # seuil zone retenue (v5: 4 vs 6 en v4)
+ZONE_MIN_OBS = 4          
 
-# Zone map enrichie v5
+# Zone map enrichie
 ZONE_MAP = [
     # Quartiers urbains
     ("Gueliz",        r"gu[eé]liz"),
@@ -86,7 +61,7 @@ ZONE_MAP = [
     ("Marrakech",     r"^marrakech$"),
 ]
 
-# ─── FEATURES LIST ────────────────────────────────────────────────────────────
+#  FEATURES LIST 
 
 NUMERIC_FEATURES = [
     # Surface
@@ -101,8 +76,8 @@ NUMERIC_FEATURES = [
     "surface_log_x_pm2",
     "zone_bias",
     # Interactions v5
-    "immeuble_x_log_surf",    # kw_immeuble × log_surface (nouveau v5)
-    "quality_x_log_surf",     # terrain_quality × log_surface (nouveau v5)
+    "immeuble_x_log_surf",   
+    "quality_x_log_surf",     
     "te_x_surface",
     # NLP numériques
     "kw_immeuble", "kw_facade", "kw_projet",
@@ -117,11 +92,11 @@ NUMERIC_FEATURES = [
 ]
 
 BINARY_FEATURES = [
-    "kw_agricole",        # signal négatif fort (-0.34)
-    "kw_industriel",      # signal négatif
-    "kw_constructible",   # signal positif
-    "kw_viabilise",       # signal positif
-    "kw_golf",            # signal positif fort
+    "kw_agricole",        
+    "kw_industriel",     
+    "kw_constructible",   
+    "kw_viabilise",       
+    "kw_golf",            
     "is_particulier",
 ]
 
@@ -136,7 +111,7 @@ CATEGORICAL_FEATURES = [
 TARGET_LOG = "log_prix"   # log(prix_total) — plus stable que log(pm²) sur petit dataset
 
 
-# ─── HELPERS ──────────────────────────────────────────────────────────────────
+#  HELPERS 
 
 def _parse_prix(s):
     if pd.isna(s): return np.nan
@@ -188,7 +163,7 @@ def _kw(series, pattern):
     return series.str.contains(pattern, regex=True, na=False).astype(int)
 
 
-# ─── 1. CHARGEMENT & CLEANING ─────────────────────────────────────────────────
+#  1. CHARGEMENT & CLEANING ─
 
 def load_data(path: str) -> pd.DataFrame:
     """Charge, nettoie et fait le feature engineering de base."""
@@ -315,7 +290,7 @@ def load_data(path: str) -> pd.DataFrame:
 
     df.drop(columns=["_text"], inplace=True)
 
-    print(f"\n✅ Dataset final : {df.shape}")
+    print(f"\n Dataset final : {df.shape}")
     print(f"   Prix médian  : {df['prix_num'].median():,.0f} MAD")
     print(f"   PM2 médian   : {df['pm2'].median():,.0f} MAD/m²")
     print(f"\nusage_terrain :\n{df['usage_terrain'].value_counts().to_string()}")
@@ -323,7 +298,7 @@ def load_data(path: str) -> pd.DataFrame:
     return df
 
 
-# ─── 2. SPLIT + TARGET ENCODING ───────────────────────────────────────────────
+#  2. SPLIT + TARGET ENCODING ──
 
 def _add_features(df_split, stats):
     """Ajoute les features dérivées des stats train (sans leakage)."""
@@ -409,11 +384,11 @@ def split_and_encode(df, test_size=0.2, random_state=42):
     X_train = df_train[all_feats].copy(); y_train = df_train[TARGET_LOG].copy()
     X_test  = df_test[all_feats].copy();  y_test  = df_test[TARGET_LOG].copy()
 
-    print(f"✅ Split — Train : {len(X_train)} | Test : {len(X_test)} | Features : {len(all_feats)}")
+    print(f" Split — Train : {len(X_train)} | Test : {len(X_test)} | Features : {len(all_feats)}")
     return X_train, X_test, y_train, y_test, df_train, df_test, stats
 
 
-# ─── 3. PIPELINE SKLEARN ──────────────────────────────────────────────────────
+#  3. PIPELINE SKLEARN 
 
 def build_pipeline(X_train, xgb_params: dict = None):
     num_cols = [c for c in NUMERIC_FEATURES     if c in X_train.columns]
@@ -450,11 +425,11 @@ def build_pipeline(X_train, xgb_params: dict = None):
         ("preprocessor", preprocessor),
         ("model", XGBRegressor(**default_xgb)),
     ])
-    print(f"✅ Pipeline — num:{len(num_cols)} bin:{len(bin_cols)} cat:{len(cat_cols)}")
+    print(f" Pipeline — num:{len(num_cols)} bin:{len(bin_cols)} cat:{len(cat_cols)}")
     return pipeline
 
 
-# ─── 4. OPTUNA (optionnel) ────────────────────────────────────────────────────
+#  4. OPTUNA (optionnel) ─
 
 def tune_optuna(X_train, y_train, n_trials=200):
     """Lance Optuna et retourne les meilleurs hyperparamètres."""
@@ -462,7 +437,7 @@ def tune_optuna(X_train, y_train, n_trials=200):
         import optuna
         optuna.logging.set_verbosity(optuna.logging.WARNING)
     except ImportError:
-        print("⚠️  optuna non installé — pip install optuna")
+        print("  optuna non installé — pip install optuna")
         return {}
 
     num_cols = [c for c in NUMERIC_FEATURES     if c in X_train.columns]
@@ -505,31 +480,22 @@ def tune_optuna(X_train, y_train, n_trials=200):
     study   = optuna.create_study(direction="maximize", sampler=sampler, pruner=pruner)
     study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
 
-    print(f"\n✅ Optuna — Meilleur R² CV : {study.best_value:.4f}")
+    print(f"\n Optuna — Meilleur R² CV : {study.best_value:.4f}")
     return study.best_params
 
 
-# ─── 5. ENTRAÎNEMENT ──────────────────────────────────────────────────────────
+#  5. ENTRAÎNEMENT ─
 
 def train(pipeline, X_train, y_train):
     pipeline.fit(X_train, y_train)
-    print("✅ Entraînement terminé")
+    print(" Entraînement terminé")
     return pipeline
 
 
-# ─── 6. ÉVALUATION ────────────────────────────────────────────────────────────
+#  6. ÉVALUATION 
 
 def evaluate(pipeline, X_test, y_test, df_test=None, X_train=None, y_train=None, cv_folds=5):
-    """
-    Évalue le modèle sur le test set.
-    La cible est log(prix_total). Back-transform = exp(pred).
 
-    Métriques retournées :
-      - R² sur log(prix) : métrique principale (pas sensible aux outliers de prix)
-      - MdAPE            : MAPE médiane (robuste aux erreurs de données)
-      - MAPE             : MAPE moyenne (biaisée par les annonces aberrantes)
-      - CV R²            : validation croisée sur train (5 folds)
-    """
     log_pred = pipeline.predict(X_test)
 
     # R² sur l'espace log — métrique principale, non faussée par les gros outliers
@@ -557,7 +523,7 @@ def evaluate(pipeline, X_test, y_test, df_test=None, X_train=None, y_train=None,
     print("\n" + "═" * 52)
     print("  MÉTRIQUES — TERRAIN VENTE v5")
     print("═" * 52)
-    print(f"  R² log(prix) [principale] : {r2_log:>10.4f}  ✅")
+    print(f"  R² log(prix) [principale] : {r2_log:>10.4f}  ")
     print(f"  CV R² ({cv_folds} folds)          : {cv_r2.mean():.4f} ± {cv_r2.std():.4f}")
     print("─" * 52)
     print(f"  MAE              : {mae:>18,.0f} MAD")
@@ -583,7 +549,7 @@ def evaluate(pipeline, X_test, y_test, df_test=None, X_train=None, y_train=None,
     }
 
 
-# ─── 7. VISUALISATIONS ────────────────────────────────────────────────────────
+#  7. VISUALISATIONS ──
 
 def plot_results(pipeline, X_test, df_test, output_path="terrain_v5_eval.png"):
     import matplotlib.pyplot as plt
@@ -643,10 +609,10 @@ def plot_results(pipeline, X_test, df_test, output_path="terrain_v5_eval.png"):
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     plt.show()
-    print(f"✅ Graphiques sauvegardés → {output_path}")
+    print(f" Graphiques sauvegardés → {output_path}")
 
 
-# ─── 8. PRÉDICTION ────────────────────────────────────────────────────────────
+#  8. PRÉDICTION 
 
 def predict_price(pipeline, terrain: dict, stats: dict) -> float:
     """
@@ -687,14 +653,14 @@ def predict_price(pipeline, terrain: dict, stats: dict) -> float:
     prix_mad      = np.exp(log_prix_pred)
     pm2           = prix_mad / t["surface_num"]
 
-    print(f"🏗️  Terrain  : {t['surface_num']:,.0f} m²  |  Zone : {t['zone_clean']}")
-    print(f"💰  Prix estimé : {prix_mad:,.0f} MAD  ({prix_mad/EUR_TO_MAD:,.0f} EUR)")
+    print(f"    Terrain  : {t['surface_num']:,.0f} m²  |  Zone : {t['zone_clean']}")
+    print(f"    Prix estimé : {prix_mad:,.0f} MAD  ({prix_mad/EUR_TO_MAD:,.0f} EUR)")
     print(f"    Prix/m²     : {pm2:,.0f} MAD/m²")
     print(f"    Fourchette  : [{prix_mad*0.6:,.0f} — {prix_mad*1.6:,.0f}] MAD")
     return prix_mad
 
 
-# ─── MAIN ─────────────────────────────────────────────────────────────────────
+#  MAIN 
 
 if __name__ == "__main__":
     DATA_PATH  = "terrain_vente.csv"
@@ -730,7 +696,7 @@ if __name__ == "__main__":
     # Sauvegarde
     os.makedirs(os.path.dirname(MODEL_PATH) if os.path.dirname(MODEL_PATH) else ".", exist_ok=True)
     joblib.dump({"pipeline": pipeline, "stats": stats}, MODEL_PATH)
-    print(f"\n✅ Modèle → {MODEL_PATH}")
+    print(f"\n Modèle → {MODEL_PATH}")
 
     metadata = {
         "date":          datetime.now().strftime("%Y-%m-%d"),
@@ -754,551 +720,6 @@ if __name__ == "__main__":
     }
     with open(META_PATH, "w", encoding="utf-8") as f:
         json.dump(metadata, f, ensure_ascii=False, indent=2)
-    print(f"✅ Métadonnées → {META_PATH}")
+    print(f" Métadonnées → {META_PATH}")
 
 
-
-# # terrain_model_v2.py
-# # =========================================================
-# # PRICE PREDICTION — TERRAIN MARRAKECH
-# # VERSION OPTIMISÉE (ANTI-OVERFIT + CATBOOST)
-# # =========================================================
-
-# import re
-# import json
-# import joblib
-# import warnings
-# import numpy as np
-# import pandas as pd
-
-# from sklearn.model_selection import (
-#     train_test_split,
-#     GroupKFold,
-#     cross_val_score
-# )
-
-# from sklearn.metrics import (
-#     mean_absolute_error,
-#     mean_squared_error,
-#     r2_score
-# )
-
-# from catboost import CatBoostRegressor
-
-# warnings.filterwarnings("ignore")
-
-# # =========================================================
-# # CONFIG
-# # =========================================================
-
-# DATA_PATH = "terrain_vente.csv"
-
-# SURFACE_MIN = 80
-# SURFACE_MAX = 100000
-
-# PM2_MIN = 100
-# PM2_MAX = 30000
-
-# EUR_TO_MAD = 10.8
-
-# TARGET = "log_pm2"
-
-# # =========================================================
-# # HELPERS
-# # =========================================================
-
-# def parse_price(s):
-
-#     if pd.isna(s):
-#         return np.nan
-
-#     s = str(s)
-
-#     s = (
-#         s.replace(" ", "")
-#         .replace("\xa0", "")
-#         .replace(".", "")
-#         .replace(",", ".")
-#     )
-
-#     match = re.search(r"\d+(?:\.\d+)?", s)
-
-#     if not match:
-#         return np.nan
-
-#     value = float(match.group())
-
-#     if "EUR" in s.upper():
-#         value *= EUR_TO_MAD
-
-#     return value
-
-
-# def parse_surface(s):
-
-#     if pd.isna(s):
-#         return np.nan
-
-#     s = str(s).replace(",", ".")
-
-#     match = re.search(r"[\d]+(?:[.,]\d+)?", s)
-
-#     if not match:
-#         return np.nan
-
-#     return float(match.group())
-
-
-# # =========================================================
-# # ZONES
-# # =========================================================
-
-# ZONE_PATTERNS = {
-
-#     "Route_Ourika": r"ourika",
-#     "Route_Fes": r"fes|fès",
-#     "Route_Casa": r"casa|casablanca",
-#     "Palmeraie": r"palmeraie",
-#     "Targa": r"targa",
-#     "Route_Tahanaout": r"tahanaout",
-#     "Route_Amizmiz": r"amizmiz",
-#     "Route_Safi": r"safi",
-#     "Chrifia": r"chrifia",
-#     "Sidi_Abdallah": r"sidi abdellah",
-# }
-
-
-# def extract_zone(text):
-
-#     if pd.isna(text):
-#         return "Autre"
-
-#     text = str(text).lower()
-
-#     for zone, pattern in ZONE_PATTERNS.items():
-
-#         if re.search(pattern, text):
-#             return zone
-
-#     return "Autre"
-
-
-# # =========================================================
-# # LOAD DATA
-# # =========================================================
-
-# def load_data(path):
-
-#     df = pd.read_csv(path)
-
-#     print("=" * 60)
-#     print("CHARGEMENT DATA")
-#     print("=" * 60)
-
-#     # -----------------------------------------------------
-#     # terrain only
-#     # -----------------------------------------------------
-
-#     df = df[
-#         df["type_bien"]
-#         .astype(str)
-#         .str.lower()
-#         .str.contains("terrain")
-#     ].copy()
-
-#     print("Terrains:", len(df))
-
-#     # -----------------------------------------------------
-#     # parse
-#     # -----------------------------------------------------
-
-#     df["prix_num"] = df["prix"].apply(parse_price)
-
-#     df["surface_num"] = df["surface"].apply(parse_surface)
-
-#     # -----------------------------------------------------
-#     # filters
-#     # -----------------------------------------------------
-
-#     df = df[
-#         df["prix_num"].notna()
-#     ]
-
-#     df = df[
-#         df["surface_num"].notna()
-#     ]
-
-#     df = df[
-#         df["surface_num"].between(SURFACE_MIN, SURFACE_MAX)
-#     ]
-
-#     # -----------------------------------------------------
-#     # target
-#     # -----------------------------------------------------
-
-#     df["pm2"] = df["prix_num"] / df["surface_num"]
-
-#     df = df[
-#         df["pm2"].between(PM2_MIN, PM2_MAX)
-#     ]
-
-#     # -----------------------------------------------------
-#     # remove outliers
-#     # -----------------------------------------------------
-
-#     q_low = df["pm2"].quantile(0.02)
-#     q_high = df["pm2"].quantile(0.98)
-
-#     df = df[
-#         df["pm2"].between(q_low, q_high)
-#     ]
-
-#     # -----------------------------------------------------
-#     # features
-#     # -----------------------------------------------------
-
-#     text_cols = (
-#         df["titre"].fillna("") +
-#         " " +
-#         df["description"].fillna("") +
-#         " " +
-#         df["localisation"].fillna("")
-#     ).str.lower()
-
-#     df["zone_clean"] = text_cols.apply(extract_zone)
-
-#     df["log_surface"] = np.log(df["surface_num"])
-
-#     df["usage_terrain"] = "autre"
-
-#     df.loc[
-#         text_cols.str.contains("agricole", na=False),
-#         "usage_terrain"
-#     ] = "agricole"
-
-#     df.loc[
-#         text_cols.str.contains("immeuble|r\+", na=False),
-#         "usage_terrain"
-#     ] = "immeuble"
-
-#     df.loc[
-#         text_cols.str.contains("golf", na=False),
-#         "usage_terrain"
-#     ] = "golf"
-
-#     # -----------------------------------------------------
-#     # keywords
-#     # -----------------------------------------------------
-
-#     df["kw_constructible"] = (
-#         text_cols
-#         .str.contains("constructible|villa|lotissement", na=False)
-#         .astype(int)
-#     )
-
-#     df["kw_agricole"] = (
-#         text_cols
-#         .str.contains("agricole|ferme|olivier", na=False)
-#         .astype(int)
-#     )
-
-#     df["kw_immeuble"] = (
-#         text_cols
-#         .str.contains("immeuble|r\\+", na=False)
-#         .astype(int)
-#     )
-
-#     df["kw_golf"] = (
-#         text_cols
-#         .str.contains("golf", na=False)
-#         .astype(int)
-#     )
-
-#     # -----------------------------------------------------
-#     # target
-#     # -----------------------------------------------------
-
-#     df["log_pm2"] = np.log(df["pm2"])
-
-#     print("Dataset final:", df.shape)
-
-#     return df
-
-
-# # =========================================================
-# # TRAIN
-# # =========================================================
-
-# def train_model(df):
-
-#     FEATURES = [
-
-#         "surface_num",
-#         "log_surface",
-
-#         "zone_clean",
-#         "usage_terrain",
-
-#         "kw_constructible",
-#         "kw_agricole",
-#         "kw_immeuble",
-#         "kw_golf",
-#     ]
-
-#     CAT_FEATURES = [
-#         "zone_clean",
-#         "usage_terrain"
-#     ]
-
-#     X = df[FEATURES]
-
-#     y = df[TARGET]
-
-#     groups = df["zone_clean"]
-
-#     # -----------------------------------------------------
-#     # split
-#     # -----------------------------------------------------
-
-#     X_train, X_test, y_train, y_test = train_test_split(
-#         X,
-#         y,
-#         test_size=0.2,
-#         random_state=42
-#     )
-
-#     # -----------------------------------------------------
-#     # model
-#     # -----------------------------------------------------
-
-#     model = CatBoostRegressor(
-
-#         iterations=2000,
-#         learning_rate=0.03,
-#         depth=6,
-
-#         loss_function="RMSE",
-
-#         eval_metric="R2",
-
-#         random_seed=42,
-
-#         verbose=200,
-
-#         early_stopping_rounds=200
-#     )
-
-#     # -----------------------------------------------------
-#     # fit
-#     # -----------------------------------------------------
-
-#     model.fit(
-
-#         X_train,
-#         y_train,
-
-#         cat_features=CAT_FEATURES,
-
-#         eval_set=(X_test, y_test),
-
-#         use_best_model=True
-#     )
-
-#     # -----------------------------------------------------
-#     # predictions
-#     # -----------------------------------------------------
-
-#     pred_log_pm2 = model.predict(X_test)
-
-#     pred_pm2 = np.exp(pred_log_pm2)
-
-#     real_pm2 = np.exp(y_test)
-
-#     # prix total
-#     pred_price = pred_pm2 * X_test["surface_num"]
-
-#     real_price = real_pm2 * X_test["surface_num"]
-
-#     # -----------------------------------------------------
-#     # metrics
-#     # -----------------------------------------------------
-
-#     mae = mean_absolute_error(real_price, pred_price)
-
-#     rmse = np.sqrt(
-#         mean_squared_error(real_price, pred_price)
-#     )
-
-#     r2 = r2_score(real_price, pred_price)
-
-#     mape = np.mean(
-#         np.abs(real_price - pred_price)
-#         / real_price
-#     ) * 100
-
-#     mdape = np.median(
-#         np.abs(real_price - pred_price)
-#         / real_price
-#     ) * 100
-
-#     # -----------------------------------------------------
-#     # cross validation
-#     # -----------------------------------------------------
-
-#     gkf = GroupKFold(n_splits=5)
-
-#     cv_scores = []
-
-#     for train_idx, val_idx in gkf.split(X, y, groups):
-
-#         X_tr = X.iloc[train_idx]
-#         X_val = X.iloc[val_idx]
-
-#         y_tr = y.iloc[train_idx]
-#         y_val = y.iloc[val_idx]
-
-#         cv_model = CatBoostRegressor(
-
-#             iterations=2000,
-#             learning_rate=0.03,
-#             depth=6,
-
-#             loss_function="RMSE",
-
-#             eval_metric="R2",
-
-#             random_seed=42,
-
-#             verbose=False
-#         )
-
-#         cv_model.fit(
-
-#             X_tr,
-#             y_tr,
-
-#             cat_features=CAT_FEATURES,
-
-#             eval_set=(X_val, y_val),
-
-#             verbose=False
-#         )
-
-#         preds = cv_model.predict(X_val)
-
-#         score = r2_score(y_val, preds)
-
-#         cv_scores.append(score)
-
-#     cv_scores = np.array(cv_scores)
-
-#     # -----------------------------------------------------
-#     # results
-#     # -----------------------------------------------------
-
-#     print("\n" + "=" * 60)
-#     print("MÉTRIQUES")
-#     print("=" * 60)
-
-#     print(f"MAE     : {mae:,.0f} MAD")
-#     print(f"RMSE    : {rmse:,.0f} MAD")
-#     print(f"R²      : {r2:.4f}")
-#     print(f"MAPE    : {mape:.2f}%")
-#     print(f"MdAPE   : {mdape:.2f}%")
-
-#     print(
-#         f"CV R²   : "
-#         f"{cv_scores.mean():.4f} ± {cv_scores.std():.4f}"
-#     )
-
-#     # -----------------------------------------------------
-#     # save
-#     # -----------------------------------------------------
-
-#     joblib.dump(model, "terrain_catboost_model.pkl")
-
-#     metadata = {
-
-#         "features": FEATURES,
-#         "target": TARGET,
-
-#         "metrics": {
-
-#             "mae": float(mae),
-#             "rmse": float(rmse),
-#             "r2": float(r2),
-#             "mape": float(mape),
-#             "mdape": float(mdape)
-#         }
-#     }
-
-#     with open("terrain_metadata.json", "w") as f:
-
-#         json.dump(metadata, f, indent=4)
-
-#     print("\nModel saved.")
-
-#     return model
-
-
-# # =========================================================
-# # PREDICT
-# # =========================================================
-
-# def predict_price(model, surface, zone):
-
-#     row = pd.DataFrame([{
-
-#         "surface_num": surface,
-#         "log_surface": np.log(surface),
-
-#         "zone_clean": zone,
-#         "usage_terrain": "autre",
-
-#         "kw_constructible": 0,
-#         "kw_agricole": 0,
-#         "kw_immeuble": 0,
-#         "kw_golf": 0,
-#     }])
-
-#     pred_log_pm2 = model.predict(row)[0]
-
-#     pred_pm2 = np.exp(pred_log_pm2)
-
-#     total_price = pred_pm2 * surface
-
-#     print("=" * 60)
-
-#     print("PREDICTION")
-
-#     print("=" * 60)
-
-#     print(f"Surface : {surface:,.0f} m²")
-
-#     print(f"Zone    : {zone}")
-
-#     print(f"Prix/m² : {pred_pm2:,.0f} MAD")
-
-#     print(f"Prix total : {total_price:,.0f} MAD")
-
-#     return total_price
-
-
-# # =========================================================
-# # MAIN
-# # =========================================================
-
-# if __name__ == "__main__":
-
-#     df = load_data(DATA_PATH)
-
-#     model = train_model(df)
-
-#     predict_price(
-
-#         model,
-
-#         surface=1000,
-
-#         zone="Route_Ourika"
-#     )
