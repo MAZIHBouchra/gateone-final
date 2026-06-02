@@ -1,12 +1,3 @@
-"""
-pip_locaux.py — Pipeline de prédiction prix locaux commerciaux Marrakech
-Améliorations v2 :
-  - Fix bug zone Guéliz/Guéliz (normalisation accents)
-  - CV sur X_train uniquement (pas de data leakage)
-  - Target : log(prix_total) au lieu de log(pm²) [corrélation surface plus forte]
-  - Interaction surface × type_local
-  - Fallback fourchette ±35% si R² < 0.55 (plafond données comme terrains)
-"""
 
 import re
 import unicodedata
@@ -27,16 +18,12 @@ from xgboost import XGBRegressor
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-# ─────────────────────────────────────────────
 # CHEMINS
-# ─────────────────────────────────────────────
 BASE_DIR   = Path(__file__).resolve().parent.parent
 DATA_PATH  = BASE_DIR / "notebooks/ventes/locaux_vente_cleaned.csv"
 MODEL_PATH = BASE_DIR / "model_training/models/xgb_locaux_vente.pkl"
 
-# ─────────────────────────────────────────────
 # CONSTANTES EXPORTÉES (importables depuis le notebook)
-# ─────────────────────────────────────────────
 
 TARGET_LOG = "log_prix_total"
 
@@ -58,9 +45,7 @@ BINARY_FEATURES = [
 
 CATEGORICAL_FEATURES = ["zone_clean", "source_clean", "type_local"]
 
-# ─────────────────────────────────────────────
 # 1. UTILITAIRES
-# ─────────────────────────────────────────────
 
 def normalize_text(s: str) -> str:
     """Supprime les accents et met en minuscules — fix Guéliz vs Guéliz."""
@@ -98,13 +83,11 @@ def infer_type_local(row: pd.Series) -> str:
     if row.get("kw_salle"):      return "salle"
     return "local_comm"
 
-# ─────────────────────────────────────────────
 # 2. CHARGEMENT & NETTOYAGE
-# ─────────────────────────────────────────────
 
 def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
-    print(f"✅ Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
+    print(f" Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
 
     # --- Construction zone_clean ---
     # Le CSV brut peut avoir "quartier", "localisation" ou déjà "zone_clean"
@@ -157,7 +140,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
         for col in kw_df.columns:
             df[col] = kw_df[col].values
 
-    # --- Type local ---
+   
     # Priorité 1 : colonne type_bien du CSV brut (mapping direct)
     TYPE_BIEN_MAP = {
         "bureau":          "bureau",
@@ -226,9 +209,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     print(f"   Surface médiane : {df['surface_num'].median():.0f} m²")
     return df
 
-# ─────────────────────────────────────────────
 # 3. FEATURE ENGINEERING & TARGET ENCODING
-# ─────────────────────────────────────────────
 
 def build_features(df: pd.DataFrame, stats: dict = None, is_train: bool = True) -> tuple:
     """
@@ -339,9 +320,7 @@ def split_and_encode(df: pd.DataFrame, test_size: float = 0.2, seed: int = 42, r
 
     return X_train, X_test, y_train, y_test, train_df, test_df, stats
 
-# ─────────────────────────────────────────────
 # 4. CONSTRUCTION DU PIPELINE SKLEARN
-# ─────────────────────────────────────────────
 
 def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
     """Accepte stats (dict) ou X_train (DataFrame) — compatibilité notebook."""
@@ -381,9 +360,7 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
     pipeline = Pipeline([("preprocessor", preprocessor), ("model", model)])
     return pipeline
 
-# ─────────────────────────────────────────────
 # 5. OPTUNA — TUNING HYPERPARAMÈTRES
-# ─────────────────────────────────────────────
 
 def tune_hyperparams(X_train: pd.DataFrame, y_train: np.ndarray, stats: dict, n_trials: int = 40) -> dict:
     """Optimise XGBoost sur X_train via CV 5-fold (pas de data leakage)."""
@@ -416,18 +393,14 @@ def tune_hyperparams(X_train: pd.DataFrame, y_train: np.ndarray, stats: dict, n_
     print(f"   Params : {best}")
     return best
 
-# ─────────────────────────────────────────────
 # 6. ENTRAÎNEMENT
-# ─────────────────────────────────────────────
 
 def train(pipeline: Pipeline, X_train: pd.DataFrame, y_train: np.ndarray) -> Pipeline:
-    print("🚀 Entraînement...")
+    print(" Entraînement...")
     pipeline.fit(X_train, y_train)
     return pipeline
 
-# ─────────────────────────────────────────────
 # 7. ÉVALUATION
-# ─────────────────────────────────────────────
 
 def evaluate(pipeline: Pipeline, X_train_or_Xtest, X_test_or_ytest, y_train_or_dftest=None, y_test=None, df_test: pd.DataFrame = None):
     """
@@ -466,7 +439,7 @@ def evaluate(pipeline: Pipeline, X_train_or_Xtest, X_test_or_ytest, y_train_or_d
     median_prix = np.median(prix_reel)
 
     print("\n" + "=" * 50)
-    print("📊 RÉSULTATS LOCAUX COMMERCIAUX")
+    print(" RÉSULTATS LOCAUX COMMERCIAUX")
     print("=" * 50)
     print(f"  R² train        : {r2_train:.3f}")
     print(f"  R² test         : {r2_test:.3f}")
@@ -482,10 +455,10 @@ def evaluate(pipeline: Pipeline, X_train_or_Xtest, X_test_or_ytest, y_train_or_d
 
     # Verdict qualité
     if r2_test >= 0.55:
-        print("\n  ✅ Modèle utilisable — prédiction ponctuelle")
+        print("\n   Modèle utilisable — prédiction ponctuelle")
         mode = "point"
     else:
-        print("\n  ⚠️  R² < 0.55 — plafond données atteint (comme terrains)")
+        print("\n    R² < 0.55 — plafond données atteint (comme terrains)")
         print("     → Mode FOURCHETTE ±35% activé")
         mode = "range"
 
@@ -506,9 +479,7 @@ def evaluate(pipeline: Pipeline, X_train_or_Xtest, X_test_or_ytest, y_train_or_d
         "RMSE (MAD)": float(np.sqrt(np.mean((prix_pred - prix_reel) ** 2))),
     }
 
-# ─────────────────────────────────────────────
 # 8. GRAPHIQUES
-# ─────────────────────────────────────────────
 
 def plot_results(pipeline, X_test, y_test_or_dftest=None, metrics: dict = None, save_dir: Path = None):
     # Détection signature : 3 args (pipeline, X_test, df_test) ou 4 args (pipeline, X_test, y_test, metrics)
@@ -589,9 +560,7 @@ def plot_results(pipeline, X_test, y_test_or_dftest=None, metrics: dict = None, 
         print(f"   Graphique sauvegardé : {save_dir / 'locaux_results.png'}")
     plt.show()
 
-# ─────────────────────────────────────────────
 # 9. PRÉDICTION UNITAIRE
-# ─────────────────────────────────────────────
 
 def predict_price(pipeline: Pipeline, bien_dict: dict, stats: dict) -> dict:
     """
@@ -667,7 +636,7 @@ def predict_price(pipeline: Pipeline, bien_dict: dict, stats: dict) -> dict:
             "surface":     surface,
         }
 
-    print(f"\n💰 Prédiction locaux ({mode}) :")
+    print(f"\n Prédiction locaux ({mode}) :")
     if mode == "range":
         print(f"   Fourchette : {result['prix_min']:,.0f} — {result['prix_max']:,.0f} MAD")
     print(f"   Prix estimé : {result['prix_estime']:,.0f} MAD")
@@ -677,9 +646,7 @@ def predict_price(pipeline: Pipeline, bien_dict: dict, stats: dict) -> dict:
     result["prix_point"] = float(prix_point)
     return result
 
-# ─────────────────────────────────────────────
 # 10. PIPELINE COMPLET
-# ─────────────────────────────────────────────
 
 def run_pipeline(tune: bool = True, n_trials: int = 40):
     print("\n" + "=" * 60)
@@ -690,7 +657,7 @@ def run_pipeline(tune: bool = True, n_trials: int = 40):
     df = load_data()
 
     # 2. Split + encoding
-    print("\n📂 Split train/test...")
+    print("\n Split train/test...")
     X_train, X_test, y_train, y_test, stats = split_and_encode(df)
 
     # 3. Hyperparamètres
@@ -712,21 +679,19 @@ def run_pipeline(tune: bool = True, n_trials: int = 40):
     # 7. Sauvegarde
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump({"pipeline": pipeline_final, "stats": stats}, MODEL_PATH)
-    print(f"\n✅ Modèle sauvegardé : {MODEL_PATH}")
+    print(f"\n Modèle sauvegardé : {MODEL_PATH}")
 
     return pipeline_final, stats, metrics
 
 
-# ─────────────────────────────────────────────
 # POINT D'ENTRÉE
-# ─────────────────────────────────────────────
 if __name__ == "__main__":
     pipeline_final, stats, metrics = run_pipeline(tune=True, n_trials=40)
 
     # Exemple de prédiction unitaire
     exemple = {
         "surface_num":   120,
-        "zone_clean":    "Guéliz",   # accents tolérés grâce à normalize_text
+        "zone_clean":    "Guéliz",   
         "type_local":    "bureau",
         "etage":         2,
         "parking":       1,
