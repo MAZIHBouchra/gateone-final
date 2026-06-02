@@ -1,5 +1,5 @@
 {
-  "date": "2026-05-31",
+  "date": "2026-06-02",
   "version": "v1_optuna",
   "modele": "XGBRegressor",
   "type_bien": "maison_vente",
@@ -13,23 +13,23 @@
     "MAPE": 19.81
   },
   "metriques_test": {
-    "R2": 0.9075,
-    "MAE": 394852.0,
-    "RMSE": 739143.0,
-    "MAPE": 19.75
+    "R2": 0.9062,
+    "MAE": 397336.0,
+    "RMSE": 744452.0,
+    "MAPE": 19.86
   },
-  "cv_r2_optuna": 0.9097,
+  "cv_r2_optuna": 0.9098,
   "hyperparametres": {
-    "n_estimators": 1480,
+    "n_estimators": 732,
     "max_depth": 5,
-    "learning_rate": 0.008455882069178706,
-    "max_leaves": 60,
-    "subsample": 0.6233091609364844,
-    "colsample_bytree": 0.9733698206316449,
-    "colsample_bylevel": 0.8867733579288996,
-    "min_child_weight": 8,
-    "reg_alpha": 0.005956191882509819,
-    "reg_lambda": 0.06666026513520636,
-    "gamma": 0.17334462963711875
+    "learning_rate": 0.01371038181336946,
+    "max_leaves": 30,
+    "subsample": 0.6873301418171027,
+    "colsample_bytree": 0.9237320502123251,
+    "colsample_bylevel": 0.924589768235877,
+    "min_child_weight": 10,
+    "reg_alpha": 0.00027692905061248656,
+    "reg_lambda": 0.004783692539159931,
+    "gamma": 0.14159570035820176
   }
 }
