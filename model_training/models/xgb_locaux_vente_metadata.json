@@ -1,5 +1,5 @@
 {
-  "date": "2026-05-22",
+  "date": "2026-06-02",
   "version": "v1_optuna",
   "modele": "XGBRegressor",
   "type_bien": "locaux_vente",
@@ -21,24 +21,24 @@
     "MAPE": 9.82
   },
   "metriques_test": {
-    "R2": 0.9823,
-    "MAE": 376274.0,
-    "RMSE": 1604510.0,
-    "MAPE": 8.83
+    "R2": 0.9894,
+    "MAE": 317053.0,
+    "RMSE": 1101658.0,
+    "MAPE": 8.07
   },
-  "cv_r2_optuna": 0.9902,
+  "cv_r2_optuna": 0.994,
   "hyperparametres": {
-    "n_estimators": 3310,
-    "learning_rate": 0.02059460943703328,
-    "max_depth": 7,
-    "max_leaves": 25,
-    "subsample": 0.7265205811316526,
-    "colsample_bytree": 0.8817535936779622,
-    "colsample_bylevel": 0.8234112605808116,
+    "n_estimators": 2822,
+    "learning_rate": 0.03406550068391617,
+    "max_depth": 2,
+    "max_leaves": 34,
+    "subsample": 0.5668340689306011,
+    "colsample_bytree": 0.9802549992122223,
+    "colsample_bylevel": 0.8845627794053365,
     "min_child_weight": 3,
-    "reg_alpha": 0.0005718390052684811,
-    "reg_lambda": 0.03391783436606919,
-    "gamma": 0.0007972681171905648
+    "reg_alpha": 0.04960905174083814,
+    "reg_lambda": 0.0004252477585912968,
+    "gamma": 0.002795482573628572
   },
   "note": "Prix/m² médian 19 400 MAD — kw_industriel signal négatif fort"
 }
