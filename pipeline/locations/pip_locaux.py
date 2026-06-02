@@ -280,7 +280,7 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
 #  4. OPTUNA ─
 
 def tune_hyperparams(X_train, y_train, stats, n_trials: int = 40) -> dict:
-    print(f"🔍 Tuning hyperparamètres ({n_trials} trials)...")
+    print(f" Tuning hyperparamètres ({n_trials} trials)...")
 
     def objective(trial):
         params = dict(
