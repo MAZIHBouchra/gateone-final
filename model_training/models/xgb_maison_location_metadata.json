@@ -1,0 +1,35 @@
+{
+  "date": "2026-06-02",
+  "version": "v1_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "maison_vente",
+  "target": "log(prix_total)",
+  "n_lignes_train": 68,
+  "n_lignes_test": 18,
+  "n_features": 49,
+  "n_zones": 29,
+  "metriques_baseline": {
+    "R2": 0.7603,
+    "MAPE": 26.35
+  },
+  "metriques_test": {
+    "R2": 0.8381,
+    "MAE": 1088.0,
+    "RMSE": 1575.0,
+    "MAPE": 21.83
+  },
+  "cv_r2_optuna": 0.8667,
+  "hyperparametres": {
+    "n_estimators": 1728,
+    "max_depth": 4,
+    "learning_rate": 0.01705093267550543,
+    "max_leaves": 17,
+    "subsample": 0.8716663655826326,
+    "colsample_bytree": 0.9894170701486306,
+    "colsample_bylevel": 0.9501785826774412,
+    "min_child_weight": 6,
+    "reg_alpha": 1.4207161605259586,
+    "reg_lambda": 0.010837036344704879,
+    "gamma": 0.001859222532582244
+  }
+}
