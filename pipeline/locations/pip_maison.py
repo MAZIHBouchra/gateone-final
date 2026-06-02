@@ -18,18 +18,14 @@ from xgboost import XGBRegressor
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-# ─────────────────────────────────────────────
 # CHEMINS
-# ─────────────────────────────────────────────
 BASE_DIR   = Path(__file__).resolve().parent.parent.parent
 DATA_PATH  = BASE_DIR / "data/marrakech_immo_location/maison_location.csv"
 MODEL_PATH = BASE_DIR / "model_training/models/xgb_maison_location.pkl"
 
 EUR_TO_MAD = 10.8
 
-# ─────────────────────────────────────────────
 # CONSTANTES EXPORTÉES
-# ─────────────────────────────────────────────
 TARGET_LOG = "log_prix"
 
 NUMERIC_FEATURES = [
@@ -63,9 +59,7 @@ CATEGORICAL_FEATURES = [
     "zone_clean", "localisation_fine", "segment_prix", "cat_surface",
 ]
 
-# ─────────────────────────────────────────────
 # ZONE MAP — localisation texte → zone propre
-# ─────────────────────────────────────────────
 ZONE_MAP = [
     ("Guéliz",             r"gueliz|guéliz|guéliz"),
     ("Hivernage",          r"hivernage"),
@@ -147,9 +141,7 @@ def extract_keywords(titre, description=""):
         "kw_toit":       int(bool(re.search(r"toit|terrasse.toit|rooftop", text))),
     }
 
-# ─────────────────────────────────────────────
 # 1. LOAD DATA
-# ─────────────────────────────────────────────
 def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
     print(f" Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
@@ -274,9 +266,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     print(f"   pm² médian     : {df['prix_m2'].median():,.0f} MAD/m²")
     return df
 
-# ─────────────────────────────────────────────
 # 2. FEATURE ENGINEERING
-# ─────────────────────────────────────────────
 GROUPBY_FEATURES = {
     "te_log_prix_zone", "te_log_prix_loc",
     "pm2_median_zone", "pm2_median_loc",
@@ -377,9 +367,7 @@ def split_and_encode(df: pd.DataFrame, test_size: float = 0.2,
 
     return X_train, X_test, y_train, y_test, train_df, test_df, stats
 
-# ─────────────────────────────────────────────
 # 3. PIPELINE SKLEARN
-# ─────────────────────────────────────────────
 def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
     if isinstance(stats_or_X, dict):
         num_cols = stats_or_X["numeric_cols"]
@@ -401,9 +389,7 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
 
     return Pipeline([("preprocessor", preprocessor), ("model", XGBRegressor(**xgb_params))])
 
-# ─────────────────────────────────────────────
 # 4. OPTUNA
-# ─────────────────────────────────────────────
 def tune_hyperparams(X_train, y_train, stats, n_trials=150):
     print(f" Optuna {n_trials} trials sur X_train (CV 5-fold)...")
 
@@ -435,17 +421,13 @@ def tune_hyperparams(X_train, y_train, stats, n_trials=150):
         print(f"   {k:30s}: {v}")
     return study.best_params, study
 
-# ─────────────────────────────────────────────
 # 5. ENTRAÎNEMENT
-# ─────────────────────────────────────────────
 def train(pipeline, X_train, y_train):
-    print("🚀 Entraînement...")
+    print(" Entraînement...")
     pipeline.fit(X_train, y_train)
     return pipeline
 
-# ─────────────────────────────────────────────
 # 6. ÉVALUATION
-# ─────────────────────────────────────────────
 def evaluate(pipeline, X_test, y_test_or_dftest=None, df_test=None,
              X_train=None, y_train=None, cv_folds=5):
     # Signature flexible
@@ -513,9 +495,7 @@ def evaluate(pipeline, X_test, y_test_or_dftest=None, df_test=None,
         "mape": mape, "r2_test": r2, "mad": mae,
     }
 
-# ─────────────────────────────────────────────
 # 7. GRAPHIQUES
-# ─────────────────────────────────────────────
 def plot_results(pipeline, X_test, y_test_or_dftest=None, metrics=None, save_dir=None):
     if isinstance(y_test_or_dftest, pd.DataFrame):
         df_plot  = y_test_or_dftest
@@ -578,9 +558,7 @@ def plot_results(pipeline, X_test, y_test_or_dftest=None, metrics=None, save_dir
         fig.savefig(Path(save_dir) / "maison_results.png", dpi=150, bbox_inches="tight")
     plt.show()
 
-# ─────────────────────────────────────────────
 # 8. PRÉDICTION UNITAIRE
-# ─────────────────────────────────────────────
 def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
     b = bien_dict.copy()
     if "zone_clean" in b:
@@ -679,9 +657,7 @@ def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
     print(f"   Prix/m²     : {result['pm2_estime']:,.0f} MAD/m²")
     return result
 
-# ─────────────────────────────────────────────
 # 9. PIPELINE COMPLET
-# ─────────────────────────────────────────────
 def run_pipeline(tune=True, n_trials=150):
     print("\n" + "═" * 60)
     print("  PIPELINE MAISON LOCATION")
