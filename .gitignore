@@ -29,4 +29,4 @@ instance/
 .pytest_cache
 
 
-
+model_training/models/*.joblib
