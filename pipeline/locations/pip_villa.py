@@ -1,16 +1,3 @@
-"""
-pip_villa.py  v2
-================
-Pipeline villas Marrakech — target log(prix), sans category_encoders,
-groupby features sans leakage, NLP enrichi.
-
-Corrections vs version précédente :
-  - Suppression category_encoders (TargetEncoder causait du leakage)
-  - surface_terrain_text supprimé (disponible pour 3% seulement → bruit)
-  - Groupby features calculées dans split_and_encode (sans leakage)
-  - Pipeline step nommé "preprocessor" (cohérence plot/evaluate)
-  - predict_price() prend stats en argument
-"""
 
 import re
 import numpy as np
@@ -25,9 +12,9 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from xgboost import XGBRegressor
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # CONSTANTES
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 NUMERIC_FEATURES = [
     # Surface
@@ -69,9 +56,9 @@ TARGET_RAW  = "prix_num"
 EUR_TO_MAD  = 10.8
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 1. CHARGEMENT & CLEANING
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def load_data(path: str) -> pd.DataFrame:
     """
@@ -206,24 +193,18 @@ def load_data(path: str) -> pd.DataFrame:
     df["surf_x_standing"] = df["surface_num"] * df["score_standing"]
     df["log_prix"] = np.log(df["prix_num"])
 
-    print(f"✅ Shape finale : {df.shape}")
+    print(f" Shape finale : {df.shape}")
     print(f"   Prix médian  : {df['prix_num'].median():,.0f} MAD")
     print(f"   Zones        : {df['localisation_fine'].nunique()}")
     return df
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 2. SPLIT + FEATURES GROUPBY (sans leakage)
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def split_and_encode(df, test_size: float = 0.2, random_state: int = 42):
-    """
-    Split train/test puis calcule les features groupby sur train uniquement.
-
-    Retourne
-    --------
-    X_train, X_test, y_train, y_test, df_train, df_test, stats
-    """
+  
     # Toutes les features calculées dans _enrich (pas encore dans df)
     GROUPBY_FEATURES = {
         "surface_x_quartier", "prix_m2_moy_quartier", "pm2_moy_quartier",
@@ -334,16 +315,15 @@ def split_and_encode(df, test_size: float = 0.2, random_state: int = 42):
     X_train = X_train[all_feats]
     X_test  = X_test[all_feats]
 
-    print(f"✅ Split — Train : {len(X_train)} | Test : {len(X_test)} | Features : {len(all_feats)}")
+    print(f" Split — Train : {len(X_train)} | Test : {len(X_test)} | Features : {len(all_feats)}")
     return X_train, X_test, y_train, y_test, df_train, df_test, stats
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 3. PIPELINE SKLEARN
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def build_pipeline(X_train, xgb_params: dict = None):
-    """Construit le pipeline sklearn. Retourne : pipeline non fitté."""
     num_cols = [c for c in NUMERIC_FEATURES    if c in X_train.columns]
     bin_cols = [c for c in BINARY_FEATURES     if c in X_train.columns]
     cat_cols = [c for c in CATEGORICAL_FEATURES if c in X_train.columns]
@@ -376,23 +356,23 @@ def build_pipeline(X_train, xgb_params: dict = None):
         ("preprocessor", preprocessor),
         ("model", XGBRegressor(**default_xgb)),
     ])
-    print(f"✅ Pipeline — num:{len(num_cols)} bin:{len(bin_cols)} cat:{len(cat_cols)}")
+    print(f" Pipeline — num:{len(num_cols)} bin:{len(bin_cols)} cat:{len(cat_cols)}")
     return pipeline
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 4. ENTRAÎNEMENT
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def train(pipeline, X_train, y_train):
     pipeline.fit(X_train, y_train)
-    print("✅ Entraînement terminé (cible = log prix)")
+    print( "Entraînement terminé (cible = log prix)")
     return pipeline
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 5. ÉVALUATION
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def evaluate(pipeline, X_test, y_test, X_train=None, y_train=None, cv_folds: int = 5):
     """
@@ -429,9 +409,9 @@ def evaluate(pipeline, X_test, y_test, X_train=None, y_train=None, cv_folds: int
     return metrics
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 6. VISUALISATIONS
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def plot_results(pipeline, X_test, y_test):
     y_pred_mad = np.exp(pipeline.predict(X_test))
@@ -479,33 +459,15 @@ def plot_results(pipeline, X_test, y_test):
     plt.tight_layout()
     plt.savefig("villa_model_v2_evaluation.png", dpi=150, bbox_inches="tight")
     plt.show()
-    print("📊 villa_model_v2_evaluation.png")
+    print(" villa_model_evaluation.png")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 # 7. PRÉDICTION
-# ─────────────────────────────────────────────────────────────────────────────
+# 
 
 def predict_price(pipeline, villa: dict, stats: dict) -> float:
-    """
-    Prédit le prix d'une villa.
-
-    Paramètres
-    ----------
-    pipeline : pipeline entraîné
-    villa    : dict avec les features (surface_num, quartier_clean, localisation_fine…)
-    stats    : dict retourné par split_and_encode()
-
-    Exemple :
-        villa = {
-            "surface_num": 450, "chambres_num": 5, "salles_bain_num": 3,
-            "etage": 0, "etage_known": 1,
-            "quartier_clean": "Palmeraie", "localisation_fine": "palmeraie",
-            "cat_surface": "large",
-            "piscine":1, "parking":1, "terrasse":1, "jardin":1,
-            "climatisation":1, "securite":1, ...
-        }
-    """
+   
     t = villa.copy()
 
     # Defaults
@@ -568,6 +530,6 @@ def predict_price(pipeline, villa: dict, stats: dict) -> float:
             df_in[col] = 0
 
     prix_mad = np.exp(pipeline.predict(df_in[all_feats])[0])
-    print(f"💰 Villa {s} m² | {q} | Prix estimé : {prix_mad:,.0f} MAD ({prix_mad/10.8:,.0f} EUR)")
+    print(f" Villa {s} m² | {q} | Prix estimé : {prix_mad:,.0f} MAD ({prix_mad/10.8:,.0f} EUR)")
     print(f"   ≈ {prix_mad/s:,.0f} MAD/m²")
     return prix_mad
