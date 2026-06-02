@@ -1,0 +1,35 @@
+{
+  "date": "2026-06-02",
+  "version": "v1_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "appartement_location",
+  "target": "log(prix_total)",
+  "n_lignes_train": 4888,
+  "n_lignes_test": 1223,
+  "n_features": 47,
+  "n_zones": 6,
+  "metriques_baseline": {
+    "R2": 0.8984,
+    "MAPE": 13.99
+  },
+  "metriques_test": {
+    "R2": 0.9013,
+    "MAE": 1028.0,
+    "RMSE": 1404.0,
+    "MAPE": 13.78
+  },
+  "cv_r2_optuna": 0.8999,
+  "hyperparametres": {
+    "n_estimators": 1411,
+    "max_depth": 7,
+    "learning_rate": 0.005384439055323248,
+    "max_leaves": 52,
+    "subsample": 0.6342106612791136,
+    "colsample_bytree": 0.9727469041541921,
+    "colsample_bylevel": 0.9787082856948708,
+    "min_child_weight": 5,
+    "reg_alpha": 0.1583902600739765,
+    "reg_lambda": 2.7998595908008017,
+    "gamma": 0.0012211191608440097
+  }
+}
