@@ -23,23 +23,23 @@
     "kw_agricole"
   ],
   "metriques_test": {
-    "R2": 0.2231,
-    "MAE": 3324.0,
-    "RMSE": 7122.0,
-    "MAPE": 81.71
+    "R2": 0.2571,
+    "MAE": 3262.0,
+    "RMSE": 6965.0,
+    "MAPE": 85.25
   },
   "hyperparametres": {
-    "n_estimators": 3716,
-    "learning_rate": 0.0032189605141290673,
-    "max_depth": 3,
-    "max_leaves": 37,
-    "subsample": 0.5092647939476201,
-    "colsample_bytree": 0.665308053914039,
-    "colsample_bylevel": 0.42637972032255417,
-    "min_child_weight": 20,
-    "reg_alpha": 0.00039866272975555735,
-    "reg_lambda": 0.012296916309767971,
-    "gamma": 0.14791121135985497
+    "n_estimators": 1897,
+    "learning_rate": 0.00499908752027338,
+    "max_depth": 2,
+    "max_leaves": 32,
+    "subsample": 0.900312723839387,
+    "colsample_bytree": 0.40023576579259174,
+    "colsample_bylevel": 0.4588798452766269,
+    "min_child_weight": 16,
+    "reg_alpha": 0.043521248626889546,
+    "reg_lambda": 6.58370592777414,
+    "gamma": 0.30775274194780794
   },
   "affichage_site": "Fourchette ±40% obligatoire pour les terrains",
   "formule": "prix_min = prix_estime × 0.60 | prix_max = prix_estime × 1.60"
