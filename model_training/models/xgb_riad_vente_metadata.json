@@ -1,5 +1,5 @@
 {
-  "date": "2026-06-01",
+  "date": "2026-06-02",
   "version": "v1_optuna",
   "modele": "XGBRegressor",
   "type_bien": "riad_vente",
@@ -13,23 +13,23 @@
     "MAPE": 16.89
   },
   "metriques_test": {
-    "R2": 0.8854,
-    "MAE": 867263.0,
-    "RMSE": 1754025.0,
-    "MAPE": 17.42
+    "R2": 0.8803,
+    "MAE": 881699.0,
+    "RMSE": 1780506.0,
+    "MAPE": 17.78
   },
-  "cv_r2_optuna": 0.8847,
+  "cv_r2_optuna": 0.8835,
   "hyperparametres": {
-    "n_estimators": 1053,
-    "max_depth": 8,
-    "learning_rate": 0.0068302978208232374,
-    "max_leaves": 36,
-    "subsample": 0.863941987156927,
-    "colsample_bytree": 0.8771498914347455,
-    "colsample_bylevel": 0.9754820769628321,
-    "min_child_weight": 3,
-    "reg_alpha": 2.6682495096636123e-05,
-    "reg_lambda": 0.057466485666430665,
-    "gamma": 0.04359765371477663
+    "n_estimators": 803,
+    "max_depth": 7,
+    "learning_rate": 0.03511002205812146,
+    "max_leaves": 24,
+    "subsample": 0.855891614498936,
+    "colsample_bytree": 0.8595775006813323,
+    "colsample_bylevel": 0.9883610300583446,
+    "min_child_weight": 8,
+    "reg_alpha": 0.007591374513236371,
+    "reg_lambda": 0.09341963136933956,
+    "gamma": 0.05649351447535409
   }
 }
