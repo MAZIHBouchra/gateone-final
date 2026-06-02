@@ -1,0 +1,35 @@
+{
+  "date": "2026-06-02",
+  "version": "v1_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "riad_vente",
+  "target": "log(prix_total)",
+  "n_lignes_train": 20,
+  "n_lignes_test": 6,
+  "n_features": 47,
+  "n_zones": 4,
+  "metriques_baseline": {
+    "R2": -0.9246,
+    "MAPE": 78.59
+  },
+  "metriques_test": {
+    "R2": 0.1757,
+    "MAE": 8655.0,
+    "RMSE": 10557.0,
+    "MAPE": 60.96
+  },
+  "cv_r2_optuna": 0.5693,
+  "hyperparametres": {
+    "n_estimators": 295,
+    "max_depth": 3,
+    "learning_rate": 0.17239587182641194,
+    "max_leaves": 15,
+    "subsample": 0.574343670280426,
+    "colsample_bytree": 0.3739496340703734,
+    "colsample_bylevel": 0.7324936136127977,
+    "min_child_weight": 4,
+    "reg_alpha": 0.0024829780676219964,
+    "reg_lambda": 0.003655490318012752,
+    "gamma": 0.05010197987909992
+  }
+}
