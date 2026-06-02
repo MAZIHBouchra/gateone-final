@@ -1,5 +1,5 @@
 {
-  "date": "2026-05-25",
+  "date": "2026-06-02",
   "modele": "XGBRegressor",
   "n_lignes_train": 4226,
   "n_lignes_test": 1057,
@@ -32,20 +32,20 @@
     "localisation_fine"
   ],
   "metriques_test": {
-    "R2": 0.7376,
-    "MAE": 251212.0,
-    "RMSE": 395297.0,
-    "MAPE": 19.46
+    "R2": 0.7364,
+    "MAE": 249064.0,
+    "RMSE": 396237.0,
+    "MAPE": 19.24
   },
   "hyperparametres": {
-    "n_estimators": 1412,
-    "learning_rate": 0.009928008036179646,
-    "max_depth": 6,
-    "subsample": 0.8941839338314094,
-    "colsample_bytree": 0.610024028216717,
-    "min_child_weight": 6,
-    "reg_alpha": 0.0022614229064134646,
-    "reg_lambda": 0.0019864582345028433,
-    "gamma": 0.0025017958485855658
+    "n_estimators": 1398,
+    "learning_rate": 0.005948931946684828,
+    "max_depth": 9,
+    "subsample": 0.9373753698233684,
+    "colsample_bytree": 0.6229026681227944,
+    "min_child_weight": 3,
+    "reg_alpha": 0.0008257117670923578,
+    "reg_lambda": 5.715940075996814,
+    "gamma": 0.001611582091336437
   }
 }
