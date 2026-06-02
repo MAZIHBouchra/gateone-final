@@ -21,24 +21,24 @@
     "MAPE": 9.82
   },
   "metriques_test": {
-    "R2": 0.9894,
-    "MAE": 317053.0,
-    "RMSE": 1101658.0,
-    "MAPE": 8.07
+    "R2": 0.9859,
+    "MAE": 364492.0,
+    "RMSE": 1485339.0,
+    "MAPE": 8.38
   },
-  "cv_r2_optuna": 0.994,
+  "cv_r2_optuna": 0.9934,
   "hyperparametres": {
-    "n_estimators": 2822,
-    "learning_rate": 0.03406550068391617,
+    "n_estimators": 3992,
+    "learning_rate": 0.022617972644115206,
     "max_depth": 2,
-    "max_leaves": 34,
-    "subsample": 0.5668340689306011,
-    "colsample_bytree": 0.9802549992122223,
-    "colsample_bylevel": 0.8845627794053365,
-    "min_child_weight": 3,
-    "reg_alpha": 0.04960905174083814,
-    "reg_lambda": 0.0004252477585912968,
-    "gamma": 0.002795482573628572
+    "max_leaves": 41,
+    "subsample": 0.8650007879648152,
+    "colsample_bytree": 0.8124362781490129,
+    "colsample_bylevel": 0.9156452845129315,
+    "min_child_weight": 4,
+    "reg_alpha": 0.017032948510998118,
+    "reg_lambda": 0.0006778104774621261,
+    "gamma": 0.00014146534244185993
   },
   "note": "Prix/m² médian 19 400 MAD — kw_industriel signal négatif fort"
 }
