@@ -1,0 +1,42 @@
+{
+  "date": "2026-06-03",
+  "version": "v1_optuna",
+  "modele": "XGBRegressor",
+  "type_bien": "bureaux_vente",
+  "target": "log(prix/m²) → prix = exp(pred) × surface",
+  "n_lignes_train": 110,
+  "n_lignes_test": 28,
+  "n_features": 45,
+  "n_zones": 9,
+  "types_bureaux": {
+    "mid": 102,
+    "premium": 30,
+    "ultra": 3,
+    "eco": 3
+  },
+  "metriques_baseline": {
+    "R2": 0.6642,
+    "MAPE": 21.61
+  },
+  "metriques_test": {
+    "R2": 0.7673,
+    "MAE": 738646.0,
+    "RMSE": 2882273.0,
+    "MAPE": 19.55
+  },
+  "cv_r2_optuna": 0.6866,
+  "hyperparametres": {
+    "n_estimators": 2900,
+    "learning_rate": 0.04271537668317896,
+    "max_depth": 7,
+    "max_leaves": 31,
+    "subsample": 0.936444223054437,
+    "colsample_bytree": 0.4171894187783268,
+    "colsample_bylevel": 0.44767700439595576,
+    "min_child_weight": 2,
+    "reg_alpha": 0.000259171010378382,
+    "reg_lambda": 0.00028977155674653595,
+    "gamma": 0.001315825262387875
+  },
+  "note": "Prix médian 19 400 MAD — kw_industriel signal négatif fort"
+}

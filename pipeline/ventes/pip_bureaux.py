@@ -130,7 +130,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     # Bureaux uniquement - Filtrer les lignes non pertinentes comme la vente de meubles de bureau (prix très bas)
     print(f"   Total initial : {len(df)}")
 
-    # ── Prix ──
+    #  Prix 
     price_col = next((c for c in ["prix_num", "prix_total", "prix"] if c in df.columns and pd.to_numeric(df[c], errors="coerce").notna().sum() > len(df) * 0.3), None)
     df["prix_num"] = pd.to_numeric(df[price_col], errors="coerce")
 
@@ -138,11 +138,11 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
         eur_mask = df["prix"].astype(str).str.contains("EUR", na=False)
         df.loc[eur_mask, "prix_num"] *= EUR_TO_MAD
 
-    # ── Surface ──
+    #  Surface 
     surf_col = next((c for c in ["surface_num", "surface"] if c in df.columns and pd.to_numeric(df[c], errors="coerce").notna().sum() > len(df) * 0.3), None)
     df["surface_num"] = pd.to_numeric(df[surf_col], errors="coerce")
 
-    # ── Filtres ──
+    #  Filtres 
     # Prix pour la vente de bureaux
     df = df[df["prix_num"].between(150_000, 100_000_000)].copy()
     df = df[df["surface_num"].between(15, 5_000)].copy()
@@ -155,11 +155,11 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df.reset_index(drop=True, inplace=True)
     print(f"   Après filtres : {len(df)} lignes")
 
-    # ── Zones ──
+    #  Zones 
     df["zone_clean"]        = df.apply(extract_zone, axis=1)
     df["localisation_fine"] = df.apply(extract_localisation_fine, axis=1)
 
-    # ── Features surface ──
+    #  Features surface 
     df["log_surface"]       = np.log(df["surface_num"])
     df["chambres_num"]      = pd.to_numeric(df.get("chambres_num", df.get("chambres")), errors="coerce").fillna(0).clip(0, 50)
     df["salles_bain_num"]   = pd.to_numeric(df.get("salles_bain_num", df.get("salles_bain")), errors="coerce").fillna(1).clip(0, 20)
@@ -167,12 +167,12 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
 
     df["surface_par_piece"] = df["surface_num"] / df["nb_pieces"]
 
-    # ── Étage ──
+    #  Étage 
     df["etage_num"]   = pd.to_numeric(df.get("etage"), errors="coerce").fillna(-1).clip(-1, 10)
     df["etage_known"] = (df["etage_num"] >= 0).astype(int)
     df.loc[df["etage_num"] < 0, "etage_num"] = 0
 
-    # ── Équipements binaires ──
+    #  Équipements binaires 
     for col in BINARY_FEATURES:
         if col not in df.columns:
             df[col] = 0
@@ -180,15 +180,15 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
 
     df["is_particulier"] = (df.get("agence", "").astype(str).str.lower().isin(["particulier","nan",""])).astype(int)
 
-    # ── Scores composites ──
+    #  Scores composites 
     df["score_standing"] = (df["ascenseur"] * 3 + df["climatisation"] * 2 + df["securite"] * 2 + df["parking"] * 2 + df["neuf"] * 2)
     df["score_confort"]  = (df["meuble"] + df["terrasse"])
     df["nb_equipements"] = df[["ascenseur","parking","terrasse","climatisation","securite","meuble","neuf","jardin"]].sum(axis=1)
 
-    # ── Interactions ──
+    #  Interactions 
     df["surf_x_standing"] = df["surface_num"] * df["score_standing"]
 
-    # ── Keywords NLP ──
+    #  Keywords NLP 
     titre_col = "titre" if "titre" in df.columns else None
     desc_col  = "description" if "description" in df.columns else None
     kw_df = df.apply(lambda r: extract_keywords(
@@ -198,21 +198,21 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     for col in kw_df.columns:
         df[col] = kw_df[col].values
 
-    # ── cat_surface ──
+    #  cat_surface 
     df["cat_surface"] = pd.cut(
         df["surface_num"],
         bins=[0, 40, 80, 150, 300, 10000],
         labels=["tiny", "small", "medium", "large", "estate"]
     ).astype(str)
 
-    # ── Segment prix ──
+    #  Segment prix 
     df["segment_prix"] = pd.cut(
         df["prix_num"],
         bins=[0, 600_000, 1_500_000, 5_000_000, 1e12],
         labels=["eco", "mid", "premium", "ultra"]
     ).astype(str)
 
-    # ── Target ──
+    #  Target 
     df["log_prix"] = np.log(df["prix_num"])
     df["prix_m2"]  = df["prix_num"] / df["surface_num"]
 
