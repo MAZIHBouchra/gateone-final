@@ -1,35 +1,35 @@
 {
-  "date": "2026-06-02",
+  "date": "2026-06-03",
   "version": "v1_optuna",
   "modele": "XGBRegressor",
   "type_bien": "riad_vente",
   "target": "log(prix_total)",
-  "n_lignes_train": 20,
-  "n_lignes_test": 6,
-  "n_features": 47,
+  "n_lignes_train": 19,
+  "n_lignes_test": 5,
+  "n_features": 48,
   "n_zones": 4,
   "metriques_baseline": {
-    "R2": -0.9246,
-    "MAPE": 78.59
+    "R2": 0.0705,
+    "MAPE": 46.48
   },
   "metriques_test": {
-    "R2": 0.1757,
-    "MAE": 8655.0,
-    "RMSE": 10557.0,
-    "MAPE": 60.96
+    "R2": 0.364,
+    "MAE": 10074.0,
+    "RMSE": 14531.0,
+    "MAPE": 42.4
   },
-  "cv_r2_optuna": 0.5693,
+  "cv_r2_optuna": 0.5177,
   "hyperparametres": {
-    "n_estimators": 295,
-    "max_depth": 3,
-    "learning_rate": 0.17239587182641194,
-    "max_leaves": 15,
-    "subsample": 0.574343670280426,
-    "colsample_bytree": 0.3739496340703734,
-    "colsample_bylevel": 0.7324936136127977,
-    "min_child_weight": 4,
-    "reg_alpha": 0.0024829780676219964,
-    "reg_lambda": 0.003655490318012752,
-    "gamma": 0.05010197987909992
+    "n_estimators": 1733,
+    "max_depth": 2,
+    "learning_rate": 0.14996393999864155,
+    "max_leaves": 12,
+    "subsample": 0.530584601171921,
+    "colsample_bytree": 0.9032200907271138,
+    "colsample_bylevel": 0.7448223314252493,
+    "min_child_weight": 2,
+    "reg_alpha": 0.0427842260033082,
+    "reg_lambda": 0.1217075282955335,
+    "gamma": 0.04721862221217535
   }
 }

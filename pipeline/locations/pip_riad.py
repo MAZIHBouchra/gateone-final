@@ -37,7 +37,7 @@ NUMERIC_FEATURES = [
     # Standing & équipements
     "score_standing", "score_confort", "nb_equipements",
     # Interactions
-    "surf_x_ch", "surf_x_standing",
+    "surf_x_ch", "surf_x_standing", "surf_x_piscine",
     # NLP keywords
     "kw_hote", "kw_renove", "kw_patio", "kw_bassin", "kw_acces",
     "kw_titre", "kw_hammam", "kw_toit",
@@ -126,8 +126,8 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     df = pd.read_csv(path)
     print(f" Chargement : {len(df)} lignes, {df.shape[1]} colonnes")
 
-    # Riads uniquement
-    df = df[df["type_bien"].isin(["Riad", "Vente Riad"])].copy()
+    # Riads uniquement (case-insensitive, location uniquement — exclure 'Vente Riad')
+    df = df[df["type_bien"].str.lower().isin(["riad"])].copy()
     print(f"   Riads : {len(df)}")
 
     # ── Prix ──
@@ -142,15 +142,20 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     surf_col = next((c for c in ["surface_num", "surface"] if c in df.columns and pd.to_numeric(df[c], errors="coerce").notna().sum() > len(df) * 0.1), None)
     df["surface_num"] = pd.to_numeric(df[surf_col], errors="coerce")
 
-    # ── Filtres ──
-    df = df[df["prix_num"].between(500, 2_000_000)].copy()
-    df = df[df["surface_num"].between(30, 2_000)].copy()
-    df["_pm2"] = df["prix_num"] / df["surface_num"]
-    df = df[df["_pm2"].between(10, 5_000)].copy()
-    df.drop(columns=["_pm2"], inplace=True)
+    # ── Exclusion location courte durée (prix par nuit/jour) ──
+    t_col = df["titre"].fillna("").astype(str) if "titre" in df.columns else ""
+    d_col = df["description"].fillna("").astype(str) if "description" in df.columns else ""
+    text_cols = (t_col + " " + d_col).str.lower()
+    mask_courte_duree = text_cols.str.contains(r"par nuit|\bnuit\b|par jour|\bjour\b|vacance|courte dur[eé]e", regex=True)
+    df = df[~mask_courte_duree].copy()
+    print(f"   Après filtre courte durée : {len(df)}")
 
-    log_p = np.log(df["prix_num"])
-    df = df[(log_p >= log_p.quantile(0.01)) & (log_p <= log_p.quantile(0.99))].copy()
+    # ── Filtres adaptés à la LOCATION (loyer mensuel MAD) ──
+    df = df[df["prix_num"].between(6_000, 200_000)].copy()   # loyer mensuel réaliste pour riad (min 6k)
+    df = df[df["surface_num"].between(40, 5_000)].copy()
+    df["_pm2"] = df["prix_num"] / df["surface_num"]
+    df = df[df["_pm2"].between(15, 1_500)].copy()           # loyer/m² mensuel
+    df.drop(columns=["_pm2"], inplace=True)
     df.reset_index(drop=True, inplace=True)
     print(f"   Après filtres : {len(df)} lignes")
 
@@ -188,6 +193,7 @@ def load_data(path: Path = DATA_PATH) -> pd.DataFrame:
     # ── Interactions ──
     df["surf_x_ch"]       = df["surface_num"] * df["chambres_num"]
     df["surf_x_standing"] = df["surface_num"] * df["score_standing"]
+    df["surf_x_piscine"]  = df["surface_num"] * df["piscine"]      # piscine très important pour riads
 
     # ── Keywords NLP ──
     titre_col = "titre" if "titre" in df.columns else None
@@ -320,32 +326,38 @@ def build_pipeline(stats_or_X, xgb_params: dict = None) -> Pipeline:
         ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), cat_cols),
     ], remainder="drop")
     if xgb_params is None:
-        xgb_params = dict(n_estimators=400, max_depth=5, learning_rate=0.05, random_state=42)
+        xgb_params = dict(n_estimators=400, max_depth=5, learning_rate=0.05, random_state=42, n_jobs=1)
+    else:
+        xgb_params["random_state"] = 42
+        xgb_params["n_jobs"] = 1
     return Pipeline([("preprocessor", preprocessor), ("model", XGBRegressor(**xgb_params))])
 
 # 4. OPTUNA
 def tune_hyperparams(X_train, y_train, stats, n_trials=150):
-    print(f" Optuna {n_trials} trials sur X_train (CV 5-fold)...")
+    n = len(X_train)
+    n_splits = min(5, max(2, n // 5))
+    cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+    cv_label = f"{n_splits}-fold"
+    print(f" Optuna {n_trials} trials sur X_train (CV {cv_label})...")
 
     def objective(trial):
         params = dict(
-            n_estimators     = trial.suggest_int("n_estimators", 50, 400),
-            max_depth        = trial.suggest_int("max_depth", 2, 4),
-            learning_rate    = trial.suggest_float("learning_rate", 0.01, 0.2, log=True),
-            max_leaves       = trial.suggest_int("max_leaves", 3, 15),
-            subsample        = trial.suggest_float("subsample", 0.5, 1.0),
-            colsample_bytree = trial.suggest_float("colsample_bytree", 0.3, 1.0),
-            colsample_bylevel= trial.suggest_float("colsample_bylevel", 0.3, 1.0),
-            min_child_weight = trial.suggest_int("min_child_weight", 1, 6),
-            reg_alpha        = trial.suggest_float("reg_alpha", 0.001, 10.0, log=True),
-            reg_lambda       = trial.suggest_float("reg_lambda", 0.001, 10.0, log=True),
-            gamma            = trial.suggest_float("gamma", 0.001, 5.0, log=True),
-            random_state=42, n_jobs=-1,
+            n_estimators      = trial.suggest_int("n_estimators", 50, 2000),
+            max_depth         = trial.suggest_int("max_depth", 1, 6),
+            learning_rate     = trial.suggest_float("learning_rate", 0.003, 0.15, log=True),
+            max_leaves        = trial.suggest_int("max_leaves", 2, 31),
+            subsample         = trial.suggest_float("subsample", 0.5, 1.0),
+            colsample_bytree  = trial.suggest_float("colsample_bytree", 0.3, 1.0),
+            colsample_bylevel = trial.suggest_float("colsample_bylevel", 0.3, 1.0),
+            min_child_weight  = trial.suggest_int("min_child_weight", 2, 30),
+            reg_alpha         = trial.suggest_float("reg_alpha", 0.01, 50.0, log=True),
+            reg_lambda        = trial.suggest_float("reg_lambda", 0.01, 50.0, log=True),
+            gamma             = trial.suggest_float("gamma", 0.001, 10.0, log=True),
+            random_state=42, n_jobs=1, tree_method="hist",
         )
         pipe   = build_pipeline(stats, params)
-        cv     = KFold(n_splits=5, shuffle=True, random_state=42)
-        scores = cross_val_score(pipe, X_train, y_train, cv=cv, scoring="r2", n_jobs=-1)
-        return scores.mean()
+        scores = cross_val_score(pipe, X_train, y_train, cv=cv, scoring="r2", n_jobs=1)
+        return float(np.mean(scores))
 
     study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
@@ -479,7 +491,8 @@ def plot_results(pipeline, X_test, y_test_or_dftest=None, metrics=None, save_dir
     if save_dir:
         Path(save_dir).mkdir(parents=True, exist_ok=True)
         fig.savefig(Path(save_dir) / "riad_results.png", dpi=150, bbox_inches="tight")
-    plt.show()
+    # plt.show()
+    plt.close(fig)
 
 # 8. PRÉDICTION UNITAIRE
 def predict_price(pipeline, bien_dict: dict, stats: dict) -> dict:
@@ -586,7 +599,8 @@ def run_pipeline(tune=True, n_trials=150):
     print("═" * 60)
 
     df = load_data()
-    print("\n Split train/test...")
+    print(f"\n Dataset : {len(df)} riads")
+    print(" Split train/test...")
     X_train, X_test, y_train, y_test, df_train, df_test, stats = split_and_encode(df)
 
     xgb_params, study = tune_hyperparams(X_train, y_train, stats, n_trials) if tune else (None, None)
@@ -606,4 +620,4 @@ def run_pipeline(tune=True, n_trials=150):
     return pipeline_final, stats, metrics, study
 
 if __name__ == "__main__":
-    pipeline_final, stats, metrics, study = run_pipeline(tune=True, n_trials=50)
+    pipeline_final, stats, metrics, study = run_pipeline(tune=True, n_trials=150)
