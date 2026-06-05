@@ -21,6 +21,8 @@ import AdminAIStudio from "./pages/admin/AdminAIStudio";
 import PropertiesPage from './pages/admin/PropertiesPage';
 import LeadsPage from './pages/admin/LeadsPage';
 import BlogStudio from './pages/admin/BlogStudio';
+import AdminEditProperty from './pages/admin/AdminEditProperty';
+import SettingsPage from './pages/admin/SettingsPage';
 
 // Fallback Page
 import NotFound from "./pages/NotFound";
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="/admin/studio" element={<AdminAIStudio />} />
             <Route path="/admin/leads" element={<LeadsPage />} />
             <Route path="/admin/blogs" element={<BlogStudio />} />
+			<Route path="/admin/edit/:id" element={<AdminEditProperty />} />
+			<Route path="/admin/settings" element={<SettingsPage />} />
 
             {/* --- ERROR CATCH --- */}
             <Route path="*" element={<NotFound />} />

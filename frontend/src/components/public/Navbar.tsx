@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -8,36 +7,34 @@ export default function Navbar() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
 
-  // Vérifier si nous sommes sur la Home Page
   const isHomePage = location.pathname === '/';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 30);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Logique de couleurs dynamique
-  // Sur la home : transparent au début. Ailleurs : toujours rempli (ou sombre).
-  const navBackground = isHomePage 
-    ? (scrolled ? "bg-white/90 backdrop-blur-xl border-b border-white/10 shadow-sm" : "bg-transparent")
-    : "bg-[#0B1F33]/95 backdrop-blur-xl border-b border-white/5 shadow-lg"; // Version sombre pour les autres pages
+  // CORRECTION : meilleur contraste au scroll sur Home
+  const navBackground = isHomePage
+    ? (scrolled
+        ? "bg-white shadow-md border-b border-gray-100"          // ← plus de /90, ombre visible, bordure grise
+        : "bg-transparent")
+    : "bg-[#0B1F33]/95 backdrop-blur-xl border-b border-white/5 shadow-lg";
 
   const textColor = isHomePage
     ? (scrolled ? "text-[#0B1F33]" : "text-white")
-    : "text-white"; // Toujours blanc sur les pages sombres comme Properties
+    : "text-white";
 
-  const logoIntelligenceColor = "text-[#5DA9E9]"; // Ta couleur de marque reste fixe
+  const logoIntelligenceColor = "text-[#5DA9E9]";
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-[100] px-8 md:px-12 py-5 transition-all duration-500 ${navBackground}`}>
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        
+
         {/* LOGO */}
         <div className="cursor-pointer group" onClick={() => navigate('/')}>
-          <h1 className={`text-2xl font-serif font-bold tracking-tighter transition-all ${textColor}`}>
+          <h1 className={`text-2xl font-serif font-bold tracking-tighter transition-all duration-500 ${textColor}`}>
             GateOne
             <span className={`block text-[10px] uppercase tracking-[0.4em] italic mt-0.5 ${logoIntelligenceColor} group-hover:tracking-[0.5em] transition-all`}>
               Intelligence
@@ -49,17 +46,27 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-12">
           {[
             { label: 'Properties', path: '/properties' },
-            { label: 'Journal', path: '/journal' },
-            { label: 'About', path: '/about' },
-			{ label: 'Contact', path: '/contact' }
+            { label: 'Journal',    path: '/journal'    },
+            { label: 'About',      path: '/about'      },
+            { label: 'Contact',    path: '/contact'    },
           ].map((item) => (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`text-[10px] uppercase font-bold tracking-[0.3em] transition-all relative py-2
-                after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px] after:bg-[#5DA9E9] after:transition-all
-                ${location.pathname === item.path ? 'text-[#5DA9E9] after:w-full' : `after:w-0 hover:after:w-full ${scrolled || !isHomePage ? 'hover:text-[#5DA9E9]' : 'text-white/80 hover:text-white'}`}
-                ${!isHomePage ? 'text-white/80' : scrolled ? 'text-[#0B1F33]/70' : 'text-white/70'}
+              className={`
+                text-[10px] uppercase font-bold tracking-[0.3em] transition-all duration-300 relative py-2
+                after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[1px]
+                after:bg-[#5DA9E9] after:transition-all
+                ${location.pathname === item.path
+                  ? 'text-[#5DA9E9] after:w-full'
+                  : `after:w-0 hover:after:w-full
+                     ${isHomePage && !scrolled
+                        ? 'text-white/80 hover:text-white'
+                        : isHomePage && scrolled
+                          ? 'text-[#0B1F33]/70 hover:text-[#5DA9E9]'   // ← CORRECTION : hover bleu sur fond blanc
+                          : 'text-white/80 hover:text-white'
+                     }`
+                }
               `}
             >
               {item.label}
@@ -70,15 +77,17 @@ export default function Navbar() {
         {/* BUTTON */}
         <button
           onClick={() => navigate('/admin/login')}
-          className={`text-[10px] uppercase font-bold tracking-[0.2em] px-7 py-3 rounded-full transition-all border
-            ${isHomePage && !scrolled 
-              ? "border-white/30 bg-white/10 text-white hover:bg-white hover:text-[#0B1F33]" 
-              : "border-[#5DA9E9] text-white bg-[#5DA9E9]/10 hover:bg-[#5DA9E9] shadow-lg shadow-sky-500/20"
+          className={`
+            text-[10px] uppercase font-bold tracking-[0.2em] px-7 py-3 rounded-full transition-all border
+            ${isHomePage && !scrolled
+              ? "border-white/30 bg-white/10 text-white hover:bg-white hover:text-[#0B1F33]"
+              : "border-[#5DA9E9] text-[#5DA9E9] bg-transparent hover:bg-[#5DA9E9] hover:text-white shadow-sm"  // ← CORRECTION : texte visible sur blanc
             }
           `}
         >
           Private Access
         </button>
+
       </div>
     </nav>
   );
