@@ -160,6 +160,7 @@ class AIContentCache(Base):
     seo_title = Column(String(255)) 
     article_body = Column(Text, nullable=False) 
     meta_keywords = Column(Text) 
+    is_published = Column(Boolean, default=False)
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     property = relationship("Property", back_populates="ai_articles")

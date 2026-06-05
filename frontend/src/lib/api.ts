@@ -79,5 +79,47 @@ export const propertiesApi = {
     const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/social-posts`);
     if (!response.ok) throw new Error("Social posts not found");
     return response.json();
+  },
+  
+  async getById(id: string) {
+    const res = await fetch(`${API_BASE_URL}/properties/${id}`);
+    return res.json();
+  },
+
+  // Dans frontend/src/lib/api.ts
+
+// Dans frontend/src/lib/api.ts
+
+async update(id: string, formData: any) {
+  return fetch(`${API_BASE_URL}/properties/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: formData.title,
+      intent: formData.intent || "Sale", // On force une valeur par défaut
+      price: parseFloat(formData.price),
+      location: formData.location,
+      neighborhood: formData.neighborhood,
+      type: formData.type,
+      bedrooms: parseInt(formData.bedrooms) || 0,
+      bathrooms: parseInt(formData.bathrooms) || 0,
+      area_sqm: parseInt(formData.area_sqm) || 0,
+      status: formData.status || "available",
+      // ICI : On s'assure d'envoyer 'features' car c'est ce que Pydantic attend
+      features: formData.features || formData.description || "Premium property description" 
+    })
+  });
+},
+
+async syncAI(id: string, formData: any) {
+  return fetch(`${API_BASE_URL}/properties/${id}/sync-ai`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  });
+},
+
+  async delete(id: string) {
+    return fetch(`${API_BASE_URL}/properties/${id}`, { method: 'DELETE' });
   }
 };
