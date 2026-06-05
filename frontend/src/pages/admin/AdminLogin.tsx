@@ -38,6 +38,7 @@ export default function AdminLogin() {
         // Stockage du Token JWT
         localStorage.setItem('gateone_token', data.access_token);
         localStorage.setItem('agent_name', data.agent.full_name);
+		localStorage.setItem('gateone_role', data.agent.role)
         
         // Redirection vers le Dashboard
         navigate('/admin');
