@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:8000/api";
 
-// Interface pour TypeScript
+// Interface pour TypeScript (Inclusion de thumbnail_url pour le catalogue)
 export interface Property {
   id: string;
   title: string;
@@ -13,29 +13,39 @@ export interface Property {
   area_sqm: number;
   description: string;
   status: string;
+  thumbnail_url?: string;
   created_at?: string;
 }
 
+// Fonction utilitaire pour récupérer le token proprement
+const getAuthHeader = () => {
+  const token = localStorage.getItem('gateone_token');
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+};
+
 export const propertiesApi = {
-  // 1. RÉCUPÉRER TOUS LES BIENS (Celle qui manquait !)
+  
+  // 1. RÉCUPÉRER TOUS LES BIENS (Filtrés par Agent/Admin au Backend)
   async getAll(): Promise<Property[]> {
-    console.log("Fetching all properties from:", `${API_BASE_URL}/properties/`);
     const response = await fetch(`${API_BASE_URL}/properties/`, {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeader() },
     });
-    if (!response.ok) throw new Error("Error fetching properties");
-    const data = await response.json();
-    console.log("🔍 Data received from backend:", data);
-    return data;
+    return response.json();
+  },
+  
+  async getPublicCatalog(): Promise<Property[]> {
+    const response = await fetch(`${API_BASE_URL}/properties/public`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" } // PAS de token ici !
+    });
+    if (!response.ok) throw new Error("Catalog fetch error");
+    return response.json();
   },
 
-  // 2. AJOUTER UN BIEN AVEC IA
+  // 2. AJOUTER UN BIEN AVEC IMAGE ET IA (Multipart/FormData)
   async addWithAI(formData: any, imageFile: File | null) {
-    // 1. On crée le conteneur FormData
     const data = new FormData();
-
-    // 2. On ajoute les champs textuels un par un (doit correspondre aux noms dans le Backend)
     data.append("title", formData.title);
     data.append("price", formData.price.toString());
     data.append("location", formData.location);
@@ -44,82 +54,96 @@ export const propertiesApi = {
     data.append("bedrooms", formData.bedrooms.toString());
     data.append("bathrooms", formData.bathrooms.toString());
     data.append("area_sqm", formData.area_sqm.toString());
-    data.append("intent", formData.intent);
-    data.append("features", `Plot: ${formData.plot_size || 0}m2, Features: ${formData.features}`);
+    data.append("intent", formData.intent || "Sale");
+    data.append("features", formData.features || "");
     data.append("status", formData.status || "available");
 
-    // 3. On ajoute le fichier s'il existe
     if (imageFile) {
       data.append("image", imageFile);
     }
 
-    // 4. On envoie la requête (Attention : ne PAS mettre de Content-Type header !)
     const response = await fetch(`${API_BASE_URL}/properties/add-with-ai`, {
       method: "POST",
+      headers: { 
+        ...getAuthHeader() // ATTENTION: Pas de Content-Type ici, FormData s'en occupe
+      },
       body: data, 
     });
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Upload failed");
-    }
+    if (!response.ok) throw new Error("Failed to secure listing. Check credentials.");
     return response.json();
   },
 
-
-  // 3. RÉCUPÉRER L'ARTICLE IA
+  // 3. RÉCUPÉRER L'ARTICLE IA (Avec privilèges Admin/Owner)
   async getAIArticle(propertyId: string) {
-    const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/ai-article`);
-    if (!response.ok) throw new Error("Article not found");
+    const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/ai-article?is_admin=true`, {
+        headers: { ...getAuthHeader() }
+    });
+    if (!response.ok) throw new Error("Forbidden: Asset analysis restricted.");
     return response.json();
   },
 
   // 4. RÉCUPÉRER LES POSTS SOCIAUX
   async getSocialPosts(propertyId: string) {
-    const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/social-posts`);
-    if (!response.ok) throw new Error("Social posts not found");
+    const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/social-posts`, {
+        headers: { ...getAuthHeader() }
+    });
+    if (!response.ok) throw new Error("Social briefing not found");
     return response.json();
   },
   
+  // 5. RÉCUPÉRER UN BIEN PAR SON ID (Pour édition)
   async getById(id: string) {
-    const res = await fetch(`${API_BASE_URL}/properties/${id}`);
+    const res = await fetch(`${API_BASE_URL}/properties/${id}`, {
+        headers: { ...getAuthHeader() }
+    });
+    if (!res.ok) throw new Error("Identity mismatch for asset coordinates");
     return res.json();
   },
 
-  // Dans frontend/src/lib/api.ts
+  // 6. METTRE À JOUR LES SPECS (Ownership Validation au Backend)
+  async update(id: string, formData: any) {
+    return fetch(`${API_BASE_URL}/properties/${id}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeader()
+      },
+      body: JSON.stringify({
+        title: formData.title,
+        intent: formData.intent || "Sale",
+        price: parseFloat(formData.price),
+        location: formData.location,
+        neighborhood: formData.neighborhood,
+        type: formData.type,
+        bedrooms: parseInt(formData.bedrooms) || 0,
+        bathrooms: parseInt(formData.bathrooms) || 0,
+        area_sqm: parseInt(formData.area_sqm) || 0,
+        status: formData.status || "available",
+        features: formData.features || formData.description || ""
+      })
+    });
+  },
 
-// Dans frontend/src/lib/api.ts
+  // 7. RELANCER LA SYNC IA
+  async syncAI(id: string, formData: any) {
+    return fetch(`${API_BASE_URL}/properties/${id}/sync-ai`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        ...getAuthHeader() 
+      },
+      body: JSON.stringify(formData)
+    });
+  },
 
-async update(id: string, formData: any) {
-  return fetch(`${API_BASE_URL}/properties/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      title: formData.title,
-      intent: formData.intent || "Sale", // On force une valeur par défaut
-      price: parseFloat(formData.price),
-      location: formData.location,
-      neighborhood: formData.neighborhood,
-      type: formData.type,
-      bedrooms: parseInt(formData.bedrooms) || 0,
-      bathrooms: parseInt(formData.bathrooms) || 0,
-      area_sqm: parseInt(formData.area_sqm) || 0,
-      status: formData.status || "available",
-      // ICI : On s'assure d'envoyer 'features' car c'est ce que Pydantic attend
-      features: formData.features || formData.description || "Premium property description" 
-    })
-  });
-},
-
-async syncAI(id: string, formData: any) {
-  return fetch(`${API_BASE_URL}/properties/${id}/sync-ai`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  });
-},
-
+  // 8. SUPPRESSION SÉCURISÉE (Le Backend vérifie si l'agent est le propriétaire)
   async delete(id: string) {
-    return fetch(`${API_BASE_URL}/properties/${id}`, { method: 'DELETE' });
+    const response = await fetch(`${API_BASE_URL}/properties/${id}`, { 
+        method: 'DELETE',
+        headers: { ...getAuthHeader() }
+    });
+    if (!response.ok) throw new Error("Revocation denied: Unauthorized access.");
+    return response.json();
   }
 };

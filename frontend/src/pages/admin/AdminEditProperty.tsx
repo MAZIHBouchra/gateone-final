@@ -127,10 +127,19 @@ export default function AdminEditProperty() {
             </div>
             <div>
               <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Type</label>
-              <select name="type" value={formData.type} onChange={handleChange} className="w-full border-b border-gray-100 py-2 bg-transparent text-sm">
-                 <option value="Luxury Villa">Villa</option>
-                 <option value="Riad">Riad</option>
-                 <option value="Apartment">Apartment</option>
+              <select 
+               name="type" 
+               value={formData.type} 
+               onChange={handleChange} 
+               className="w-full border-b border-gray-100 py-2 bg-transparent text-sm outline-none"
+               >
+               <option value="Luxury Villa">Luxury Villa</option>
+               <option value="Historic Riad">Historic Riad</option>
+               <option value="Royal Palace">Royal Palace (Palais)</option>
+               <option value="Prestige Penthouse">Prestige Penthouse</option>
+               <option value="Luxury Apartment">Luxury Apartment</option>
+               <option value="Strategic Land">Investment Land (Terrain)</option>
+               <option value="Other">Other / Exceptional Estate</option>
               </select>
             </div>
             <div>

@@ -85,32 +85,37 @@ const handleOpenIntelligence = async (prop: Property) => {
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure? This will delete the asset, all its images and the generated AI intelligence pack.")) {
         try {
-            const res = await fetch(`http://localhost:8000/api/properties/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                // On met à jour la liste sans recharger la page
-                setProperties(properties.filter(p => p.id !== id));
-            }
+            // ✅ On utilise le client centralisé qui envoie le Token
+            const result = await propertiesApi.delete(id); 
+            
+            // Si l'exécution arrive ici, c'est que result.ok était vrai
+            setProperties(properties.filter(p => p.id !== id));
+            alert(" Asset successfully decommissioned.");
+            
         } catch (error) {
-            alert("Error during deletion.");
+            console.error("Deletion failed:", error);
+            alert("Action Denied: You don't have permission to delete this asset or your session has expired.");
         }
     }
-  };
+};
   
-  const handlePublishFromList = async () => {
+  // Dans PropertiesPage.tsx, cherchez handlePublishFromList
+const handlePublishFromList = async () => {
     if (!selectedProp) return;
     
     try {
         const res = await fetch(`http://localhost:8000/api/properties/${selectedProp.id}/approve-article`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }, // <-- Obligatoire
+            body: JSON.stringify({}) // <-- On envoie un objet vide pour éviter le 422
         });
 
         if (res.ok) {
-            alert(" Excellence: The Intelligence Pack is now LIVE for all customers.");
-            // On met à jour l'état local pour changer l'affichage
+            alert(" Confirmed: The version is now Live!");
             setAiArticle((prev: any) => ({ ...prev, is_published: true }));
         }
     } catch (err) {
-        alert("Failed to synchronize with server.");
+        alert("Server communication failed.");
     }
 };
 
