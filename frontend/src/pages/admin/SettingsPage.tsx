@@ -19,9 +19,17 @@ export default function SettingsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [passData, setPassData] = useState({ current: '', next: '' });
+  const [updating, setUpdating] = useState(false);
 
   // Formulaire pour nouveau membre
-  const [newAgent, setNewAgent] = useState({ first_name: '', last_name: '', email: '', password: '', role: 'agent' });
+  const [newAgent, setNewAgent] = useState({ 
+    first_name: '', 
+    last_name: '', 
+    email: '', 
+    password: '', 
+    role: 'agent' // Par défaut
+  });
 
   useEffect(() => {
     // Vérification du rôle stocké lors du login
@@ -47,12 +55,83 @@ export default function SettingsPage() {
         body: JSON.stringify(newAgent)
       });
       if (res.ok) {
-        alert("✨ Professional Credentials generated for new Agent.");
+        alert("Professional Credentials generated for new Agent.");
         fetchAgents();
         setNewAgent({ first_name: '', last_name: '', email: '', password: '', role: 'agent' });
       }
     } finally { setLoading(false); }
   };
+  
+  const handleDeleteAgent = async (agentId: number, agentName: string) => {
+    // 1. Demande de confirmation professionnelle
+    if (window.confirm(`Security Protocol: Are you sure you want to revoke access for ${agentName}? This action is permanent.`)) {
+        try {
+            const res = await fetch(`http://localhost:8000/api/auth/agents/${agentId}`, {
+                method: 'DELETE',
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem('gateone_token')}`
+                }
+            });
+
+            if (res.ok) {
+                // 2. Mise à jour de la liste locale instantanément
+                setAgents(prev => prev.filter(a => a.id !== agentId));
+                alert("🔒 Access revoked successfully.");
+            } else {
+                const err = await res.json();
+                alert(err.detail);
+            }
+        } catch (error) {
+            alert("Connection error with the Security Gateway.");
+        }
+    }
+};
+  
+  const handlePasswordUpdate = async () => {
+    if(!passData.current || !passData.next) return;
+    setUpdating(true);
+    
+    try {
+        const res = await fetch('http://localhost:8000/api/auth/profile/password', {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('gateone_token')}`
+            },
+            body: JSON.stringify({
+                current_password: passData.current,
+                new_password: passData.next
+            })
+        });
+
+        if (res.ok) {
+            alert("Identity secured! Your new security key is active.");
+            setPassData({ current: '', next: '' }); // Reset
+        } else {
+            const err = await res.json();
+            alert(err.detail);
+        }
+    } finally { setUpdating(false); }
+  };
+  
+  const handleResetPassword = async (agentId: number, agentEmail: string) => {
+  const newPass = prompt(`Enter a temporary Security Key for ${agentEmail}:`);
+  
+  if (newPass && newPass.length >= 6) {
+    try {
+       const res = await fetch(`http://localhost:8000/api/auth/agents/${agentId}/reset-password`, {
+         method: 'PUT',
+         headers: {
+           'Content-Type': 'application/json',
+           'Authorization': `Bearer ${localStorage.getItem('gateone_token')}`
+         },
+         body: JSON.stringify({ new_password: newPass })
+       });
+       
+       if (res.ok) alert(`Password for ${agentEmail} has been updated.`);
+    } catch (err) { alert("Security sync failed."); }
+  }
+};
 
   return (
     <AdminLayout>
@@ -96,10 +175,26 @@ export default function SettingsPage() {
                   
                   <div className="space-y-4 pt-6">
                     <label className="text-[10px] uppercase font-bold text-gray-400">Change Security Key (Password)</label>
-                    <input type="password" placeholder="Current Password" className="w-full border-b py-3 outline-none focus:border-[#C7A987] text-sm" />
-                    <input type="password" placeholder="New Secret Key" className="w-full border-b py-3 outline-none focus:border-[#C7A987] text-sm" />
-                    <button className="bg-[#2D3321] text-[#F9F7F2] px-8 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest mt-4">
-                        Update Credentials
+					<input 
+                      type="password" 
+                      placeholder="Current Password" 
+                      className="w-full border-b py-3 outline-none focus:border-[#C7A987] text-sm" 
+                      value={passData.current}
+                      onChange={e => setPassData({...passData, current: e.target.value})}
+                    />
+                    <input 
+                      type="password" 
+                      placeholder="New Secret Key" 
+                      className="w-full border-b py-3 outline-none focus:border-[#C7A987] text-sm" 
+                      value={passData.next}
+                      onChange={e => setPassData({...passData, next: e.target.value})}
+                    />
+					<button 
+                      onClick={handlePasswordUpdate}
+                      disabled={updating}
+                      className="bg-[#2D3321] text-[#F9F7F2] px-8 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest mt-4"
+					  >
+                      {updating ? <Loader2 className="animate-spin" /> : "Update Credentials"}
                     </button>
                   </div>
                </div>
@@ -114,17 +209,83 @@ export default function SettingsPage() {
                </div>
 
                {/* AJOUT NOUVEAU MEMBRE */}
-               <form onSubmit={handleCreateAgent} className="grid grid-cols-2 md:grid-cols-4 gap-4 p-8 bg-[#F9F7F2] rounded-3xl border border-[#C7A987]/20">
-                  <input required placeholder="First Name" className="bg-white px-4 py-3 rounded-xl text-xs outline-none" onChange={e => setNewAgent({...newAgent, first_name: e.target.value})} />
-                  <input required placeholder="Last Name" className="bg-white px-4 py-3 rounded-xl text-xs outline-none" onChange={e => setNewAgent({...newAgent, last_name: e.target.value})} />
-                  <input required type="email" placeholder="agent@gateone.immo" className="bg-white px-4 py-3 rounded-xl text-xs outline-none" onChange={e => setNewAgent({...newAgent, email: e.target.value})} />
-                  <input required type="password" placeholder="Temp Secret Key" className="bg-white px-4 py-3 rounded-xl text-xs outline-none" onChange={e => setNewAgent({...newAgent, password: e.target.value})} />
-                  <div className="col-span-4 flex justify-end">
-                      <button disabled={loading} className="bg-[#2D3321] text-white px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
-                        {loading ? <Loader2 className="animate-spin"/> : <UserPlus size={16}/>} PROVISION NEW ACCOUNT
-                      </button>
-                  </div>
-               </form>
+               {/* --- NOUVEAU BLOC : AGENCY HIERARCHY FORM --- */}
+<div className="bg-[#F9F7F2] rounded-[2.5rem] p-10 border border-[#C7A987]/20 relative overflow-hidden group">
+  {/* Décoration d'arrière-plan discrète */}
+  <div className="absolute top-0 right-0 w-32 h-32 bg-[#C7A987]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
+
+  <div className="flex justify-between items-center mb-10">
+    <div>
+      <h3 className="text-2xl font-serif font-bold text-[#2D3321]">Provision Associate</h3>
+      <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Onboarding system for verified agents</p>
+    </div>
+    <div className="bg-white/50 border border-white p-2 rounded-xl text-gray-400">
+      <UserPlus size={20} />
+    </div>
+  </div>
+
+  <form onSubmit={handleCreateAgent} className="space-y-6 relative z-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Colonne 1 : Identité */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1">
+             <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest ml-1">First Name</label>
+             <input required value={newAgent.first_name} className="w-full bg-white px-5 py-3 rounded-2xl text-xs outline-none focus:ring-2 focus:ring-[#C7A987]/20 border border-transparent focus:border-[#C7A987] transition-all" 
+             onChange={e => setNewAgent({...newAgent, first_name: e.target.value})} />
+          </div>
+          <div className="space-y-1">
+             <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest ml-1">Last Name</label>
+             <input required value={newAgent.last_name} className="w-full bg-white px-5 py-3 rounded-2xl text-xs outline-none focus:ring-2 focus:ring-[#C7A987]/20 border border-transparent focus:border-[#C7A987] transition-all" 
+             onChange={e => setNewAgent({...newAgent, last_name: e.target.value})} />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest ml-1">Professional Email</label>
+          <input required type="email" value={newAgent.email} className="w-full bg-white px-5 py-3 rounded-2xl text-xs outline-none border border-transparent focus:border-[#C7A987] transition-all" 
+          placeholder="e.g. agent@gateone.immo" onChange={e => setNewAgent({...newAgent, email: e.target.value})} />
+        </div>
+      </div>
+
+      {/* Colonne 2 : Accès */}
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest ml-1">System Permissions</label>
+          <select 
+            className="w-full bg-white px-5 py-3 rounded-2xl text-xs outline-none border border-transparent focus:border-[#C7A987] transition-all appearance-none cursor-pointer text-[#2D3321] font-bold"
+            value={newAgent.role}
+            onChange={e => setNewAgent({...newAgent, role: e.target.value})}
+          >
+            <option value="agent">Associate Agent (Limited Access)</option>
+            <option value="admin">Platform Administrator (Full Access)</option>
+          </select>
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest ml-1">Initial Security Key</label>
+          <input required type="password" value={newAgent.password} className="w-full bg-white px-5 py-3 rounded-2xl text-xs outline-none border border-transparent focus:border-[#C7A987] transition-all font-mono" 
+          placeholder="••••••••••••" onChange={e => setNewAgent({...newAgent, password: e.target.value})} />
+        </div>
+      </div>
+    </div>
+
+    <div className="pt-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[#C7A987]">
+            <div className="w-1.5 h-1.5 bg-[#C7A987] rounded-full animate-pulse"></div>
+            <span className="text-[8px] uppercase font-bold tracking-[0.3em]">Encryption logic: Active</span>
+        </div>
+        <button 
+          disabled={loading}
+          className="bg-[#2D3321] text-[#F9F7F2] px-10 py-5 rounded-[1.8rem] font-bold text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 shadow-xl hover:bg-black transition-all active:scale-95 disabled:opacity-50"
+        >
+          {loading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} className="text-[#C7A987]" />}
+          Deploy Professional Access
+        </button>
+    </div>
+  </form>
+</div>
+			   
 
                {/* LISTE DES AGENTS */}
                <div className="space-y-4">
@@ -137,8 +298,18 @@ export default function SettingsPage() {
                             <p className="text-[10px] text-gray-400 uppercase tracking-widest">{agent.role} • {agent.email}</p>
                           </div>
                        </div>
-                       <button className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                          <Trash2 size={16} />
+                       <button 
+                         onClick={() => handleDeleteAgent(agent.id, agent.first_name)}
+                         className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                         >
+                         <Trash2 size={16} />
+                       </button>
+					   <button 
+                        onClick={() => handleResetPassword(agent.id, agent.email)}
+                        className="p-3 text-gray-400 hover:text-[#C7A987] hover:bg-[#F9F7F2] rounded-xl transition-all"
+                        title="Reset Security Key"
+                        >
+                        <Lock size={16} />
                        </button>
                     </div>
                   ))}

@@ -26,23 +26,25 @@ export default function AdminLogin() {
 
     try {
       // Simulation de l'appel API (à connecter avec ta route /api/auth/login plus tard)
-      const response = await fetch('http://localhost:8000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+const response = await fetch('http://localhost:8000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData),
+});
 
-      const data = await response.json();
+const data = await response.json();
+console.log("Check data from Server:", data); // <--- LOG À VÉRIFIER DANS F12
 
-      if (response.ok) {
-        // Stockage du Token JWT
-        localStorage.setItem('gateone_token', data.access_token);
-        localStorage.setItem('agent_name', data.agent.full_name);
-		localStorage.setItem('gateone_role', data.agent.role)
-        
-        // Redirection vers le Dashboard
-        navigate('/admin');
-      } else {
+if (response.ok) {
+    localStorage.setItem('gateone_token', data.access_token);
+    localStorage.setItem('agent_name', data.agent.full_name);
+    
+    // 🔥 CORRECTION ICI : Assurez-vous d'utiliser data.agent.role
+    // tel que défini dans le JSON envoyé par Python
+    localStorage.setItem('gateone_role', data.agent.role); 
+    
+    navigate('/admin');
+} else {
         setError(data.detail || "Authentication failed. Please check your credentials.");
       }
     } catch (err) {
@@ -96,29 +98,42 @@ export default function AdminLogin() {
             </div>
 
             {/* PASSWORD FIELD */}
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase font-bold text-gray-400 tracking-widest ml-1">Security Key</label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#C7A987] transition-colors">
-                  <Lock size={18} />
-                </div>
-                <input 
-                  required
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-[#F9F7F2]/50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-[#C7A987] focus:ring-4 focus:ring-[#C7A987]/5 transition-all text-sm"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-[#2D3321] transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
+            {/* PASSWORD FIELD */}
+<div className="space-y-2">
+  <div className="flex justify-between items-center ml-1">
+    <label className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Security Key</label>
+    
+    {/* LIEN DE RÉCUPÉRATION SUBTIL */}
+    <button 
+      type="button"
+      onClick={() => alert("Identity Security Policy: Please contact your System Administrator to receive a temporary recovery key.")}
+      className="text-[9px] uppercase font-bold text-[#C7A987]/60 hover:text-[#C7A987] transition-all tracking-tighter"
+    >
+      Forgot Key?
+    </button>
+  </div>
+  
+  <div className="relative group">
+    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-[#C7A987] transition-colors">
+      <Lock size={18} />
+    </div>
+    <input 
+      required
+      type={showPassword ? "text" : "password"}
+      placeholder="••••••••••••"
+      className="w-full pl-12 pr-12 py-4 bg-[#F9F7F2]/50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-[#C7A987] focus:ring-4 focus:ring-[#C7A987]/5 transition-all text-sm"
+      value={formData.password}
+      onChange={(e) => setFormData({...formData, password: e.target.value})}
+    />
+    <button 
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-[#2D3321] transition-colors"
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </button>
+  </div>
+</div>
 
             {/* ERROR MESSAGE */}
             {error && (
