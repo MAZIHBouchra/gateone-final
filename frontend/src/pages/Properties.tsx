@@ -11,7 +11,7 @@ import {
   Search, 
   ArrowUpRight,
   Sparkles,
-  Loader2
+  Loader2, Bath
 } from 'lucide-react';
 
 
@@ -25,36 +25,40 @@ export default function Properties() {
 
   useEffect(() => {
     async function loadData() {
-      try {
-        const data = await propertiesApi.getAll();
-
-        setProperties(
-          data.filter((p: any) => p.status === "available")
-        );
-      } catch (err) {
-        console.error("Discovery error", err);
-      } finally {
-        setLoading(false);
-      }
+        try {
+            console.log("🛰️ Fetching Public Catalog...");
+            const data = await propertiesApi.getPublicCatalog();
+            
+            // On vérifie que data est bien un tableau avant de le stocker
+            if (Array.isArray(data)) {
+                console.log("✅ Catalog received:", data.length, "assets");
+                setProperties(data);
+            }
+        } catch (err) {
+            console.error("❌ Logic Error in Discovery Page:", err);
+        } finally {
+            // QUOI QU'IL ARRIVE, on arrête le spinner
+            setLoading(false); 
+        }
     }
-
     loadData();
-  }, []);
+}, []);
 
-  const filteredProperties = properties.filter((prop) => {
-    const matchesType =
-      filter === "all" || prop.type === filter;
+const filteredProperties = properties.filter((prop) => {
+    // Vérification du type (Villas, Riads, etc.)
+    const matchesType = filter === "all" || prop.type === filter;
 
-    const matchesSearch =
-      prop.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      prop.location
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+    // Nettoyage des chaînes pour une recherche insensible à la casse
+    const search = searchTerm.toLowerCase();
+    
+    const matchesSearch = 
+      prop.title?.toLowerCase().includes(search) || 
+      prop.location?.toLowerCase().includes(search) || 
+      prop.neighborhood?.toLowerCase().includes(search);
 
     return matchesType && matchesSearch;
-  });
+});
+
 
   return (
     <div className="min-h-screen bg-white pt-24">
@@ -84,29 +88,24 @@ export default function Properties() {
           </h1>
 
           {/* SEARCH BAR */}
-          <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 flex flex-col md:flex-row items-center shadow-2xl">
+          {/* PREMIUM SEARCH BAR (Glassmorphism) */}
+<div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 flex flex-col md:flex-row items-center shadow-2xl relative z-10">
+    <div className="flex-1 flex items-center px-5 w-full">
+        <Search className="text-[#5DA9E9] mr-3" size={18} />
+        <input
+            type="text"
+            placeholder="Search by city, neighborhood, or estate name..."
+            className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-gray-400 py-4"
+            value={searchTerm} // Liaison avec l'état
+            onChange={(e) => setSearchTerm(e.target.value)} // Mise à jour instantanée
+        />
+    </div>
 
-            <div className="flex-1 flex items-center px-5 w-full">
-              <Search
-                className="text-[#5DA9E9] mr-3"
-                size={18}
-              />
-
-              <input
-                type="text"
-                placeholder="Search city, neighborhood..."
-                className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-gray-300 py-4"
-                value={searchTerm}
-                onChange={(e) =>
-                  setSearchTerm(e.target.value)
-                }
-              />
-            </div>
-
-            <button className="bg-[#5DA9E9] text-white px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-sky-400 transition-all shadow-xl active:scale-95">
-              Refine Search
-            </button>
-          </div>
+    {/* Ce bouton est visuel pour le "luxe", l'utilisateur voit les résultats bouger dès qu'il tape */}
+    <button className="bg-[#5DA9E9] text-white px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-sky-400 transition-all shadow-xl active:scale-95">
+        Refine Search
+    </button>
+</div>
         </div>
       </div>
 
@@ -245,68 +244,34 @@ export default function Properties() {
                   </p>
 
                   {/* DETAILS */}
-                  <div className="mt-auto grid grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+                  <div className="mt-auto grid grid-cols-3 gap-2 border-t border-gray-50 pt-6">
+  {/* AREA */}
+  <div className="flex flex-col">
+    <span className="text-[9px] text-gray-400 font-bold uppercase">Area</span>
+    <div className="flex items-center gap-1.5 text-[#2D3321]">
+      <Maximize size={14} className="opacity-20" /> 
+      <span className="text-xs font-bold">{prop.area_sqm} m²</span>
+    </div>
+  </div>
 
-                    {/* AREA */}
-                    <div className="flex flex-col">
+  {/* BEDROOMS */}
+  <div className="flex flex-col border-x border-gray-50 px-2">
+    <span className="text-[9px] text-gray-400 font-bold uppercase">Beds</span>
+    <div className="flex items-center gap-1.5 text-[#2D3321]">
+      <Bed size={14} className="opacity-20" /> 
+      <span className="text-xs font-bold">{prop.bedrooms}</span>
+    </div>
+  </div>
 
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        Area
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
-
-                        <Maximize
-                          size={14}
-                          className="opacity-30"
-                        />
-
-                        <span className="text-xs font-bold">
-                          {prop.area_sqm} m²
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* ROOMS */}
-                    <div className="flex flex-col">
-
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        Rooms
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
-
-                        <Bed
-                          size={14}
-                          className="opacity-30"
-                        />
-
-                        <span className="text-xs font-bold">
-                          {prop.bedrooms} Bed
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* ROI */}
-                    <div className="flex flex-col">
-
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        AI ROI
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#5DA9E9]">
-
-                        <Sparkles
-                          size={14}
-                          className="opacity-70"
-                        />
-
-                        <span className="text-xs font-bold">
-                          ~12.4%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+  {/* BATHROOMS (Remplace le AI ROI) */}
+  <div className="flex flex-col pl-1">
+    <span className="text-[9px] text-gray-400 font-bold uppercase">Baths</span>
+    <div className="flex items-center gap-1.5 text-[#2D3321]">
+      <Bath size={14} className="opacity-20" /> 
+      <span className="text-xs font-bold">{prop.bathrooms || 0}</span>
+    </div>
+  </div>
+</div>
 
                   {/* PRICE */}
                   <div className="mt-8 flex justify-between items-end">

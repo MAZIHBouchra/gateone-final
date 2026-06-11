@@ -135,31 +135,52 @@ class AIService:
 
     # --- 5. ORCHESTRATEUR AUTOMATIQUE (PROPRIÉTÉS) ---
     async def generate_complete_marketing_package(self, property_id: str, property_data: dict):
+    # ÉTAPE 1 : On génère TOUT le contenu SANS ouvrir la base de données
+      try:
+        print(f"⚙️ IA : Analyse du bien {property_id} démarrée...")
+        
+        # Ce sont les appels longs (environ 1 minute au total)
+        article_text = self.generate_seo_article(property_data, "English")
+        social_raw = await self.generate_social_media_pack(article_text, property_data)
+        social_data = self._clean_json_response(social_raw)
+        
+        # ÉTAPE 2 : Une fois que tout est prêt, on ouvre la DB seulement pour sauvegarder
         db = SessionLocal()
         try:
-            print(f"⚙️ Orchestration démarrée pour le bien : {property_id}")
-            article_text = self.generate_seo_article(property_data, "English")
+            print(f"💾 Persistance des données d'intelligence...")
             
-            # Sauvegarde auto de l'article
-            self.save_validated_article(db, property_id, article_text, "en", f"Luxury {property_data.get('type')} in {property_data.get('location')}")
+            # Sauvegarde article
+            self.save_validated_article(
+                db, 
+                property_id, 
+                article_text, 
+                "en", 
+                f"Luxury {property_data.get('type')} in {property_data.get('location')}"
+            )
 
-            # Génération et sauvegarde Social Media
-            social_raw = await self.generate_social_media_pack(article_text, property_data)
-            social_data = self._clean_json_response(social_raw)
-
+            # Sauvegarde Social Media
             for platform in ["instagram", "facebook"]:
                 if platform in social_data:
-                    db.add(SocialPost(property_id=property_id, platform=platform, content=social_data[platform]))
+                    db.add(SocialPost(
+                        property_id=property_id, 
+                        platform=platform, 
+                        content=social_data[platform]
+                    ))
             
             db.commit()
-            print(f"✅ Orchestration réussie pour {property_id}")
+            print(f"✅ Orchestration terminée avec succès pour {property_id}")
             return True
-        except Exception as e:
+
+        except Exception as db_err:
             db.rollback()
-            print(f"❌ Erreur Orchestration : {str(e)}")
+            print(f"❌ Erreur DB (pendant l'enregistrement) : {str(db_err)}")
             return False
         finally:
-            db.close()
+            db.close() # On libère la connexion immédiatement
+
+      except Exception as ai_err:
+        print(f"❌ Erreur AI (pendant la génération) : {str(ai_err)}")
+        return False
 
     # --- 6. ORCHESTRATEUR ÉDITORIAL (BLOG) ---
     async def generate_expert_blog_workflow(self, db: Session, topic: str, region: str, keywords: list):

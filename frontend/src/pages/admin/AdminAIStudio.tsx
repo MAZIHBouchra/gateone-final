@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { 
   Sparkles, Loader2, FileText, Edit3, Save, 
   UploadCloud, Image as ImageIcon, X, Share2, 
-  ExternalLink
+  ExternalLink, CheckCircle2
 } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { propertiesApi } from '../../lib/api';
@@ -127,23 +127,29 @@ export default function AdminAIStudio() {
     }
   };
   
-  const handlePublish = async () => {
+  const handleApproveAndStream = async () => {
   if (!propertyId) return;
-  setLoading(true); // Optionnel : réutiliser le loading global
 
   try {
-    const res = await fetch(`http://localhost:8000/api/properties/${propertyId}/approve-article`, {
-      method: 'PUT'
+    const response = await fetch(`http://localhost:8000/api/properties/${propertyId}/approve-article`, {
+      method: 'PUT',
+      headers: { 
+          'Accept': 'application/json',        // <-- Dis au serveur que tu veux du JSON
+          'Content-Type': 'application/json',  // <-- Obligatoire pour le body
+          "Authorization": `Bearer ${localStorage.getItem('gateone_token')}` 
+      },
+      // IMPORTANT : Assure-toi que editableContent contient bien du texte
+      body: JSON.stringify({ content: editableContent || "" }) 
     });
 
-    if (res.ok) {
-      alert("🚀 Strategic Content Streamed! The article is now live for all clients.");
-      // Optionnel : rediriger l'agent vers la liste des propriétés
+    if (response.ok) {
+      alert(" Final validation successful! The refined version is now streaming live.");
+    } else {
+      const errorDetail = await response.json();
+      console.error("422 Details:", errorDetail); // Tu verras l'erreur précise ici
     }
   } catch (error) {
-    alert("Publishing failed.");
-  } finally {
-    setLoading(false);
+    console.error("Network crash:", error);
   }
 };
 
@@ -187,10 +193,19 @@ export default function AdminAIStudio() {
                 </div>
                 <div>
                   <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Type</label>
-                  <select name="type" value={formData.type} onChange={handleChange} className="w-full border-b border-gray-100 py-2 bg-transparent text-sm outline-none">
-                    <option value="Luxury Villa">Villa</option>
-                    <option value="Riad">Riad</option>
-                    <option value="Apartment">Apartment</option>
+                  <select 
+                   name="type" 
+                   value={formData.type} 
+                   onChange={handleChange} 
+                   className="w-full border-b border-gray-100 py-2 bg-transparent text-sm outline-none"
+                   >
+                   <option value="Luxury Villa">Luxury Villa</option>
+                   <option value="Historic Riad">Historic Riad</option>
+                   <option value="Royal Palace">Royal Palace (Palais)</option>
+                   <option value="Prestige Penthouse">Prestige Penthouse</option>
+                   <option value="Luxury Apartment">Luxury Apartment</option>
+                   <option value="Strategic Land">Investment Land (Terrain)</option>
+                   <option value="Other">Other / Exceptional Estate</option>
                   </select>
                 </div>
                 <div>
@@ -328,9 +343,14 @@ export default function AdminAIStudio() {
                     {isEditing ? <Save size={14} /> : <Edit3 size={14} />}
                     {isEditing ? "SAVE MANUAL EDITS" : "MODIFY RAW CONTENT"}
                   </button>
-                  <button className="text-[#C7A987] text-[10px] font-bold uppercase border border-[#C7A987] px-8 py-3 rounded-2xl hover:bg-[#C7A987] hover:text-white transition-all shadow-md active:scale-95">
-                    Approve & Stream to Site
-                  </button>
+                  <button 
+  onClick={handleApproveAndStream} // <-- On branche la fonction ici
+  disabled={loading}
+  className="text-[#C7A987] text-[10px] font-bold uppercase border border-[#C7A987] px-8 py-3 rounded-2xl hover:bg-[#C7A987] hover:text-white transition-all shadow-md active:scale-95 flex items-center gap-2"
+>
+  {loading ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+  Approve & Stream to Site
+</button>
                 </div>
               </div>
 

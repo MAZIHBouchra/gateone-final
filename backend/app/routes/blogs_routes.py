@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from typing import List
 from app.database.connection import get_db
 from app.services.blog_service import BlogService
+from uuid import UUID
+from app.database.models import Blog, BlogStatus
 
 router = APIRouter(prefix="/api/blogs", tags=["blogs"])
 blog_service = BlogService()
@@ -39,3 +41,33 @@ async def generate_industrial_blog_api(
     except Exception as e:
         print(f"❌ Backend Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+ 
+@router.put("/{blog_id}/publish")
+async def publish_blog(blog_id: UUID, db: Session = Depends(get_db)):
+    blog = db.query(Blog).filter(Blog.id == blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Blog not found")
+    
+    blog.status = BlogStatus.published
+    db.commit()
+    
+    return {"status": "success", "message": "Article is now live for clients"}
+
+
+@router.put("/{blog_id}/publish")
+async def publish_blog(blog_id: UUID, db: Session = Depends(get_db)):
+    # 1. Rechercher l'article de blog par son ID
+    blog = db.query(Blog).filter(Blog.id == blog_id).first()
+    
+    if not blog:
+        raise HTTPException(status_code=404, detail="Strategic article not found in records.")
+
+    # 2. Mise à jour du statut
+    blog.status = BlogStatus.published
+    db.commit()
+    
+    print(f"🚀 LIVE: Blog '{blog.topic}' is now public.")
+    return {
+        "status": "success", 
+        "message": "The expert analysis is now visible on the public journal."
+    }
