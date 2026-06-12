@@ -13,23 +13,23 @@
     "MAPE": 46.48
   },
   "metriques_test": {
-    "R2": 0.364,
-    "MAE": 10074.0,
-    "RMSE": 14531.0,
-    "MAPE": 42.4
+    "R2": 0.3642,
+    "MAE": 9981.0,
+    "RMSE": 15413.0,
+    "MAPE": 37.05
   },
-  "cv_r2_optuna": 0.5177,
+  "cv_r2_optuna": 0.3935,
   "hyperparametres": {
-    "n_estimators": 1733,
-    "max_depth": 2,
-    "learning_rate": 0.14996393999864155,
-    "max_leaves": 12,
-    "subsample": 0.530584601171921,
-    "colsample_bytree": 0.9032200907271138,
-    "colsample_bylevel": 0.7448223314252493,
-    "min_child_weight": 2,
-    "reg_alpha": 0.0427842260033082,
-    "reg_lambda": 0.1217075282955335,
-    "gamma": 0.04721862221217535
+    "n_estimators": 1792,
+    "max_depth": 6,
+    "learning_rate": 0.00765031815683309,
+    "max_leaves": 30,
+    "subsample": 0.9105946796243164,
+    "colsample_bytree": 0.606158050200244,
+    "colsample_bylevel": 0.9608389183654354,
+    "min_child_weight": 5,
+    "reg_alpha": 0.015764193007680255,
+    "reg_lambda": 2.4104213232804104,
+    "gamma": 0.006686402975904076
   }
 }
