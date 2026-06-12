@@ -1,46 +1,36 @@
 {
-  "date": "2026-06-02",
-  "version": "v4_optuna",
+  "date": "2026-06-10",
+  "version": "v5_antigravity_optuna",
   "modele": "XGBRegressor",
   "type_bien": "terrain_vente",
-  "target": "log(prix_total)",
-  "n_lignes_train": 262,
-  "n_lignes_test": 66,
-  "n_features": 34,
-  "n_zones": 14,
-  "sources": {
-    "milkiya": 142,
-    "sarouty": 121,
-    "agenz": 65
+  "target": "log(pm2) -> prix = exp(pred) x surface",
+  "n_lignes_train": 1139,
+  "n_lignes_test": 285,
+  "n_features": 69,
+  "n_zones": 43,
+  "ag_coverage_usage": 0,
+  "metriques_baseline": {
+    "R2": 0.8122,
+    "MAPE": 8.88
   },
-  "features_cles": [
-    "log_surface",
-    "z_pm2_median",
-    "log_prix_estime",
-    "terrain_quality",
-    "kw_facade",
-    "kw_immeuble",
-    "kw_agricole"
-  ],
   "metriques_test": {
-    "R2": 0.2571,
-    "MAE": 3262.0,
-    "RMSE": 6965.0,
-    "MAPE": 85.25
+    "R2": 0.8056,
+    "MAE": 2192288.0,
+    "RMSE": 5342387.0,
+    "MAPE": 8.97
   },
+  "cv_r2_optuna": 0.8093,
   "hyperparametres": {
-    "n_estimators": 1897,
-    "learning_rate": 0.00499908752027338,
-    "max_depth": 2,
-    "max_leaves": 32,
-    "subsample": 0.900312723839387,
-    "colsample_bytree": 0.40023576579259174,
-    "colsample_bylevel": 0.4588798452766269,
-    "min_child_weight": 16,
-    "reg_alpha": 0.043521248626889546,
-    "reg_lambda": 6.58370592777414,
-    "gamma": 0.30775274194780794
-  },
-  "affichage_site": "Fourchette ±40% obligatoire pour les terrains",
-  "formule": "prix_min = prix_estime × 0.60 | prix_max = prix_estime × 1.60"
+    "n_estimators": 3670,
+    "max_depth": 5,
+    "learning_rate": 0.005738494375615973,
+    "max_leaves": 53,
+    "subsample": 0.9637925583752829,
+    "colsample_bytree": 0.7629061467051441,
+    "colsample_bylevel": 0.589418908721689,
+    "min_child_weight": 8,
+    "reg_alpha": 1.3758201464104628e-05,
+    "reg_lambda": 0.1589024868374423,
+    "gamma": 0.21357788820607926
+  }
 }
