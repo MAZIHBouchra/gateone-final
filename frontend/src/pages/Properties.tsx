@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { propertiesApi } from '@/lib/api';
 import Navbar from '@/components/public/Navbar';
+import Footer from '@/components/public/Footer';
 import { 
   MapPin, 
   Maximize, 
@@ -26,16 +27,16 @@ export default function Properties() {
   useEffect(() => {
     async function loadData() {
         try {
-            console.log("🛰️ Fetching Public Catalog...");
+            console.log("️ Fetching Public Catalog...");
             const data = await propertiesApi.getPublicCatalog();
             
             // On vérifie que data est bien un tableau avant de le stocker
             if (Array.isArray(data)) {
-                console.log("✅ Catalog received:", data.length, "assets");
+                console.log(" Catalog received:", data.length, "assets");
                 setProperties(data);
             }
         } catch (err) {
-            console.error("❌ Logic Error in Discovery Page:", err);
+            console.error(" Logic Error in Discovery Page:", err);
         } finally {
             // QUOI QU'IL ARRIVE, on arrête le spinner
             setLoading(false); 
@@ -44,48 +45,49 @@ export default function Properties() {
     loadData();
 }, []);
 
-const filteredProperties = properties.filter((prop) => {
-    // Vérification du type (Villas, Riads, etc.)
-    const matchesType = filter === "all" || prop.type === filter;
+const filteredProperties = filter === 'all'
+  ? properties
+  : properties.filter(p => {
+      const type = p.type?.toLowerCase() || '';
+      const f = filter.toLowerCase();
+      
+      if (f === 'villa')      return type.includes('villa');
+      if (f === 'riad')       return type.includes('riad');
+      if (f === 'palace')     return type.includes('palace') || type.includes('palais');
+      if (f === 'penthouse')  return type.includes('penthouse');
+      if (f === 'apartment')  return type.includes('apartment') || type.includes('appartement');
+      if (f === 'land')       return type.includes('land') || type.includes('terrain');
+      if (f === 'other')      return type.includes('other') || type.includes('exceptional');
+      return type === f;
+    });
 
-    // Nettoyage des chaînes pour une recherche insensible à la casse
-    const search = searchTerm.toLowerCase();
-    
-    const matchesSearch = 
-      prop.title?.toLowerCase().includes(search) || 
-      prop.location?.toLowerCase().includes(search) || 
-      prop.neighborhood?.toLowerCase().includes(search);
 
-    return matchesType && matchesSearch;
-});
+ return (
+  <div className="min-h-screen bg-[#FDFCF9] font-sans">
+    <Navbar />
 
+    {/* HERO SECTION - RESTRUCTURED FOR FLUIDITY */}
+    <header className="relative pt-44 pb-20 px-8 bg-[#0B1F33] text-white">
+      {/* 🎨 Fond décoratif arabesque */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            `url('https://www.transparenttextures.com/patterns/arabesque.png')`
+        }}
+      />
+      
+      {/* 🔵 Lumière IA de luxe (glow effect) */}
+      <div className="absolute -bottom-32 left-1/4 w-[40vw] h-64 bg-[#5DA9E9]/15 blur-[120px] rounded-full pointer-events-none" />
 
-  return (
-    <div className="min-h-screen bg-white pt-24">
-	  <Navbar />
+      <div className="max-w-7xl mx-auto relative z-10 text-center">
+        <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.6em] mb-4 block">
+          Exclusive Portfolio
+        </span>
 
-      {/* HERO SECTION */}
-      <div className="bg-[#0B1F33] text-white pt-32 pb-20 px-8 relative overflow-hidden">
-
-        {/* Overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage:
-              `url('https://www.transparenttextures.com/patterns/arabesque.png')`
-          }}
-        />
-
-        <div className="max-w-7xl mx-auto relative z-10 text-center">
-
-          <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.4em] mb-4 block">
-            Exclusive Collection
-          </span>
-
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-10 tracking-tight leading-tight">
-            Discover Exceptional <br />
-            Properties
-          </h1>
+        <h1 className="text-5xl md:text-7xl font-serif font-bold mb-10 tracking-tight leading-tight">
+          Discover Exceptional Assets
+        </h1>
 
           {/* SEARCH BAR */}
           {/* PREMIUM SEARCH BAR (Glassmorphism) */}
@@ -106,42 +108,47 @@ const filteredProperties = properties.filter((prop) => {
         Refine Search
     </button>
 </div>
-        </div>
-      </div>
+       </div>
+    </header>
+
 
       {/* FILTER BAR */}
-      <div className="max-w-7xl mx-auto px-8 py-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-40 shadow-sm">
+<div className="max-w-7xl mx-auto px-8 py-6 border-b border-[#EDE9E0] flex justify-between items-center bg-white sticky top-0 z-40 shadow-sm">
+  
+  {/* Filtres */}
+  <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+    {[
+      { value: 'all',            label: 'All Properties'    },
+      { value: 'villa',          label: 'Luxury Villa'      },
+      { value: 'riad',           label: 'Historic Riad'     },
+      { value: 'palace',         label: 'Royal Palace'      },
+      { value: 'penthouse',      label: 'Penthouse'         },
+      { value: 'apartment',      label: 'Apartment'         },
+      { value: 'land',           label: 'Investment Land'   },
+      { value: 'other',          label: 'Exceptional'       },
+    ].map((type) => (
+      <button
+        key={type.value}
+        onClick={() => setFilter(type.value)}
+        className={`
+          px-5 py-2.5 rounded-full text-[10px] font-bold uppercase 
+          tracking-widest transition-all border whitespace-nowrap
+          ${filter === type.value
+            ? "bg-[#0B1F33] text-white border-[#0B1F33]"
+            : "border-[#EDE9E0] text-gray-400 hover:border-[#0B1F33] hover:text-[#0B1F33] bg-white"
+          }
+        `}
+      >
+        {type.label}
+      </button>
+    ))}
+  </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
-
-          {["all", "Luxury Villa", "Riad", "Apartment"].map((type) => (
-
-            <button
-              key={type}
-              onClick={() => setFilter(type)}
-              className={`
-                px-6 py-3 rounded-full text-[10px]
-                font-bold uppercase tracking-widest
-                transition-all border whitespace-nowrap
-
-                ${
-                  filter === type
-                    ? "bg-[#0B1F33] text-white border-[#0B1F33] shadow-lg shadow-[#0B1F33]/20"
-                    : "border-gray-200 text-gray-500 hover:border-[#5DA9E9] hover:text-[#5DA9E9]"
-                }
-              `}
-            >
-              {type === "all"
-                ? "All Properties"
-                : type}
-            </button>
-          ))}
-        </div>
-
-        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest hidden md:block">
-          {filteredProperties.length} Properties Available
-        </p>
-      </div>
+  {/* Compteur */}
+  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest hidden md:block shrink-0 ml-6">
+    {filteredProperties.length} Properties
+  </p>
+</div>
 
       {/* PROPERTIES GRID */}
       <main className="max-w-7xl mx-auto px-8 py-20">
@@ -255,22 +262,26 @@ const filteredProperties = properties.filter((prop) => {
   </div>
 
   {/* BEDROOMS */}
-  <div className="flex flex-col border-x border-gray-50 px-2">
-    <span className="text-[9px] text-gray-400 font-bold uppercase">Beds</span>
-    <div className="flex items-center gap-1.5 text-[#2D3321]">
-      <Bed size={14} className="opacity-20" /> 
-      <span className="text-xs font-bold">{prop.bedrooms}</span>
-    </div>
+<div className="flex flex-col border-x border-gray-50 px-4">
+  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1">Beds</span>
+  <div className="flex items-center gap-1.5">
+    <Bed size={13} className="text-gray-300" />
+    <span className="text-sm font-bold text-[#0B1F33]">
+      {prop.bedrooms ?? '—'}
+    </span>
   </div>
+</div>
 
-  {/* BATHROOMS (Remplace le AI ROI) */}
-  <div className="flex flex-col pl-1">
-    <span className="text-[9px] text-gray-400 font-bold uppercase">Baths</span>
-    <div className="flex items-center gap-1.5 text-[#2D3321]">
-      <Bath size={14} className="opacity-20" /> 
-      <span className="text-xs font-bold">{prop.bathrooms || 0}</span>
-    </div>
+{/* BATHROOMS */}
+<div className="flex flex-col pl-4">
+  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1">Baths</span>
+  <div className="flex items-center gap-1.5">
+    <Bath size={13} className="text-gray-300" />
+    <span className="text-sm font-bold text-[#0B1F33]">
+      {prop.bathrooms ?? '—'}
+    </span>
   </div>
+</div>
 </div>
 
                   {/* PRICE */}
@@ -291,6 +302,9 @@ const filteredProperties = properties.filter((prop) => {
           </div>
         )}
       </main>
+	 
+	 {/* --- FOOTER: FINAL IMPACT --- */}
+        <Footer />
     </div>
   );
 }

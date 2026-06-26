@@ -56,22 +56,26 @@ export default function PropertiesPage() {
     }
   };
 
-  // Dans PropertiesPage.tsx, cherche la fonction handleOpenIntelligence
 const handleOpenIntelligence = async (prop: Property) => {
     setSelectedProp(prop);
     setFetchingData(true);
     setIsModalOpen(true);
+    setActiveTab('article');
 
     try {
-      // 🚀 CRUCIAL : On ajoute ?is_admin=true pour voir les articles non-publiés
+      // 🚀 ON UTILISE propertiesApi AU LIEU DE fetch() DIRECT
+      // Car propertiesApi contient déjà toute la logique "Authorization: Bearer"
       const [article, social] = await Promise.all([
-        fetch(`http://localhost:8000/api/properties/${prop.id}/ai-article?is_admin=true`).then(r => r.json()),
+        propertiesApi.getAIArticle(prop.id),
         propertiesApi.getSocialPosts(prop.id)
       ]);
+      
       setAiArticle(article);
       setSocialPosts(social);
+      
     } catch (error) {
-      setAiArticle(null); // Affichera le message "No content"
+      console.error("Access Denied or Not found", error);
+      setAiArticle(null);
     } finally {
       setFetchingData(false);
     }

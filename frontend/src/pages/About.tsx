@@ -3,6 +3,7 @@
 import React from 'react';
 
 import Navbar from '@/components/public/Navbar';
+import Footer from '@/components/public/Footer';
 
 import {
   ShieldCheck,
@@ -359,6 +360,8 @@ export default function About() {
           </div>
         </div>
       </section>
+	  {/* --- FOOTER: FINAL IMPACT --- */}
+       <Footer />
     </div>
   );
 }

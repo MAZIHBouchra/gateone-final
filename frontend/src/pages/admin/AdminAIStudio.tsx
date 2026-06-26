@@ -77,9 +77,18 @@ export default function AdminAIStudio() {
 
       const checkAIContent = setInterval(async () => {
         attempts++;
+        
+        // 🚀 On récupère le token une seule fois au début de l'intervalle
+        const token = localStorage.getItem('gateone_token');
+
         try {
-          // 1. Fetch Article
-          const artRes = await fetch(`http://localhost:8000/api/properties/${newId}/ai-article?is_admin=true`);
+          // 1. Fetch Article (SÉCURISÉ)
+          const artRes = await fetch(`http://localhost:8000/api/properties/${newId}/ai-article?is_admin=true`, {
+            headers: {
+              "Authorization": `Bearer ${token}` // <--- CRUCIAL : Votre laissez-passer
+            }
+          });
+
           if (artRes.ok) {
             const artJson = await artRes.json();
             setAiData(artJson);
@@ -87,8 +96,13 @@ export default function AdminAIStudio() {
             setGenerated(true);
           }
 
-          // 2. Fetch Social Posts
-          const socRes = await fetch(`http://localhost:8000/api/properties/${newId}/social-posts`);
+          // 2. Fetch Social Posts (SÉCURISÉ par cohérence)
+          const socRes = await fetch(`http://localhost:8000/api/properties/${newId}/social-posts`, {
+            headers: {
+              "Authorization": `Bearer ${token}` // <--- Indispensable pour votre API sécurisée
+            }
+          });
+
           if (socRes.ok) {
             const socJson = await socRes.json();
             setSocialData(socJson);
@@ -101,7 +115,9 @@ export default function AdminAIStudio() {
             setLoading(false);
             alert("Timeout: Generation completed partially.");
           }
-        } catch (err) {}
+        } catch (err) {
+            // Ignorer les erreurs temporaires pendant que l'IA rédige
+        }
       }, 4000);
 
     } catch (error) {
@@ -199,13 +215,13 @@ export default function AdminAIStudio() {
                    onChange={handleChange} 
                    className="w-full border-b border-gray-100 py-2 bg-transparent text-sm outline-none"
                    >
-                   <option value="Luxury Villa">Luxury Villa</option>
-                   <option value="Historic Riad">Historic Riad</option>
-                   <option value="Royal Palace">Royal Palace (Palais)</option>
-                   <option value="Prestige Penthouse">Prestige Penthouse</option>
-                   <option value="Luxury Apartment">Luxury Apartment</option>
-                   <option value="Strategic Land">Investment Land (Terrain)</option>
-                   <option value="Other">Other / Exceptional Estate</option>
+                   <option value="villa">Luxury Villa</option>
+                   <option value="riad">Historic Riad</option>
+                   <option value="palace">Royal Palace</option>
+                   <option value="penthouse">Prestige Penthouse</option>
+                   <option value="apartment">Luxury Apartment</option>
+                   <option value="land">Investment Land</option>
+                   <option value="other">Exceptional Estate</option>
                   </select>
                 </div>
                 <div>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 import Navbar from '@/components/public/Navbar';
+import Footer from '@/components/public/Footer';
 
 import {
   Mail,
@@ -360,13 +361,8 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-14 border-t border-gray-100 text-center text-[10px] uppercase font-bold text-gray-400 tracking-[0.3em]">
-
-        Orchid Island ©
-        {new Date().getFullYear()}
-        — Luxury Real Estate Intelligence
-      </footer>
+      {/* --- FOOTER: FINAL IMPACT --- */}
+       <Footer />
     </div>
   );
 }
