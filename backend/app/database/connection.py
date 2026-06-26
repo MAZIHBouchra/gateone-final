@@ -30,8 +30,14 @@ if not SQLALCHEMY_DATABASE_URL:
 # On ajoute pool_pre_ping pour gérer les déconnexions du Cloud (Neon)
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_pre_ping=True
-    )
+    pool_pre_ping=True,
+    pool_recycle=300,
+    pool_size=5,
+    max_overflow=10,
+    connect_args={
+        "connect_timeout": 10
+    }
+)
 
 # 2. Création de la fabrique de sessions (SessionLocal)
 # On désactive autocommit et autoflush pour avoir un contrôle total sur les transactions

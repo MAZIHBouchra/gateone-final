@@ -6,6 +6,7 @@ from app.database.connection import get_db
 from app.services.blog_service import BlogService
 from uuid import UUID
 from app.database.models import Blog, BlogStatus
+from sqlalchemy import desc
 
 router = APIRouter(prefix="/api/blogs", tags=["blogs"])
 blog_service = BlogService()
@@ -54,20 +55,41 @@ async def publish_blog(blog_id: UUID, db: Session = Depends(get_db)):
     return {"status": "success", "message": "Article is now live for clients"}
 
 
-@router.put("/{blog_id}/publish")
-async def publish_blog(blog_id: UUID, db: Session = Depends(get_db)):
-    # 1. Rechercher l'article de blog par son ID
-    blog = db.query(Blog).filter(Blog.id == blog_id).first()
-    
-    if not blog:
-        raise HTTPException(status_code=404, detail="Strategic article not found in records.")
 
-    # 2. Mise à jour du statut
-    blog.status = BlogStatus.published
-    db.commit()
-    
-    print(f"🚀 LIVE: Blog '{blog.topic}' is now public.")
+
+@router.get("/public/blogs")
+async def get_public_blogs(db: Session = Depends(get_db)):
+    """Blogs publiés pour les clients (Sans Authentification)"""
+    blogs = (
+        db.query(Blog)
+        .filter(Blog.status == BlogStatus.published)
+        .order_by(desc(Blog.created_at))
+        .all()
+    )
+    return [
+        {
+            "id": str(blog.id),
+            "topic": blog.topic,
+            "seo_title": blog.seo_title,
+            "content": blog.content,
+            "target_region": blog.target_region,
+            "created_at": blog.created_at.isoformat() if blog.created_at else None,
+        }
+        for blog in blogs
+    ]
+
+
+@router.get("/{blog_id}")
+async def get_blog_by_id(blog_id: UUID, db: Session = Depends(get_db)):
+    blog = db.query(Blog).filter(Blog.id == blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Analysis report not found.")
+        
     return {
-        "status": "success", 
-        "message": "The expert analysis is now visible on the public journal."
+        "id": str(blog.id),
+        "topic": blog.topic,
+        "seo_title": blog.seo_title,
+        "content": blog.content,
+        "target_region": blog.target_region,
+        "created_at": blog.created_at.strftime("%d/%m/%Y")
     }

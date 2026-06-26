@@ -110,9 +110,15 @@ class Lead(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     full_name = Column(String(150))
     email = Column(String(150), unique=True)
+    hashed_password = Column(String(255), nullable=True) # Ajouté pour le Login Client
+    
     current_status = Column(SQLEnum(LeadStatus), default=LeadStatus.new)
-    ai_score = Column(Numeric(5, 2), default=0.0) # Augmenté la précision à 2 décimales
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True) # Peut être null si le lead n'est pas lié à un bien précis
+    
+    # Détails du Scoring (Chapitre 4)
+    financial_points = Column(Integer, default=0)  # S_financial (0-50)
+    behavioral_points = Column(Integer, default=0) # S_behavioral (0-50)
+    ai_score = Column(Numeric(5, 2), default=0.0)  # S_total (0-100)
+    
     interactions = relationship("UserInteraction", back_populates="lead")
 
 class UserInteraction(Base):
