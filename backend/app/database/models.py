@@ -170,3 +170,14 @@ class AIContentCache(Base):
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     property = relationship("Property", back_populates="ai_articles")
+
+class ContactMessage(Base):
+    __tablename__ = "contact_messages"
+
+    id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    full_name  = Column(String(150), nullable=False)
+    email      = Column(String(150), nullable=False)
+    phone      = Column(String(50), nullable=True)
+    subject    = Column(String(200), nullable=False)
+    message    = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
