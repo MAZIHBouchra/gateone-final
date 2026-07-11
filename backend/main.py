@@ -18,6 +18,7 @@ from app.routes.admin_routes import router as admin_router
 from app.routes.dashboard_routes import router as dashboard_router 
 
 from app.routes import auth_routes
+from app.routes import contact_routes
 
 # 3. Gestion des imports optionnels
 try:
@@ -75,6 +76,7 @@ app.include_router(analytics_router)
 # --- MODIFICATION ICI : Enregistrement du routeur Dashboard ---
 app.include_router(dashboard_router) 
 app.include_router(auth_routes.router)
+app.include_router(contact_routes.router)
 
 if PROPERTIES_AVAILABLE:
     app.include_router(properties_router)
