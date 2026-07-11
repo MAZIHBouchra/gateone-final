@@ -195,5 +195,21 @@ export const leadsApi = {
         duration_seconds: 30
       })
     });
+  },
+  
+  
+  async getAllLeads(): Promise<Lead[]> {
+    const res = await fetch(`http://localhost:8000/api/leads/`, {
+        headers: getAuthHeader()
+    });
+    if (!res.ok) throw new Error("Unauthorized access to leads intelligence.");
+    return res.json();
+  },
+  
+  async getLeadIntelligence(leadId: string) {
+    const res = await fetch(`http://localhost:8000/api/leads/${leadId}/intelligence`, {
+        headers: getAuthHeader()
+    });
+    return res.json();
   }
 };

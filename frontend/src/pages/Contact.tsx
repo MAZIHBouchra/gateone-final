@@ -12,38 +12,47 @@ import {
   ArrowRight,
   Send,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Loader2
 } from 'lucide-react';
 
 export default function Contact() {
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  });
+  full_name: '',
+  email: '',
+  phone: '',
+  subject: '',
+  message: ''
+});
+const [loading, setLoading]     = useState(false);
+const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  setFormData({ ...formData, [e.target.name]: e.target.value });
+};
 
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await fetch('http://localhost:8000/api/contact/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
     });
-  };
-
-  const handleSubmit = (
-    e: React.FormEvent
-  ) => {
-
-    e.preventDefault();
-
-    console.log(formData);
-
-    // Backend API later
-  };
+    const data = await response.json();
+    if (response.ok) {
+      setSubmitted(true);
+    } else {
+      alert("Une erreur s'est produite. Veuillez réessayer.");
+    }
+  } catch (err) {
+    alert("Impossible de joindre le serveur.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
 
@@ -140,7 +149,7 @@ export default function Contact() {
 
                   <p className="text-gray-500 italic">
 
-                    contact@orchidisland.ma
+                     gateoneinfo@gmail.com
                   </p>
                 </div>
               </div>
@@ -162,7 +171,7 @@ export default function Contact() {
 
                   <p className="text-gray-500 italic">
 
-                    +212 6 00 00 00 00
+                    05 25 27 20 13 / 06 64 65 07 09
                   </p>
                 </div>
               </div>
@@ -184,7 +193,7 @@ export default function Contact() {
 
                   <p className="text-gray-500 italic">
 
-                    Marrakech, Morocco
+                    RUE LIEUTENANT MOHAMED ZEROUAL CENTRE D'AFFAIRE OUALID, 2 ème ETAGE APPT N°8 HAY YOUSSEF BEN TACHFINE MARRAKECH
                   </p>
                 </div>
               </div>
@@ -299,15 +308,25 @@ export default function Contact() {
 
                 {/* BUTTON */}
                 <button
-                  type="submit"
-                  className="w-full bg-[#0B1F33] text-white py-5 rounded-full font-bold uppercase text-[11px] tracking-widest hover:bg-[#5DA9E9] transition-all flex items-center justify-center gap-3"
-                >
-
-                  Send Request
-
-                  <ArrowRight size={16} />
-                </button>
+  type="submit"
+  disabled={loading}
+  className="w-full bg-[#0B1F33] text-white py-5 rounded-full font-bold uppercase text-[11px] tracking-widest hover:bg-[#5DA9E9] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? 'Sending...' : 'Send Request'}
+  {!loading && <ArrowRight size={16} />}
+</button>
               </form>
+			  
+			  {submitted && (
+  <div className="p-5 bg-green-50 border border-green-200 rounded-2xl text-center">
+    <p className="text-green-700 font-bold text-sm mb-1">
+      ✓ Message sent successfully!
+    </p>
+    <p className="text-green-600 text-xs">
+      Our team will get back to you within 24 hours.
+    </p>
+  </div>
+)}
 
               {/* FOOTER INFO */}
               <div className="flex flex-col md:flex-row gap-6 mt-10 pt-8 border-t border-gray-100">
@@ -331,35 +350,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-8 pb-20">
-
-        <div className="max-w-7xl mx-auto bg-[#0B1F33] rounded-[3rem] p-16 md:p-24 relative overflow-hidden text-center text-white">
-
-          <div className="absolute inset-0 bg-[#5DA9E9]/5 opacity-50 pointer-events-none" />
-
-          <div className="relative z-10">
-
-            <h2 className="text-5xl font-serif font-bold mb-8">
-
-              Access premium opportunities
-            </h2>
-
-            <p className="max-w-3xl mx-auto text-gray-400 mb-12 text-lg font-serif italic">
-
-              Orchid Island delivers luxury
-              real estate intelligence, premium
-              advisory services and AI-powered
-              operational excellence.
-            </p>
-
-            <button className="bg-[#5DA9E9] text-white px-12 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-2xl hover:bg-sky-400 transition-all">
-
-              Schedule a Consultation
-            </button>
-          </div>
-        </div>
-      </section>
 
       {/* --- FOOTER: FINAL IMPACT --- */}
        <Footer />

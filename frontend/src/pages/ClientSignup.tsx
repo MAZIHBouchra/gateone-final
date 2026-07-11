@@ -25,32 +25,34 @@ export default function ClientSignup() {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+   e.preventDefault();
+   setLoading(true);
 
-    try {
-      const response = await fetch('http://localhost:8000/api/auth/client/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+   try {
+    const response = await fetch('http://localhost:8000/api/auth/client/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
 
-      if (response.ok) {
-        alert("Welcome to the Private Circle. Your investor profile has been initialized.");
-        // ← AJOUTEZ CES LIGNES avant le navigate
-        localStorage.setItem('client_token', data.access_token);
-        localStorage.setItem('client_id', data.lead_id);
-        localStorage.setItem('client_name', data.full_name || formData.full_name);
-        window.dispatchEvent(new Event('storage'));
-  
-        navigate('/client/login'); // 
-      }
-    } catch (err) {
+    if (response.ok) {
+      const data = await response.json();   // ← LIGNE MANQUANTE, ajoutée ici
+
+      localStorage.setItem('client_token', data.access_token);
+      localStorage.setItem('client_id', data.lead_id);
+      localStorage.setItem('client_name', data.full_name || formData.full_name);
+      window.dispatchEvent(new Event('storage'));
+
+      navigate('/properties');   // connexion directe, pas besoin de repasser par /login
+    } else {
       alert("Registration failed. Please contact our support.");
-    } finally {
-      setLoading(false);
     }
-  };
+   } catch (err) {
+    alert("Registration failed. Please contact our support.");
+   } finally {
+    setLoading(false);
+   }
+ };
 
   return (
     <div className="min-h-screen bg-[#FDFCF9] flex flex-col lg:flex-row font-sans">

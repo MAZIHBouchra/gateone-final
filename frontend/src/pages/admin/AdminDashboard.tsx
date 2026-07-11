@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { leadsApi } from '@/lib/api';
 import { 
   Sparkles, Home, Users, TrendingUp, Plus, 
   ChevronRight, ArrowUpRight, Clock, Target 
@@ -18,22 +19,40 @@ export default function Dashboard() {
     market_index: "6.8%"
   });
 
-  // Simulation de données pour les leads chauds (en attendant l'API Leads)
-  const hotLeads = [
-    { name: "Jean-Pierre Dupont", interest: "Villa Palmeraie", score: 85, time: "2 mins ago" },
-    { name: "Sarah Benani", interest: "Riad Médina", score: 92, time: "1 hour ago" },
-    { name: "Mark Thompson", interest: "Penthouse Burj", score: 78, time: "3 hours ago" },
-  ];
+  
+  const [hotLeads, setHotLeads] = useState<any[]>([]);
+  const [loadingLeads, setLoadingLeads] = useState(true);
 
   useEffect(() => {
-    const storedName = localStorage.getItem('agent_name');
-    if (storedName) setAgentName(storedName);
+  const storedName = localStorage.getItem('agent_name');
+  if (storedName) {
+    setAgentName(storedName);
+  }
 
-    fetch('http://localhost:8000/api/dashboard/stats')
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(err => console.error("Stats fetch error:", err));
-  }, []);
+  // Charger les statistiques
+  fetch('http://localhost:8000/api/dashboard/stats')
+    .then(res => res.json())
+    .then(data => setStats(data))
+    .catch(err => console.error("Stats fetch error:", err));
+
+  // Charger les prospects qualifiés
+  leadsApi.getAllLeads()
+    .then((allLeads: any[]) => {
+      const qualified = allLeads
+        .filter(lead => lead.current_status === "qualified")
+        .slice(0, 5); // Afficher uniquement les 5 premiers
+
+      setHotLeads(qualified);
+    })
+    .catch(err => {
+      console.error("Leads fetch error:", err);
+      setHotLeads([]);
+    })
+    .finally(() => {
+      setLoadingLeads(false);
+    });
+
+}, []);
 
   return (
     <AdminLayout>
@@ -66,55 +85,55 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
         {/* LATEST QUALIFIED LEADS (Logique IA) */}
-        <div className="lg:col-span-8 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
-           <div className="flex justify-between items-center mb-10">
-              <h3 className="text-2xl font-serif font-bold text-[#2D3321]">Priority Prospects</h3>
-              <button onClick={() => navigate('/admin/leads')} className="text-[10px] font-bold uppercase tracking-widest text-[#C7A987] hover:underline flex items-center gap-2">
-                 View Analytics Hub <ChevronRight size={14} />
-              </button>
-           </div>
-           
-           <div className="space-y-4">
-              {hotLeads.map((lead, i) => (
-                <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-[#F9F7F2]/50 border border-transparent hover:border-[#C7A987]/20 hover:bg-white transition-all group">
-                   <div className="flex items-center gap-6">
-                      <div className="w-12 h-12 bg-[#2D3321] rounded-full flex items-center justify-center text-[#C7A987] font-bold">
-                         {lead.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                         <p className="font-bold text-[#2D3321]">{lead.name}</p>
-                         <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Target: {lead.interest}</p>
-                      </div>
-                   </div>
-                   <div className="text-right">
-                      <div className="flex items-center gap-2 mb-1">
-                         <div className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${lead.score > 80 ? 'bg-green-100 text-green-700' : 'bg-[#C7A987]/10 text-[#C7A987]'}`}>
-                           AI Score: {lead.score}
-                         </div>
-                      </div>
-                      <p className="text-[9px] text-gray-300 flex items-center justify-end gap-1"><Clock size={10}/> {lead.time}</p>
-                   </div>
-                </div>
-              ))}
-           </div>
-        </div>
+<div className="lg:col-span-8 bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100">
+  <div className="flex justify-between items-center mb-8">
+    <h3 className="text-2xl font-serif font-bold text-[#2D3321]">Priority Prospects</h3>
+    <button 
+  onClick={() => navigate('/admin/leads')}
+  className="text-[10px] font-bold uppercase tracking-widest text-[#C7A987] hover:underline flex items-center gap-2"
+>
+  View Analytics Hub <ChevronRight size={14} />
+</button>
+  </div>
 
-        {/* MARKET INSIGHTS SIDE PANEL */}
-        <div className="lg:col-span-4 space-y-6">
-           <div className="bg-[#2D3321] p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden h-full flex flex-col justify-between">
-              <div className="absolute top-0 right-0 p-8 opacity-5 rotate-12"><Sparkles size={120} /></div>
-              <div className="relative z-10">
-                <h4 className="text-[9px] font-bold uppercase text-[#C7A987] tracking-[0.4em] mb-4">Strategic Outlook</h4>
-                <h3 className="text-3xl font-serif mb-6 leading-tight">Marrakech Investment Confidence</h3>
-                <div className="space-y-6 text-sm opacity-60 italic font-serif leading-relaxed">
-                  "AI modeling suggests a high absorption rate in the Palmeraie region this month. Our current SEO dominance is 24% higher than last quarter."
-                </div>
-              </div>
-              <button className="mt-10 bg-[#C7A987] text-[#2D3321] w-full py-4 rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/20">
-                 Market Intelligence Report <ArrowUpRight size={14} />
-              </button>
-           </div>
+  <div className="space-y-4">
+    {loadingLeads ? (
+      <p className="text-center text-gray-400 italic py-10">Loading priority prospects...</p>
+    ) : hotLeads.length === 0 ? (
+      <p className="text-center text-gray-400 italic py-10">No qualified leads yet.</p>
+    ) : (
+      hotLeads.map((lead) => (
+        <div key={lead.id} className="flex items-center justify-between p-6 rounded-2xl bg-[#F9F7F2]/50 border border-transparent hover:border-[#C7A987]/20 hover:bg-white transition-all group">
+          <div className="flex items-center gap-6">
+            {/* Avatar avec correction si le nom n'a qu'un mot */}
+            <div className="w-14 h-14 bg-[#2D3321] rounded-full flex items-center justify-center text-[#C7A987] font-bold text-lg shadow-inner">
+              {lead.full_name ? lead.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : '??'}
+            </div>
+            <div>
+              <p className="font-bold text-[#2D3321] text-lg">{lead.full_name}</p>
+              <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mt-1">
+                 Target: <span className="text-[#C7A987]">{lead.interest}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="text-right flex flex-col items-end gap-2">
+            <div className={`text-[10px] font-bold px-3 py-1.5 rounded-lg inline-block whitespace-nowrap ${lead.ai_score > 80 ? 'bg-green-100 text-green-700' : 'bg-[#C7A987]/10 text-[#C7A987]'}`}>
+              AI Score: {lead.ai_score}
+            </div>
+            <p className="text-[10px] text-gray-400 flex items-center gap-1.5">
+              <Clock size={12} className="opacity-40"/> {lead.last_action_time || "Just now"}
+            </p>
+          </div>
         </div>
+      ))
+    )}
+  </div>
+</div>
+
+{/* Si vous voulez remettre le panneau latéral à droite, ajoutez-le ici dans une div className="lg:col-span-4" */}
+
+        
 
       </div>
     </AdminLayout>

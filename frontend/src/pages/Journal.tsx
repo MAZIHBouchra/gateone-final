@@ -181,10 +181,6 @@ export default function Journal() {
           <p className="text-gray-400 mb-10 italic max-w-2xl mx-auto">
             Receive exclusive intelligence reports and investment insights.
           </p>
-
-          <button className="bg-[#5DA9E9] px-12 py-5 rounded-full text-[11px] uppercase font-bold tracking-widest">
-            Subscribe
-          </button>
         </div>
       </section>
 	  
