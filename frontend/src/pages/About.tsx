@@ -3,6 +3,8 @@
 import React from 'react';
 
 import Navbar from '@/components/public/Navbar';
+import Footer from '@/components/public/Footer';
+import { useNavigate } from 'react-router-dom';
 
 import {
   ShieldCheck,
@@ -19,6 +21,8 @@ import {
 } from 'lucide-react';
 
 export default function About() {
+
+  const navigate = useNavigate();
 
   return (
 
@@ -264,12 +268,7 @@ export default function About() {
                 intelligence and premium client servicing.
               </p>
 
-              <button className="bg-[#5DA9E9] text-white px-10 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest hover:bg-sky-400 transition-all flex items-center gap-3">
-
-                Explore the Ecosystem
-
-                <ArrowRight size={16} />
-              </button>
+              
             </div>
           </div>
         </div>
@@ -352,13 +351,17 @@ export default function About() {
               premium real estate operations.
             </p>
 
-            <button className="bg-[#5DA9E9] text-white px-12 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-2xl hover:bg-sky-400 transition-all">
+            <button
+			onClick={() => navigate('/contact')}
+			className="bg-[#5DA9E9] text-white px-12 py-5 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-2xl hover:bg-sky-400 transition-all">
 
               Contact Our Team
             </button>
           </div>
         </div>
       </section>
+	  {/* --- FOOTER: FINAL IMPACT --- */}
+       <Footer />
     </div>
   );
 }

@@ -110,9 +110,15 @@ class Lead(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     full_name = Column(String(150))
     email = Column(String(150), unique=True)
+    hashed_password = Column(String(255), nullable=True) # Ajouté pour le Login Client
+    
     current_status = Column(SQLEnum(LeadStatus), default=LeadStatus.new)
-    ai_score = Column(Numeric(5, 2), default=0.0) # Augmenté la précision à 2 décimales
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True) # Peut être null si le lead n'est pas lié à un bien précis
+    
+    # Détails du Scoring (Chapitre 4)
+    financial_points = Column(Integer, default=0)  # S_financial (0-50)
+    behavioral_points = Column(Integer, default=0) # S_behavioral (0-50)
+    ai_score = Column(Numeric(5, 2), default=0.0)  # S_total (0-100)
+    
     interactions = relationship("UserInteraction", back_populates="lead")
 
 class UserInteraction(Base):
@@ -160,6 +166,18 @@ class AIContentCache(Base):
     seo_title = Column(String(255)) 
     article_body = Column(Text, nullable=False) 
     meta_keywords = Column(Text) 
+    is_published = Column(Boolean, default=False)
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     property = relationship("Property", back_populates="ai_articles")
+
+class ContactMessage(Base):
+    __tablename__ = "contact_messages"
+
+    id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    full_name  = Column(String(150), nullable=False)
+    email      = Column(String(150), nullable=False)
+    phone      = Column(String(50), nullable=True)
+    subject    = Column(String(200), nullable=False)
+    message    = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

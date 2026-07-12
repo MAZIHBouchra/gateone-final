@@ -13,6 +13,9 @@ import Properties from "./pages/Properties";           // Ta nouvelle grille de 
 import PropertyDetail from "./pages/PropertyDetail";   // Ta nouvelle fiche villa IA
 import Journal from "./pages/Journal";                 // Ton nouveau blog public
 import ArticleDetail from "./pages/ArticleDetail";     // Lecture individuelle d'un blog expert
+import ClientSignup from './pages/ClientSignup';
+import ClientLogin from './pages/ClientLogin';
+import ClientForgotPassword from './pages/ClientForgotPassword';
 
 // --- 2. AGENT-FACING PAGES (ADMIN PORTAL) ---
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -21,6 +24,9 @@ import AdminAIStudio from "./pages/admin/AdminAIStudio";
 import PropertiesPage from './pages/admin/PropertiesPage';
 import LeadsPage from './pages/admin/LeadsPage';
 import BlogStudio from './pages/admin/BlogStudio';
+import AdminEditProperty from './pages/admin/AdminEditProperty';
+import SettingsPage from './pages/admin/SettingsPage';
+
 
 // Fallback Page
 import NotFound from "./pages/NotFound";
@@ -43,6 +49,9 @@ const App = () => (
             <Route path="/property/:id" element={<PropertyDetail />} />
             <Route path="/journal" element={<Journal />} />
             <Route path="/article/:id" element={<ArticleDetail />} />
+			<Route path="/investor/signup" element={<ClientSignup />} />
+			<Route path="/client/login" element={<ClientLogin />} />
+			<Route path="/client/forgot-password" element={<ClientForgotPassword />} />
             
             {/* --- SECURE ADMIN PORTAL --- */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -51,6 +60,8 @@ const App = () => (
             <Route path="/admin/studio" element={<AdminAIStudio />} />
             <Route path="/admin/leads" element={<LeadsPage />} />
             <Route path="/admin/blogs" element={<BlogStudio />} />
+			<Route path="/admin/edit/:id" element={<AdminEditProperty />} />
+			<Route path="/admin/settings" element={<SettingsPage />} />
 
             {/* --- ERROR CATCH --- */}
             <Route path="*" element={<NotFound />} />

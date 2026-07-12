@@ -10,6 +10,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import { useNavigate } from 'react-router-dom';
+
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
   { icon: Home, label: 'Properties', path: '/admin/properties' },
@@ -20,6 +22,19 @@ const menuItems = [
 
 export default function Sidebar() {
   const location = useLocation(); // Gets current URL to highlight active button
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    // 3. ON NETTOIE TOUT L'ENVIRONNEMENT DE SÉCURITÉ
+    localStorage.removeItem('gateone_token');
+    localStorage.removeItem('gateone_role');
+    localStorage.removeItem('agent_name');
+
+    console.log("🔒 Security Alert: Identity credentials cleared. Logging out...");
+    
+    // 4. REDIRECTION VERS L'ENTRÉE DU PORTAIL
+    navigate('/');
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#2D3321] text-[#F9F7F2] flex flex-col shadow-2xl z-50">
@@ -58,9 +73,12 @@ export default function Sidebar() {
 
       {/* 3. FOOTER / LOGOUT */}
       <div className="p-4 border-t border-white/10">
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium">
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors text-sm font-medium"
+        >
           <LogOut size={20} />
-          Logout
+          Logout System
         </button>
         <div className="mt-4 px-4">
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">Orchid Island Real Estate</p>

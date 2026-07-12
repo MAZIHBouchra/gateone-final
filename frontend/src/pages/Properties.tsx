@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { propertiesApi } from '@/lib/api';
 import Navbar from '@/components/public/Navbar';
+import Footer from '@/components/public/Footer';
 import { 
   MapPin, 
   Maximize, 
@@ -11,7 +12,7 @@ import {
   Search, 
   ArrowUpRight,
   Sparkles,
-  Loader2
+  Loader2, Bath
 } from 'lucide-react';
 
 
@@ -25,124 +26,129 @@ export default function Properties() {
 
   useEffect(() => {
     async function loadData() {
-      try {
-        const data = await propertiesApi.getAll();
-
-        setProperties(
-          data.filter((p: any) => p.status === "available")
-        );
-      } catch (err) {
-        console.error("Discovery error", err);
-      } finally {
-        setLoading(false);
-      }
+        try {
+            console.log("️ Fetching Public Catalog...");
+            const data = await propertiesApi.getPublicCatalog();
+            
+            // On vérifie que data est bien un tableau avant de le stocker
+            if (Array.isArray(data)) {
+                console.log(" Catalog received:", data.length, "assets");
+                setProperties(data);
+            }
+        } catch (err) {
+            console.error(" Logic Error in Discovery Page:", err);
+        } finally {
+            // QUOI QU'IL ARRIVE, on arrête le spinner
+            setLoading(false); 
+        }
     }
-
     loadData();
-  }, []);
+}, []);
 
-  const filteredProperties = properties.filter((prop) => {
-    const matchesType =
-      filter === "all" || prop.type === filter;
+const filteredProperties = filter === 'all'
+  ? properties
+  : properties.filter(p => {
+      const type = p.type?.toLowerCase() || '';
+      const f = filter.toLowerCase();
+      
+      if (f === 'villa')      return type.includes('villa');
+      if (f === 'riad')       return type.includes('riad');
+      if (f === 'palace')     return type.includes('palace') || type.includes('palais');
+      if (f === 'penthouse')  return type.includes('penthouse');
+      if (f === 'apartment')  return type.includes('apartment') || type.includes('appartement');
+      if (f === 'land')       return type.includes('land') || type.includes('terrain');
+      if (f === 'other')      return type.includes('other') || type.includes('exceptional');
+      return type === f;
+    });
 
-    const matchesSearch =
-      prop.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      prop.location
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
 
-    return matchesType && matchesSearch;
-  });
+ return (
+  <div className="min-h-screen bg-[#FDFCF9] font-sans">
+    <Navbar />
 
-  return (
-    <div className="min-h-screen bg-white pt-24">
-	  <Navbar />
+    {/* HERO SECTION - RESTRUCTURED FOR FLUIDITY */}
+    <header className="relative pt-44 pb-20 px-8 bg-[#0B1F33] text-white">
+      {/* 🎨 Fond décoratif arabesque */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            `url('https://www.transparenttextures.com/patterns/arabesque.png')`
+        }}
+      />
+      
+      {/* 🔵 Lumière IA de luxe (glow effect) */}
+      <div className="absolute -bottom-32 left-1/4 w-[40vw] h-64 bg-[#5DA9E9]/15 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* HERO SECTION */}
-      <div className="bg-[#0B1F33] text-white pt-32 pb-20 px-8 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10 text-center">
+        <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.6em] mb-4 block">
+          Exclusive Portfolio
+        </span>
 
-        {/* Overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage:
-              `url('https://www.transparenttextures.com/patterns/arabesque.png')`
-          }}
-        />
-
-        <div className="max-w-7xl mx-auto relative z-10 text-center">
-
-          <span className="text-[10px] uppercase font-bold text-[#5DA9E9] tracking-[0.4em] mb-4 block">
-            Exclusive Collection
-          </span>
-
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-10 tracking-tight leading-tight">
-            Discover Exceptional <br />
-            Properties
-          </h1>
+        <h1 className="text-5xl md:text-7xl font-serif font-bold mb-10 tracking-tight leading-tight">
+          Discover Exceptional Assets
+        </h1>
 
           {/* SEARCH BAR */}
-          <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 flex flex-col md:flex-row items-center shadow-2xl">
+          {/* PREMIUM SEARCH BAR (Glassmorphism) */}
+<div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-xl p-2 rounded-[2rem] border border-white/10 flex flex-col md:flex-row items-center shadow-2xl relative z-10">
+    <div className="flex-1 flex items-center px-5 w-full">
+        <Search className="text-[#5DA9E9] mr-3" size={18} />
+        <input
+            type="text"
+            placeholder="Search by city, neighborhood, or estate name..."
+            className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-gray-400 py-4"
+            value={searchTerm} // Liaison avec l'état
+            onChange={(e) => setSearchTerm(e.target.value)} // Mise à jour instantanée
+        />
+    </div>
 
-            <div className="flex-1 flex items-center px-5 w-full">
-              <Search
-                className="text-[#5DA9E9] mr-3"
-                size={18}
-              />
+    {/* Ce bouton est visuel pour le "luxe", l'utilisateur voit les résultats bouger dès qu'il tape */}
+    <button className="bg-[#5DA9E9] text-white px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-sky-400 transition-all shadow-xl active:scale-95">
+        Refine Search
+    </button>
+</div>
+       </div>
+    </header>
 
-              <input
-                type="text"
-                placeholder="Search city, neighborhood..."
-                className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-gray-300 py-4"
-                value={searchTerm}
-                onChange={(e) =>
-                  setSearchTerm(e.target.value)
-                }
-              />
-            </div>
-
-            <button className="bg-[#5DA9E9] text-white px-8 py-4 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-sky-400 transition-all shadow-xl active:scale-95">
-              Refine Search
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* FILTER BAR */}
-      <div className="max-w-7xl mx-auto px-8 py-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-40 shadow-sm">
+<div className="max-w-7xl mx-auto px-8 py-6 border-b border-[#EDE9E0] flex justify-between items-center bg-white sticky top-0 z-40 shadow-sm">
+  
+  {/* Filtres */}
+  <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+    {[
+      { value: 'all',            label: 'All Properties'    },
+      { value: 'villa',          label: 'Luxury Villa'      },
+      { value: 'riad',           label: 'Historic Riad'     },
+      { value: 'palace',         label: 'Royal Palace'      },
+      { value: 'penthouse',      label: 'Penthouse'         },
+      { value: 'apartment',      label: 'Apartment'         },
+      { value: 'land',           label: 'Investment Land'   },
+      { value: 'other',          label: 'Exceptional'       },
+    ].map((type) => (
+      <button
+        key={type.value}
+        onClick={() => setFilter(type.value)}
+        className={`
+          px-5 py-2.5 rounded-full text-[10px] font-bold uppercase 
+          tracking-widest transition-all border whitespace-nowrap
+          ${filter === type.value
+            ? "bg-[#0B1F33] text-white border-[#0B1F33]"
+            : "border-[#EDE9E0] text-gray-400 hover:border-[#0B1F33] hover:text-[#0B1F33] bg-white"
+          }
+        `}
+      >
+        {type.label}
+      </button>
+    ))}
+  </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">
-
-          {["all", "Luxury Villa", "Riad", "Apartment"].map((type) => (
-
-            <button
-              key={type}
-              onClick={() => setFilter(type)}
-              className={`
-                px-6 py-3 rounded-full text-[10px]
-                font-bold uppercase tracking-widest
-                transition-all border whitespace-nowrap
-
-                ${
-                  filter === type
-                    ? "bg-[#0B1F33] text-white border-[#0B1F33] shadow-lg shadow-[#0B1F33]/20"
-                    : "border-gray-200 text-gray-500 hover:border-[#5DA9E9] hover:text-[#5DA9E9]"
-                }
-              `}
-            >
-              {type === "all"
-                ? "All Properties"
-                : type}
-            </button>
-          ))}
-        </div>
-
-        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest hidden md:block">
-          {filteredProperties.length} Properties Available
-        </p>
-      </div>
+  {/* Compteur */}
+  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest hidden md:block shrink-0 ml-6">
+    {filteredProperties.length} Properties
+  </p>
+</div>
 
       {/* PROPERTIES GRID */}
       <main className="max-w-7xl mx-auto px-8 py-20">
@@ -245,68 +251,38 @@ export default function Properties() {
                   </p>
 
                   {/* DETAILS */}
-                  <div className="mt-auto grid grid-cols-3 gap-4 border-t border-gray-100 pt-6">
+                  <div className="mt-auto grid grid-cols-3 gap-2 border-t border-gray-50 pt-6">
+  {/* AREA */}
+  <div className="flex flex-col">
+    <span className="text-[9px] text-gray-400 font-bold uppercase">Area</span>
+    <div className="flex items-center gap-1.5 text-[#2D3321]">
+      <Maximize size={14} className="opacity-20" /> 
+      <span className="text-xs font-bold">{prop.area_sqm} m²</span>
+    </div>
+  </div>
 
-                    {/* AREA */}
-                    <div className="flex flex-col">
+  {/* BEDROOMS */}
+<div className="flex flex-col border-x border-gray-50 px-4">
+  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1">Beds</span>
+  <div className="flex items-center gap-1.5">
+    <Bed size={13} className="text-gray-300" />
+    <span className="text-sm font-bold text-[#0B1F33]">
+      {prop.bedrooms ?? '—'}
+    </span>
+  </div>
+</div>
 
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        Area
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
-
-                        <Maximize
-                          size={14}
-                          className="opacity-30"
-                        />
-
-                        <span className="text-xs font-bold">
-                          {prop.area_sqm} m²
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* ROOMS */}
-                    <div className="flex flex-col">
-
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        Rooms
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#0B1F33]">
-
-                        <Bed
-                          size={14}
-                          className="opacity-30"
-                        />
-
-                        <span className="text-xs font-bold">
-                          {prop.bedrooms} Bed
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* ROI */}
-                    <div className="flex flex-col">
-
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">
-                        AI ROI
-                      </span>
-
-                      <div className="flex items-center gap-1.5 text-[#5DA9E9]">
-
-                        <Sparkles
-                          size={14}
-                          className="opacity-70"
-                        />
-
-                        <span className="text-xs font-bold">
-                          ~12.4%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+{/* BATHROOMS */}
+<div className="flex flex-col pl-4">
+  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-1">Baths</span>
+  <div className="flex items-center gap-1.5">
+    <Bath size={13} className="text-gray-300" />
+    <span className="text-sm font-bold text-[#0B1F33]">
+      {prop.bathrooms ?? '—'}
+    </span>
+  </div>
+</div>
+</div>
 
                   {/* PRICE */}
                   <div className="mt-8 flex justify-between items-end">
@@ -326,6 +302,9 @@ export default function Properties() {
           </div>
         )}
       </main>
+	 
+	 {/* --- FOOTER: FINAL IMPACT --- */}
+        <Footer />
     </div>
   );
 }

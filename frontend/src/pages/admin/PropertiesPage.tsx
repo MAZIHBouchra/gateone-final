@@ -12,15 +12,21 @@ import {
   Share2, 
   ExternalLink,
   Loader2,
-  Sparkles
+  Sparkles,
+  Trash2,  
+  Edit3,
+  CheckCircle2  
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useNavigate } from 'react-router-dom';
 
 // Interface étendue pour inclure la photo (à ajouter dans ton fichier api.ts si ce n'est pas fait)
 // export interface Property { ... thumbnail_url?: string; ... }
 
 export default function PropertiesPage() {
+  const navigate = useNavigate();
+  
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,32 +56,72 @@ export default function PropertiesPage() {
     }
   };
 
-  const handleOpenIntelligence = async (prop: Property) => {
+const handleOpenIntelligence = async (prop: Property) => {
     setSelectedProp(prop);
     setFetchingData(true);
     setIsModalOpen(true);
     setActiveTab('article');
 
     try {
+      // 🚀 ON UTILISE propertiesApi AU LIEU DE fetch() DIRECT
+      // Car propertiesApi contient déjà toute la logique "Authorization: Bearer"
       const [article, social] = await Promise.all([
         propertiesApi.getAIArticle(prop.id),
         propertiesApi.getSocialPosts(prop.id)
       ]);
+      
       setAiArticle(article);
       setSocialPosts(social);
+      
     } catch (error) {
-      console.error("Content not ready yet");
+      console.error("Access Denied or Not found", error);
       setAiArticle(null);
-      setSocialPosts(null);
     } finally {
       setFetchingData(false);
     }
-  };
+};
 
   const filteredProperties = properties.filter(p => 
     p.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure? This will delete the asset, all its images and the generated AI intelligence pack.")) {
+        try {
+            // ✅ On utilise le client centralisé qui envoie le Token
+            const result = await propertiesApi.delete(id); 
+            
+            // Si l'exécution arrive ici, c'est que result.ok était vrai
+            setProperties(properties.filter(p => p.id !== id));
+            alert(" Asset successfully decommissioned.");
+            
+        } catch (error) {
+            console.error("Deletion failed:", error);
+            alert("Action Denied: You don't have permission to delete this asset or your session has expired.");
+        }
+    }
+};
+  
+  // Dans PropertiesPage.tsx, cherchez handlePublishFromList
+const handlePublishFromList = async () => {
+    if (!selectedProp) return;
+    
+    try {
+        const res = await fetch(`http://localhost:8000/api/properties/${selectedProp.id}/approve-article`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }, // <-- Obligatoire
+            body: JSON.stringify({}) // <-- On envoie un objet vide pour éviter le 422
+        });
+
+        if (res.ok) {
+            alert(" Confirmed: The version is now Live!");
+            setAiArticle((prev: any) => ({ ...prev, is_published: true }));
+        }
+    } catch (err) {
+        alert("Server communication failed.");
+    }
+};
 
   return (
     <AdminLayout>
@@ -159,14 +205,40 @@ export default function PropertiesPage() {
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <button 
-                      onClick={() => handleOpenIntelligence(prop)}
-                      className="inline-flex items-center gap-2 bg-[#2D3321] text-white px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95"
-                    >
-                      <Sparkles size={14} className="text-[#C7A987]" />
-                      AI Intelligence
-                    </button>
-                  </td>
+  {/* CONTENEUR FLEX POUR TOUT ALIGNER AU CENTRE VERTICALEMENT */}
+  <div className="flex items-center justify-end gap-2">
+    
+    {/* GROUPE D'ACTIONS DE GESTION (Subtiles) */}
+    <div className="flex items-center bg-gray-50/50 rounded-2xl p-1 border border-gray-100 mr-2">
+      {/* BOUTON EDITER */}
+      <button 
+        onClick={() => navigate(`/admin/edit/${prop.id}`)}
+        className="p-2.5 text-gray-400 hover:text-[#C7A987] hover:bg-white rounded-xl transition-all duration-200" 
+        title="Edit Characteristics"
+      >
+        <Edit3 size={18} />
+      </button>
+
+      {/* BOUTON SUPPRIMER */}
+      <button 
+        onClick={() => handleDelete(prop.id)}
+        className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-white rounded-xl transition-all duration-200" 
+        title="Delete Asset"
+      >
+        <Trash2 size={18} />
+      </button>
+    </div>
+
+    {/* BOUTON AI (L'ACTION PRINCIPALE) */}
+    <button 
+      onClick={() => handleOpenIntelligence(prop)}
+      className="inline-flex items-center gap-2 bg-[#2D3321] text-white px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition-all shadow-md active:scale-95 shrink-0"
+    >
+      <Sparkles size={14} className="text-[#C7A987]" />
+      AI Intelligence
+    </button>
+  </div>
+</td>
                 </tr>
               ))
             )}
@@ -255,9 +327,17 @@ export default function PropertiesPage() {
               >
                   Close
               </button>
-              <button className="bg-[#C7A987] text-white px-8 py-3 rounded-2xl font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 hover:bg-[#b69a7a] transition-all shadow-lg">
-                  <ExternalLink size={16} /> Push to Website
-              </button>
+              <button 
+    onClick={handlePublishFromList}
+    disabled={aiArticle?.is_published} // Désactivé si déjà publié
+    className={`${aiArticle?.is_published ? 'bg-green-500 opacity-50 cursor-not-allowed' : 'bg-[#C7A987] hover:bg-[#b69a7a]'} text-white px-8 py-3 rounded-2xl font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 transition-all shadow-lg shadow-[#C7A987]/20`}
+>
+    {aiArticle?.is_published ? (
+        <><CheckCircle2 size={16} /> Live on Site</>
+    ) : (
+        <><ExternalLink size={16} /> Approve & Publish Now</>
+    )}
+</button>
             </div>
           </div>
         </div>

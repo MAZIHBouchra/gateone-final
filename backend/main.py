@@ -8,7 +8,6 @@ import uvicorn
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # 2. Imports des Routeurs
-from app.routes.chatbot_routes import chatbot_router
 from app.routes.email_routes import email_router
 from app.routes.price_routes import price_router
 from app.routes.leads_routes import router as leads_router
@@ -19,6 +18,7 @@ from app.routes.admin_routes import router as admin_router
 from app.routes.dashboard_routes import router as dashboard_router 
 
 from app.routes import auth_routes
+from app.routes import contact_routes
 
 # 3. Gestion des imports optionnels
 try:
@@ -59,16 +59,15 @@ app.add_middleware(
 # 6. Événements de démarrage
 @app.on_event("startup")
 async def startup_event() -> None:
-    print(" 🚀 Starting GateOne unified API with Clean Architecture...")
+    print(" Starting GateOne unified API with Clean Architecture...")
     success = ca.initialize_rag_system()
     if success:
-        print(" ✅ AI Chatbot Engine: READY")
+        print("  AI Chatbot Engine: READY")
     else:
-        print(" ❌ AI Chatbot Engine: FAILED")
+        print("  AI Chatbot Engine: FAILED")
 
 # 7. Enregistrement des Routes
 app.include_router(admin_router)
-app.include_router(chatbot_router)
 app.include_router(email_router)
 app.include_router(price_router)
 app.include_router(leads_router)
@@ -77,6 +76,7 @@ app.include_router(analytics_router)
 # --- MODIFICATION ICI : Enregistrement du routeur Dashboard ---
 app.include_router(dashboard_router) 
 app.include_router(auth_routes.router)
+app.include_router(contact_routes.router)
 
 if PROPERTIES_AVAILABLE:
     app.include_router(properties_router)
