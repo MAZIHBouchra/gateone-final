@@ -8,6 +8,8 @@ import Navbar from '@/components/public/Navbar';
 import Footer from '@/components/public/Footer';
 import { ArrowLeft, Clock, Calendar, ShieldCheck, Share2 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ export default function ArticleDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetch(`http://localhost:8000/api/blogs/${id}`)
+    fetch(`${API_BASE_URL}/api/blogs/${id}`)
       .then(res => res.json())
       .then(data => {
         setArticle(data);

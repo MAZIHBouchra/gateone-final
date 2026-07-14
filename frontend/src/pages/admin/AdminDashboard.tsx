@@ -9,6 +9,8 @@ import {
   ChevronRight, ArrowUpRight, Clock, Target 
 } from 'lucide-react';
 
+
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [agentName, setAgentName] = useState("Agent");
@@ -22,6 +24,8 @@ export default function Dashboard() {
   
   const [hotLeads, setHotLeads] = useState<any[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(true);
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   useEffect(() => {
   const storedName = localStorage.getItem('agent_name');
@@ -30,7 +34,7 @@ export default function Dashboard() {
   }
 
   // Charger les statistiques
-  fetch('http://localhost:8000/api/dashboard/stats')
+  fetch('${API_BASE_URL}/api/dashboard/stats')
     .then(res => res.json())
     .then(data => setStats(data))
     .catch(err => console.error("Stats fetch error:", err));

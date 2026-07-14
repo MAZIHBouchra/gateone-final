@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, ShieldCheck, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function ClientForgotPassword() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1); // Step 1: Email, Step 2: New Password
@@ -16,7 +18,7 @@ export default function ClientForgotPassword() {
     setLoading(true);
 
     const response = await fetch(
-      'http://localhost:8000/api/auth/client/reset-password',
+      '${API_BASE_URL}/api/auth/client/reset-password',
       {
         method: 'PUT',
         headers: {

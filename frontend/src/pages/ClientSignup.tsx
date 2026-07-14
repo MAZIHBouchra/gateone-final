@@ -14,6 +14,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function ClientSignup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export default function ClientSignup() {
    setLoading(true);
 
    try {
-    const response = await fetch('http://localhost:8000/api/auth/client/signup', {
+    const response = await fetch('${API_BASE_URL}/api/auth/client/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),

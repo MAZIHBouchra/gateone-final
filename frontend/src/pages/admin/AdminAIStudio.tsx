@@ -41,6 +41,8 @@ export default function AdminAIStudio() {
     bathrooms: "",
     features: ""
   });
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   // --- 3. HANDLERS (ÉVÉNEMENTS) ---
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -83,7 +85,7 @@ export default function AdminAIStudio() {
 
         try {
           // 1. Fetch Article (SÉCURISÉ)
-          const artRes = await fetch(`http://localhost:8000/api/properties/${newId}/ai-article?is_admin=true`, {
+          const artRes = await fetch(`${API_BASE_URL}/api/properties/${newId}/ai-article?is_admin=true`, {
             headers: {
               "Authorization": `Bearer ${token}` // <--- CRUCIAL : Votre laissez-passer
             }
@@ -97,7 +99,7 @@ export default function AdminAIStudio() {
           }
 
           // 2. Fetch Social Posts (SÉCURISÉ par cohérence)
-          const socRes = await fetch(`http://localhost:8000/api/properties/${newId}/social-posts`, {
+          const socRes = await fetch(`${API_BASE_URL}/api/properties/${newId}/social-posts`, {
             headers: {
               "Authorization": `Bearer ${token}` // <--- Indispensable pour votre API sécurisée
             }
@@ -147,7 +149,7 @@ export default function AdminAIStudio() {
   if (!propertyId) return;
 
   try {
-    const response = await fetch(`http://localhost:8000/api/properties/${propertyId}/approve-article`, {
+    const response = await fetch(`${API_BASE_URL}/api/properties/${propertyId}/approve-article`, {
       method: 'PUT',
       headers: { 
           'Accept': 'application/json',        // <-- Dis au serveur que tu veux du JSON

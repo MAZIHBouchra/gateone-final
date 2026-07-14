@@ -12,6 +12,8 @@ import {
   Sparkles
 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function ClientLogin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ export default function ClientLogin() {
     setError("");
 
     try {
-      const response = await fetch('http://localhost:8000/api/auth/client/login', {
+      const response = await fetch('${API_BASE_URL}/api/auth/client/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

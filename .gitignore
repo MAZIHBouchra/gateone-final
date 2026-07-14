@@ -8,6 +8,7 @@ __pycache__/
 # Fichiers de configuration SECRETS (Priorité Phase 1)
 .env
 .env.local
+.env.production
 
 # Fichiers système
 .DS_Store

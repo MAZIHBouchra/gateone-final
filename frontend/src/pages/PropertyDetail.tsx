@@ -29,7 +29,7 @@ export default function PropertyDetail() {
   const isLoggedIn = !!authToken;
   const userRole = localStorage.getItem('gateone_role');
   
-  const API_BASE_URL = "http://localhost:8000/api";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   
 
@@ -40,7 +40,7 @@ useEffect(() => {
         const storedClientId = localStorage.getItem('client_id');
 
         // 1. Charger les données du bien
-        const res = await fetch(`http://localhost:8000/api/properties/${id}`);
+        const res = await fetch(`${API_BASE_URL}/api/properties/${id}`);
         if (res.ok) {
             const propData = await res.json();
             setProperty(propData);

@@ -16,6 +16,8 @@ import {
   Loader2
 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 export default function Contact() {
 
   const [formData, setFormData] = useState({
@@ -36,7 +38,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
   try {
-    const response = await fetch('http://localhost:8000/api/contact/send', {
+    const response = await fetch('${API_BASE_URL}/api/contact/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

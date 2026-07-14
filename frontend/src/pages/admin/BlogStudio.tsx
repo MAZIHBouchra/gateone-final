@@ -12,6 +12,8 @@ export default function BlogStudio() {
   const [blogData, setBlogData] = useState<any>(null);
   const [form, setForm] = useState({ topic: "", region: "Global", keywords: "" });
   const [isPublished, setIsPublished] = useState(false); // Pour afficher un succès
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   const handleGenerate = async () => {
     if (!form.topic) return;
@@ -20,7 +22,7 @@ export default function BlogStudio() {
     setIsPublished(false);
 
     try {
-      const response = await fetch('http://localhost:8000/api/blogs/generate-expert', {
+      const response = await fetch('${API_BASE_URL}/api/blogs/generate-expert', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,7 +59,7 @@ export default function BlogStudio() {
     
     setPublishing(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/blogs/${blogData.id}/publish`, {
+      const response = await fetch(`${API_BASE_URL}/api/blogs/${blogData.id}/publish`, {
         method: 'PUT',
       });
 

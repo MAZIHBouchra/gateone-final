@@ -40,6 +40,8 @@ export default function PropertiesPage() {
   const [selectedProp, setSelectedProp] = useState<Property | null>(null);
   const [aiArticle, setAiArticle] = useState<any>(null);
   const [socialPosts, setSocialPosts] = useState<any>(null);
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   useEffect(() => {
     fetchData();
@@ -108,7 +110,7 @@ const handlePublishFromList = async () => {
     if (!selectedProp) return;
     
     try {
-        const res = await fetch(`http://localhost:8000/api/properties/${selectedProp.id}/approve-article`, {
+        const res = await fetch(`${API_BASE_URL}/api/properties/${selectedProp.id}/approve-article`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }, // <-- Obligatoire
             body: JSON.stringify({}) // <-- On envoie un objet vide pour éviter le 422

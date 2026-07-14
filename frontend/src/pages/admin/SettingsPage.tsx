@@ -21,6 +21,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [passData, setPassData] = useState({ current: '', next: '' });
   const [updating, setUpdating] = useState(false);
+  
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   // Formulaire pour nouveau membre
   const [newAgent, setNewAgent] = useState({ 
@@ -40,7 +42,7 @@ export default function SettingsPage() {
   }, [isAdmin]);
 
   const fetchAgents = async () => {
-    const res = await fetch('http://localhost:8000/api/auth/agents');
+    const res = await fetch('${API_BASE_URL}/api/auth/agents');
     const data = await res.json();
     setAgents(data);
   };
@@ -49,7 +51,7 @@ export default function SettingsPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/auth/register', {
+      const res = await fetch('${API_BASE_URL}/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newAgent)
@@ -66,7 +68,7 @@ export default function SettingsPage() {
     // 1. Demande de confirmation professionnelle
     if (window.confirm(`Security Protocol: Are you sure you want to revoke access for ${agentName}? This action is permanent.`)) {
         try {
-            const res = await fetch(`http://localhost:8000/api/auth/agents/${agentId}`, {
+            const res = await fetch(`${API_BASE_URL}/api/auth/agents/${agentId}`, {
                 method: 'DELETE',
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('gateone_token')}`
@@ -92,7 +94,7 @@ export default function SettingsPage() {
     setUpdating(true);
     
     try {
-        const res = await fetch('http://localhost:8000/api/auth/profile/password', {
+        const res = await fetch('${API_BASE_URL}/api/auth/profile/password', {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -119,7 +121,7 @@ export default function SettingsPage() {
   
   if (newPass && newPass.length >= 6) {
     try {
-       const res = await fetch(`http://localhost:8000/api/auth/agents/${agentId}/reset-password`, {
+       const res = await fetch(`${API_BASE_URL}/api/auth/agents/${agentId}/reset-password`, {
          method: 'PUT',
          headers: {
            'Content-Type': 'application/json',
