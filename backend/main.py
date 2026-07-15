@@ -35,7 +35,10 @@ app = FastAPI(
 # 5. Configuration CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8080",                    # dev local
+        "https://gateone-deploy.vercel.app",        # production Vercel
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
