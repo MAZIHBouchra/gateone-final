@@ -61,7 +61,7 @@ useEffect(() => {
             // --------------------------------------------
             
             // 2. Charger l'article (on réutilise le token client)
-            const artRes = await fetch(`http://localhost:8000/api/properties/${id}/ai-article`, {
+            const artRes = await fetch(`${API_BASE_URL}/api/properties/${id}/ai-article`, {
                 headers: { "Authorization": `Bearer ${authToken}` }
             });
             if (artRes.ok) {
@@ -84,7 +84,7 @@ useEffect(() => {
     
     if (clientToken) {
       try {
-        await fetch("http://localhost:8000/api/leads/interaction", {
+        await fetch("${API_BASE_URL}/api/leads/interaction", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@ useEffect(() => {
   try {
     const token = localStorage.getItem('gateone_token');
     const res = await fetch(
-      `http://localhost:8000/api/properties/${property.id}/pdf-brief`,
+      `${API_BASE_URL}/api/properties/${property.id}/pdf-brief`,
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
     if (!res.ok) throw new Error('PDF generation failed');
@@ -121,7 +121,7 @@ useEffect(() => {
     a.click();
     
     // Tracking du score
-    fetch('http://localhost:8000/api/leads/interaction', {
+    fetch('${API_BASE_URL}/api/leads/interaction', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({
