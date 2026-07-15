@@ -69,7 +69,7 @@ export default function Footer() {
                  <MapPin size={14} className="text-[#5DA9E9]"/> Centre d’affaire Oualid, Jbel Gueliz 10, 40010 Marrakech, Morocco
               </li>
               <li className="flex items-center gap-3">
-                 <Phone size={14} className="text-[#5DA9E9]"/> +212 618-688-888
+                 <Phone size={14} className="text-[#5DA9E9]"/> +212 622-222-202
               </li>
             </ul>
           </div>
