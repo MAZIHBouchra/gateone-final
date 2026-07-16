@@ -29,7 +29,7 @@ export default function PropertyDetail() {
   const isLoggedIn = !!authToken;
   const userRole = localStorage.getItem('gateone_role');
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
   
 
@@ -82,13 +82,13 @@ useEffect(() => {
   const handleWhatsApp = async () => {
     window.open(`https://wa.me/212618688888?text=I am interested in ${property?.title}`);
     
-    if (clientToken) {
+    if (isLoggedIn) {
       try {
-        await fetch("${API_BASE_URL}/api/leads/interaction", {
+        await fetch(`${API_BASE_URL}/api/leads/interaction`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${clientToken}`
+            "Authorization": `Bearer ${authToken}`
           },
           body: JSON.stringify({ 
              lead_id: localStorage.getItem('client_id'), // On envoie l'ID pour le score
@@ -121,7 +121,7 @@ useEffect(() => {
     a.click();
     
     // Tracking du score
-    fetch('${API_BASE_URL}/api/leads/interaction', {
+    fetch(`${API_BASE_URL}/api/leads/interaction`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({
