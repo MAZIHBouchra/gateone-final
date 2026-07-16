@@ -37,7 +37,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:8080",                    # dev local
-        "https://gateone-deploy.vercel.app",        # production Vercel
+        "https://gateone-final.vercel.app",        # production Vercel
     ],
     allow_credentials=True,
     allow_methods=["*"],
