@@ -28,7 +28,7 @@ export default function AdminLogin() {
 
     try {
       // Simulation de l'appel API (à connecter avec ta route /api/auth/login plus tard)
-const response = await fetch('${API_BASE_URL}/api/auth/login', {
+const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formData),

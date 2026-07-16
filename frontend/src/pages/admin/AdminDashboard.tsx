@@ -34,7 +34,7 @@ export default function Dashboard() {
   }
 
   // Charger les statistiques
-  fetch('${API_BASE_URL}/api/dashboard/stats')
+  fetch(`${API_BASE_URL}/dashboard/stats`)
     .then(res => res.json())
     .then(data => setStats(data))
     .catch(err => console.error("Stats fetch error:", err));

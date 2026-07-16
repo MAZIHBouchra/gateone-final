@@ -18,7 +18,7 @@ export default function ClientForgotPassword() {
     setLoading(true);
 
     const response = await fetch(
-      '${API_BASE_URL}/api/auth/client/reset-password',
+      `${API_BASE_URL}/auth/client/reset-password`,
       {
         method: 'PUT',
         headers: {

@@ -22,7 +22,7 @@ export default function BlogStudio() {
     setIsPublished(false);
 
     try {
-      const response = await fetch('${API_BASE_URL}/api/blogs/generate-expert', {
+      const response = await fetch(`${API_BASE_URL}/blogs/generate-expert`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -59,7 +59,7 @@ export default function BlogStudio() {
     
     setPublishing(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/blogs/${blogData.id}/publish`, {
+      const response = await fetch(`${API_BASE_URL}/blogs/${blogData.id}/publish`, {
         method: 'PUT',
       });
 

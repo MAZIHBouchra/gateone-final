@@ -18,7 +18,7 @@ export default function ArticleDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetch(`${API_BASE_URL}/api/blogs/${id}`)
+    fetch(`${API_BASE_URL}/blogs/${id}`)
       .then(res => res.json())
       .then(data => {
         setArticle(data);

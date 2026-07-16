@@ -110,7 +110,7 @@ const handlePublishFromList = async () => {
     if (!selectedProp) return;
     
     try {
-        const res = await fetch(`${API_BASE_URL}/api/properties/${selectedProp.id}/approve-article`, {
+        const res = await fetch(`${API_BASE_URL}/properties/${selectedProp.id}/approve-article`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }, // <-- Obligatoire
             body: JSON.stringify({}) // <-- On envoie un objet vide pour éviter le 422

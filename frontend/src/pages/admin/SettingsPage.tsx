@@ -51,7 +51,7 @@ export default function SettingsPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('${API_BASE_URL}/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newAgent)
@@ -68,7 +68,7 @@ export default function SettingsPage() {
     // 1. Demande de confirmation professionnelle
     if (window.confirm(`Security Protocol: Are you sure you want to revoke access for ${agentName}? This action is permanent.`)) {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/auth/agents/${agentId}`, {
+            const res = await fetch(`${API_BASE_URL}/auth/agents/${agentId}`, {
                 method: 'DELETE',
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem('gateone_token')}`
@@ -94,7 +94,7 @@ export default function SettingsPage() {
     setUpdating(true);
     
     try {
-        const res = await fetch('${API_BASE_URL}/api/auth/profile/password', {
+        const res = await fetch(`${API_BASE_URL}/auth/profile/password`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ export default function SettingsPage() {
   
   if (newPass && newPass.length >= 6) {
     try {
-       const res = await fetch(`${API_BASE_URL}/api/auth/agents/${agentId}/reset-password`, {
+       const res = await fetch(`${API_BASE_URL}/auth/agents/${agentId}/reset-password`, {
          method: 'PUT',
          headers: {
            'Content-Type': 'application/json',
