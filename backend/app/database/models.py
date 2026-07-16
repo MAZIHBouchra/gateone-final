@@ -126,7 +126,7 @@ class UserInteraction(Base):
     id = Column(Integer, primary_key=True, index=True)
     lead_id = Column(UUID(as_uuid=True), ForeignKey("leads.id"))
     action_type = Column(SQLEnum(ActionCategory))
-    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id"), nullable=True)
+    property_id = Column(UUID(as_uuid=True), ForeignKey("properties.id", ondelete="CASCADE"), nullable=True)
     duration_seconds = Column(Integer)
     timestamp = Column(DateTime, default=datetime.utcnow)
     lead = relationship("Lead", back_populates="interactions")
