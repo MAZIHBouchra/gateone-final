@@ -29,7 +29,7 @@ export default function PropertyDetail() {
   const isLoggedIn = !!authToken;
   const userRole = localStorage.getItem('gateone_role');
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
   
 
@@ -40,7 +40,7 @@ useEffect(() => {
         const storedClientId = localStorage.getItem('client_id');
 
         // 1. Charger les données du bien
-        const res = await fetch(`${API_BASE_URL}/api/properties/${id}`);
+        const res = await fetch(`${API_BASE_URL}/properties/${id}`);
         if (res.ok) {
             const propData = await res.json();
             setProperty(propData);
@@ -61,7 +61,7 @@ useEffect(() => {
             // --------------------------------------------
             
             // 2. Charger l'article (on réutilise le token client)
-            const artRes = await fetch(`${API_BASE_URL}/api/properties/${id}/ai-article`, {
+            const artRes = await fetch(`${API_BASE_URL}/properties/${id}/ai-article`, {
                 headers: { "Authorization": `Bearer ${authToken}` }
             });
             if (artRes.ok) {
@@ -84,7 +84,7 @@ useEffect(() => {
     
     if (isLoggedIn) {
       try {
-        await fetch(`${API_BASE_URL}/api/leads/interaction`, {
+        await fetch(`${API_BASE_URL}/leads/interaction`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@ useEffect(() => {
   try {
     const token = localStorage.getItem('gateone_token');
     const res = await fetch(
-      `${API_BASE_URL}/api/properties/${property.id}/pdf-brief`,
+      `${API_BASE_URL}/properties/${property.id}/pdf-brief`,
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
     if (!res.ok) throw new Error('PDF generation failed');
@@ -121,7 +121,7 @@ useEffect(() => {
     a.click();
     
     // Tracking du score
-    fetch(`${API_BASE_URL}/api/leads/interaction`, {
+    fetch(`${API_BASE_URL}/leads/interaction`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({

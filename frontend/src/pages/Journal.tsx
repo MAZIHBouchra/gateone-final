@@ -12,7 +12,7 @@ import {
   Lock
 } from "lucide-react";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 export default function Journal() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -25,7 +25,7 @@ export default function Journal() {
 
   useEffect(() => {
     // 🚀 ON UTILISE LE CHEMIN EXACT DE TON BACKEND
-    fetch('${API_BASE_URL}/api/blogs/public/blogs') 
+    fetch('${API_BASE_URL}/blogs/public/blogs') 
       .then(res => {
         if (!res.ok) throw new Error("Catalog unreachable");
         return res.json();
