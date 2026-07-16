@@ -25,7 +25,7 @@ export default function Journal() {
 
   useEffect(() => {
     // 🚀 ON UTILISE LE CHEMIN EXACT DE TON BACKEND
-    fetch('${API_BASE_URL}/blogs/public/blogs') 
+    fetch(`${API_BASE_URL}/blogs/public/blogs`) 
       .then(res => {
         if (!res.ok) throw new Error("Catalog unreachable");
         return res.json();
