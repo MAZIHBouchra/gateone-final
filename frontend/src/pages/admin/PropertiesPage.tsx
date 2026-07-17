@@ -196,7 +196,7 @@ const handlePublishFromList = async () => {
                   </td>
                   <td className="px-8 py-6">
                     <div className="font-serif font-bold text-[#C7A987] text-lg">
-                      {prop.price ? Number(prop.price).toLocaleString() : '0'} <span className="text-[10px] ml-0.5 uppercase font-sans">MAD</span>
+                      {prop.price ? Number(prop.price).toLocaleString() : '0'} <span className="text-[10px] ml-0.5 uppercase font-sans"></span>
                     </div>
                   </td>
                   <td className="px-8 py-6">
