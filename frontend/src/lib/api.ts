@@ -141,7 +141,7 @@ export const propertiesApi = {
   // Dans propertiesApi, ajoutez :
 async trackAction(clientId: string, action: string, propertyId: string) {
   const token = localStorage.getItem('gateone_token');
-  const response = await fetch(`http://localhost:8000/api/leads/interaction`, {
+  const response = await fetch(`${API_BASE_URL}/leads/interaction`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -199,7 +199,7 @@ export const leadsApi = {
   
   
   async getAllLeads(): Promise<Lead[]> {
-    const res = await fetch(`http://localhost:8000/api/leads/`, {
+    const res = await fetch(`${API_BASE_URL}/leads/`, {
         headers: getAuthHeader()
     });
     if (!res.ok) throw new Error("Unauthorized access to leads intelligence.");
@@ -207,7 +207,7 @@ export const leadsApi = {
   },
   
   async getLeadIntelligence(leadId: string) {
-    const res = await fetch(`http://localhost:8000/api/leads/${leadId}/intelligence`, {
+    const res = await fetch(`${API_BASE_URL}/leads/${leadId}/intelligence`, {
         headers: getAuthHeader()
     });
     return res.json();

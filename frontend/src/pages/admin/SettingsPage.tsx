@@ -42,7 +42,7 @@ export default function SettingsPage() {
   }, [isAdmin]);
 
   const fetchAgents = async () => {
-    const res = await fetch('${API_BASE_URL}/api/auth/agents');
+    const res = await fetch(`${API_BASE_URL}/auth/agents`);
     const data = await res.json();
     setAgents(data);
   };
