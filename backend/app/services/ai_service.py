@@ -44,45 +44,56 @@ class AIService:
 
     # --- 1. GÉNÉRATEUR D'ARTICLE (TON PROMPT VALIDÉ) ---
     def generate_seo_article(self, data: dict, language: str = "English"):
-        main_keyword = f"{data.get('type')} for {data.get('intent')} in {data.get('location')}"
-        
-        system_prompt = (
-            "You are a senior Real Estate SEO Analyst and Luxury Copywriter. "
-            "Your mission is to generate an extensive, high-end property article (1000-1500 words). "
-            f"STRICT RULES: \n"
-            f"1. Use ONLY the term '{data.get('type')}' throughout the article. \n"
-            "2. SECTION 3 MUST BE A MARKDOWN TABLE. \n"
-            "3. NO POETIC FLUFF. Replace 'nestled' with factual data. \n"
-            "4. Word count focus: Be extremely descriptive."
-        )
-        
-        user_prompt = """
-        Generate a professional SEO article in {language} for this property:
-        DATA: {data_json}
-        FOLLOW THIS STRUCTURE EXACTLY:
-        1. SEO TITLE (H1): Use exactly: {type} for {intent} in {location} - [Unique Point]
-        2. INTRODUCTION: 120 words. Keyword "{main_keyword}" in first 20 words.
-        3. PROPERTY OVERVIEW: MARKDOWN TABLE (Feature | Specification).
-        4. ARCHITECTURE & INTERIOR: Min 250 words.
-        5. EXTERIOR & AMENITIES: Min 250 words.
-        6. NEIGHBORHOOD: Min 200 words.
-        7. INVESTMENT POTENTIAL: Min 150 words.
-        8. LEGAL & CONTACT: VNA/Title status.
-        """
+    main_keyword = f"{data.get('type')} for {data.get('intent')} in {data.get('location')}"
+    
+    system_prompt = (
+        "You are a senior Real Estate SEO Analyst and Luxury Copywriter. "
+        "Your mission is to generate an extensive, high-end property article (1000-1500 words). "
+        f"STRICT RULES: \n"
+        f"1. Use ONLY the term '{data.get('type')}' throughout the article. \n"
+        "2. SECTION 3 MUST BE A MARKDOWN TABLE. \n"
+        "3. NO POETIC FLUFF. Replace 'nestled' with factual data. \n"
+        "4. Word count focus: Be extremely descriptive."
+    )
+    
+    user_prompt = """
+    Generate a professional SEO article in {language} for this property:
+    DATA: {data_json}
+    FOLLOW THIS STRUCTURE EXACTLY:
+    1. SEO TITLE (H1): Use exactly: {type} for {intent} in {location} - [Unique Point]
+    2. INTRODUCTION: 120 words. Keyword "{main_keyword}" in first 20 words.
+    3. PROPERTY OVERVIEW: MARKDOWN TABLE (Feature | Specification).
+    4. ARCHITECTURE & INTERIOR: Min 250 words.
+    5. EXTERIOR & AMENITIES: Min 250 words.
+    6. NEIGHBORHOOD: Min 200 words.
+    7. INVESTMENT POTENTIAL: Min 150 words.
+    8. LEGAL & CONTACT: VNA/Title status.
+    9. CONTACT SECTION: End the article with exactly this block (do not translate, keep as-is):
 
-        prompt_template = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("human", user_prompt)
-        ])
+    ---
 
-        chain = prompt_template | self.llm
-        response = chain.invoke({
-            "language": language,
-            "main_keyword": main_keyword,
-            "data_json": str(data),
-            **data
-        })
-        return response.content
+    ## Contact GateOne Intelligence
+
+    For any information or to arrange a visit, contact our team of experts:
+
+    - **Agency :** Orchid Island — Luxury Real Estate
+    - **E-mail :** gateoneinfo@gmail.com
+    - **Phone :** +212 622-222-202
+
+    *Orchid Island — Where Prestige Meets Opportunity.*
+    """
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", user_prompt)
+    ])
+    chain = prompt_template | self.llm
+    response = chain.invoke({
+        "language": language,
+        "main_keyword": main_keyword,
+        "data_json": str(data),
+        **data
+    })
+    return response.content
 
     # --- 2. FONCTION DE PRÉVISUALISATION (NOUVEAU - POUR TON FRONTEND) ---
     async def get_article_preview(self, property_data: dict, lang: str = "en"):
